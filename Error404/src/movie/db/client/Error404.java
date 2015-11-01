@@ -3,14 +3,19 @@ package movie.db.client;
 
 /* a small step for software engineering, a huge step for error404! */
 //blablablatestestest ich bin ned kreativ
-import java.util.ArrayList;
+
 
 import com.google.gwt.core.client.EntryPoint;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.ListBox;
+import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 /**
@@ -30,39 +35,62 @@ public class Error404 implements EntryPoint {
 	public void onModuleLoad() {
 		initializePanels();
 	}
+	private VerticalPanel mainPanel = new VerticalPanel();
 	
 	private void initializePanels(){
-		VerticalPanel mainPanel = new VerticalPanel();
 		
 		HorizontalPanel selectionPanel = new HorizontalPanel();
 		HorizontalPanel timebarPanel = new HorizontalPanel();
 		HorizontalPanel worldmapPanel = new HorizontalPanel();
 		
 		FlexTable selectionCriteriaTable = new FlexTable();
-		Button showOnWorldmapButton = new Button();
-
+		Button showAsButton = new Button();
+		showAsButton.addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {			
+				//Window.alert("Hello");
+				showAsButtonClick();
+			}
+		});
+		
 		ListBox genreDropdown = new ListBox();
 		
 		ListBox countryDropdown = new ListBox();
 		ListBox langDropdown = new ListBox();
 		ListBox formatDropdown = new ListBox();
 				
-		showOnWorldmapButton.setText("Show on Worldmap");		
+		showAsButton.setText("Show as");		
 		genreDropdown.setMultipleSelect(true);
 		initializeGenres(genreDropdown);
 		initializeCountries(countryDropdown);
-		initializeLanguages(langDropdown);
-		initializeFormats(formatDropdown);		
+		initializeLanguages(langDropdown);	
+
+		RadioButton genreRBAnd = new RadioButton("genreRBGroup", "AND");
+		genreRBAnd.setValue(true);
+		RadioButton genreRBOR = new RadioButton("genreRBGroup", "OR");
+		
+		RadioButton countryRBAnd = new RadioButton("countryRBGroup", "AND");
+		countryRBAnd.setValue(true);
+		RadioButton countryRBOR = new RadioButton("countryRBGroup", "OR");
+		
+		RadioButton langRBAnd = new RadioButton("langRBGroup", "AND");
+		langRBAnd.setValue(true);
+		RadioButton langRBOR = new RadioButton("langRBGroup", "OR");
 		
 		selectionCriteriaTable.setText(0,0,"Genre:");
 		selectionCriteriaTable.setWidget(0,1,genreDropdown);
+		selectionCriteriaTable.setWidget(0,2,genreRBAnd);
+		selectionCriteriaTable.setWidget(0,3,genreRBOR);
 		selectionCriteriaTable.setText(1,0,"Country:");
 		selectionCriteriaTable.setWidget(1,1,countryDropdown);
+		selectionCriteriaTable.setWidget(1,2,countryRBAnd);
+		selectionCriteriaTable.setWidget(1,3,countryRBOR);
 		selectionCriteriaTable.setText(2,0,"Language:");
 		selectionCriteriaTable.setWidget(2,1,langDropdown);
-		selectionCriteriaTable.setText(3,0,"Output Format:");
-		selectionCriteriaTable.setWidget(3,1,formatDropdown);
-		selectionCriteriaTable.setWidget(4,0,showOnWorldmapButton);
+		selectionCriteriaTable.setWidget(2,2,langRBAnd);
+		selectionCriteriaTable.setWidget(2,3,langRBOR);
+		selectionCriteriaTable.setWidget(3,0,showAsButton);
+		selectionCriteriaTable.setWidget(3,1,initializeFormats(formatDropdown));
+			
 		
 		selectionPanel.add(selectionCriteriaTable);
 		
@@ -83,35 +111,39 @@ public class Error404 implements EntryPoint {
 	}
 	
 	private void initializeGenres(ListBox genreDropdown){		
-		genreDropdown.addItem("Romance");	
-		genreDropdown.addItem("Comedy");
-		genreDropdown.addItem("Action");
-		genreDropdown.addItem("Horror");
-		genreDropdown.addItem("Thriller");
-		genreDropdown.addItem("Science Fiction");
-		genreDropdown.addItem("Adventure");
-		genreDropdown.addItem("Supernatural");
+		for(Genres genre : Genres.values()){
+			genreDropdown.addItem(genre.getName());
+		}
 		genreDropdown.setVisibleItemCount(5);
 	}
 	private void initializeCountries(ListBox countryDropdown){
-		countryDropdown.addItem("United States");
-		countryDropdown.addItem("Switzerland");
-		countryDropdown.addItem("DeathStar");	
-		countryDropdown.setVisibleItemCount(1);
+		for(Countries country : Countries.values()){
+			countryDropdown.addItem(country.getName());
+		}	
+		countryDropdown.setVisibleItemCount(5);
 	}
 	private void initializeLanguages(ListBox langDropdown){
-		langDropdown.addItem("English");	
-		langDropdown.addItem("German");	
-		langDropdown.addItem("Suahili");	
-		langDropdown.addItem("Klingonian");	
-		langDropdown.setVisibleItemCount(1);
+		for(Languages language : Languages.values()){
+			langDropdown.addItem(language.getName());
+		}
+		langDropdown.setVisibleItemCount(5);
 	}
-	private void initializeFormats(ListBox formatDropdown){
-		formatDropdown.addItem("Heatmap");	
-		formatDropdown.addItem("Piechart");	
-		formatDropdown.addItem("Barchart");	
-		formatDropdown.setVisibleItemCount(1);
+	private VerticalPanel initializeFormats(ListBox formatDropdown){
+		VerticalPanel formatsPanel = new VerticalPanel();
+		for(Formats format : Formats.values()){
+			formatsPanel.add(new RadioButton("formatsRBGroup", format.getName()));
+		}
+		((RadioButton)formatsPanel.getWidget(0)).setValue(true);
+		return formatsPanel;
+	}	
+	private final void showAsButtonClick(){
+		TextBox dummyTextBox = new TextBox();
+		dummyTextBox.setText("test123");
+		((HorizontalPanel)mainPanel.getWidget(1)).add(dummyTextBox);
+		
 	}
 }
+
+
 
 
