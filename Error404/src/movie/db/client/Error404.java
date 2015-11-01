@@ -5,10 +5,12 @@ package movie.db.client;
 //blablablatestestest ich bin ned kreativ
 
 
+
+
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.Random;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -36,7 +38,7 @@ public class Error404 implements EntryPoint {
 		initializePanels();
 	}
 	private VerticalPanel mainPanel = new VerticalPanel();
-	
+	private TextBox dummyTextBox = new TextBox();
 	private void initializePanels(){
 		
 		HorizontalPanel selectionPanel = new HorizontalPanel();
@@ -136,8 +138,7 @@ public class Error404 implements EntryPoint {
 		return formatsPanel;
 	}	
 	private final void showAsButtonClick(){
-		TextBox dummyTextBox = new TextBox();
-		dummyTextBox.setText("test123");
+		dummyTextBox.setText("Random: " + Random.nextInt());
 		((HorizontalPanel)mainPanel.getWidget(1)).add(dummyTextBox);
 		
 	}
