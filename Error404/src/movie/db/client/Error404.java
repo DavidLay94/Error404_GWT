@@ -46,8 +46,7 @@ public class Error404 implements EntryPoint {
 		FlexTable selectionCriteriaTable = new FlexTable();
 		Button showAsButton = new Button();
 		showAsButton.addClickHandler(new ClickHandler() {
-			public void onClick(ClickEvent event) {			
-				//Window.alert("Hello");
+			public void onClick(ClickEvent event) {		
 				showAsButtonClick();
 			}
 		});
