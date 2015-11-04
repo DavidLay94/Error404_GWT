@@ -1,14 +1,14 @@
 package movie.db.server;
 
-import java.util.LinkedList;
+import java.util.Hashtable;
 
 public class DataResult {
 
 	private String movie;
 	private int year;
-	private LinkedList<String> country = new LinkedList<String>();
-	private LinkedList<String> language = new LinkedList<String>();
-	private LinkedList<String> genre = new LinkedList<String>();
+	private Hashtable<Integer, String> country = new Hashtable<Integer, String>();
+	private Hashtable<Integer, String> language = new Hashtable<Integer, String>();
+	private Hashtable<Integer, String> genre = new Hashtable<Integer, String>();
 	
 	
 	public String getMovie(){
@@ -21,17 +21,17 @@ public class DataResult {
 		
 	}
 	
-	public LinkedList<String> getCountry(){
+	public Hashtable<Integer, String> getCountry(){
 		return country;
 		
 	}
 	
-	public LinkedList<String> getLanguage(){
+	public Hashtable<Integer, String> getLanguage(){
 		return language;
 		
 	}
 	
-	public LinkedList<String> getGenre(){
+	public Hashtable<Integer, String> getGenre(){
 		return genre;
 		
 	}
@@ -45,15 +45,15 @@ public class DataResult {
 		year = movieYear;
 	}
 	
-	public void setCountry(LinkedList<String> countryName){
+	public void setCountry(Hashtable<Integer, String> countryName){
 		country = countryName;
 	}
 	
-	public void setLanguage(LinkedList<String> languageName){
+	public void setLanguage(Hashtable<Integer, String> languageName){
 		language = languageName;
 	}
 	
-	public void setGenre(LinkedList<String> genreName){
+	public void setGenre(Hashtable<Integer, String> genreName){
 		country = genreName;
 	}
 	
