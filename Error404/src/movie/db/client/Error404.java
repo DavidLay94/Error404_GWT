@@ -174,7 +174,9 @@ public class Error404 implements EntryPoint {
 		}
 		
 		
-		String dummyTextAreaString = "Genres:\n";
+		
+		String dummyTextAreaString = selectionToSQLString(selectedCountries,"countries");
+		/*
 		for(String selected : selectedGenres){
 			dummyTextAreaString = dummyTextAreaString + selected + "\n";			
 		}
@@ -183,7 +185,7 @@ public class Error404 implements EntryPoint {
 			dummyTextAreaString = dummyTextAreaString + "AND";
 		}else{
 			dummyTextAreaString = dummyTextAreaString + "OR";
-		}
+		}§§
 		
 		dummyTextAreaString = dummyTextAreaString + "\n\nCountries:\n";
 		for(String selected : selectedCountries){
@@ -206,21 +208,28 @@ public class Error404 implements EntryPoint {
 		}else{
 			dummyTextAreaString = dummyTextAreaString + "OR";
 		}
+		*/
 		
 		dummyTextArea.setText(dummyTextAreaString);
-		((HorizontalPanel)mainPanel.getWidget(1)).add(dummyTextArea);		
+		((HorizontalPanel)mainPanel.getWidget(1)).add(dummyTextArea);	
+			
 	}
 	
-	private String countriesSelectionSQL(ArrayList<String> selectedGenres){
-		String selectedCountriesString;
-		if(selectedGenres.isEmpty()){
-			selectedCountriesString = " ";
+	private String selectionToSQLString(ArrayList<String> selectionList, String column){
+		String selectionSQL;
+		if(selectionList.isEmpty()){
+			selectionSQL = " ";
 		}else{
-			selectedCountriesString = "AND c"
+			selectionSQL = "AND "+ column + ".name IN ('";
+			for(String selection : selectionList){
+				selectionSQL = selectionSQL + selection + "','";
+			}
+			selectionSQL = selectionSQL.substring(0, selectionSQL.length()-2) + ")"; //removes ,' at the end
 		}
-		String result = String.join(",", selectedGenres);
-		return returnString;
+		return selectionSQL;
 	}
+	
+	
 }
 
 
