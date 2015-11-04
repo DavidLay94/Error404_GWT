@@ -1,60 +1,61 @@
 package movie.db.server;
 
+import java.util.ArrayList;
 import java.util.Hashtable;
 
 public class DataResult {
 
-	private String movie;
+	private String movieName;
 	private int year;
-	private Hashtable<Integer, String> country = new Hashtable<Integer, String>();
-	private Hashtable<Integer, String> language = new Hashtable<Integer, String>();
-	private Hashtable<Integer, String> genre = new Hashtable<Integer, String>();
+	private ArrayList<String> countries = new ArrayList<String>();
+	private ArrayList<String> languages = new ArrayList<String>();
+	private ArrayList<String> genres = new ArrayList<String>();
 	
 	
-	public String getMovie(){
-		return movie;
-		
+	public String getMovieName(){
+		return movieName;		
 	}
 	
 	public int getYear(){
-		return year;
+		return year;	
 		
 	}
 	
-	public Hashtable<Integer, String> getCountry(){
-		return country;
-		
+	public ArrayList<String> getCountries(){
+		return countries;		
 	}
 	
-	public Hashtable<Integer, String> getLanguage(){
-		return language;
-		
+	public ArrayList<String> getLanguages(){
+		return languages;		
 	}
 	
-	public Hashtable<Integer, String> getGenre(){
-		return genre;
-		
+	public ArrayList<String> getGenres(){
+		return genres;		
 	}
-	
-	
-	public void setMovie(String movieName){
-		movie = movieName;
+		
+	public void setMovieName(String movieName){
+		this.movieName = movieName;
 	}
 	
 	public void setYear(int movieYear){
-		year = movieYear;
+		this.year = movieYear;
 	}
 	
-	public void setCountry(Hashtable<Integer, String> countryName){
-		country = countryName;
+	public void addCountry(String countryName){		
+		if(!countries.contains(countryName)){
+			countries.add(countryName);
+		}
 	}
 	
-	public void setLanguage(Hashtable<Integer, String> languageName){
-		language = languageName;
+	public void addLanguage(String languageName){
+		if(!languages.contains(languageName)){
+			languages.add(languageName);
+		}
 	}
 	
-	public void setGenre(Hashtable<Integer, String> genreName){
-		country = genreName;
+	public void addGenre(String genreName){
+		if(!genres.contains(genreName)){
+			genres.add(genreName);
+		}
 	}
-	
 }
