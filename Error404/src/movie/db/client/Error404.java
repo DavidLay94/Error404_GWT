@@ -210,6 +210,17 @@ public class Error404 implements EntryPoint {
 		dummyTextArea.setText(dummyTextAreaString);
 		((HorizontalPanel)mainPanel.getWidget(1)).add(dummyTextArea);		
 	}
+	
+	private String countriesSelectionSQL(ArrayList<String> selectedGenres){
+		String selectedCountriesString;
+		if(selectedGenres.isEmpty()){
+			selectedCountriesString = " ";
+		}else{
+			selectedCountriesString = "AND c"
+		}
+		String result = String.join(",", selectedGenres);
+		return returnString;
+	}
 }
 
 
