@@ -4,6 +4,8 @@ import java.sql.*;
 import java.util.*;
 
 public class Query {
+	
+	//final version
 
 	@SuppressWarnings("finally")
 	public Map<Integer, DataResult> getAllData() throws SQLException {
