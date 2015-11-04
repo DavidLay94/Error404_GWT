@@ -5,25 +5,6 @@ import java.util.*;
 
 public class Query {
 
-	/*
-	 * Connection connection = ConnectionConfiguration.getConnection(); private
-	 * Statement statement; private ResultSet result; private String movie;
-	 * private int year; private String country; private String language;
-	 * private String genre;
-	 * 
-	 * private int movieId = 0; private int movieIndex = 0; private int
-	 * countryId; private int languageId; private int genreId;
-	 * 
-	 * private Map<Integer, DataResult> dataResultList = new HashMap<Integer,
-	 * DataResult>(); private DataResult dataResult;
-	 */
-
-	/*
-	 * private Hashtable<Integer, String> countryList = new Hashtable<Integer,
-	 * String>(); private Hashtable<Integer, String> genreList = new
-	 * Hashtable<Integer, String>(); private Hashtable<Integer, String>
-	 * languageList = new Hashtable<Integer, String>();
-	 */
 	@SuppressWarnings("finally")
 	public Map<Integer, DataResult> getAllData() throws SQLException {
 		Map<Integer, DataResult> dataResultMap = new HashMap<Integer, DataResult>();
@@ -58,9 +39,6 @@ public class Query {
 			// int movieIndex = 0;
 
 			int movieId;
-			int countryId;
-			int languageId;
-			int genreId;
 			String movieName;
 			int year;
 			String countryName;
@@ -73,9 +51,6 @@ public class Query {
 
 				// Retrieve data by column name
 				movieId = queryResult.getInt("movies.id");
-				countryId = queryResult.getInt("countries.id");
-				languageId = queryResult.getInt("languages.id");
-				genreId = queryResult.getInt("genres.id");
 				movieName = queryResult.getString("name");
 				year = queryResult.getInt("year");
 				countryName = queryResult.getString("countries.name");
