@@ -3,38 +3,27 @@ package movie.db.server;
 import java.sql.*;
 import java.util.*;
 
-public class Query {
+import movie.db.client.MyService;
+import movie.db.shared.DataResultShared;
 
-	/*
-	 * Connection connection = ConnectionConfiguration.getConnection(); private
-	 * Statement statement; private ResultSet result; private String movie;
-	 * private int year; private String country; private String language;
-	 * private String genre;
-	 * 
-	 * private int movieId = 0; private int movieIndex = 0; private int
-	 * countryId; private int languageId; private int genreId;
-	 * 
-	 * private Map<Integer, DataResult> dataResultList = new HashMap<Integer,
-	 * DataResult>(); private DataResult dataResult;
-	 */
+import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
-	/*
-	 * private Hashtable<Integer, String> countryList = new Hashtable<Integer,
-	 * String>(); private Hashtable<Integer, String> genreList = new
-	 * Hashtable<Integer, String>(); private Hashtable<Integer, String>
-	 * languageList = new Hashtable<Integer, String>();
-	 */
+public class Query extends RemoteServiceServlet implements MyService {
+
 	@SuppressWarnings("finally")
-	public Map<Integer, DataResult> getAllData() throws SQLException {
-		Map<Integer, DataResult> dataResultMap = new HashMap<Integer, DataResult>();
-		
-		Connection connection = ConnectionConfiguration.getConnection();
-		Statement statement = connection.createStatement(); // for creating
-															// statements out of
-															// the established
-															// connection
+	public Map<Integer, DataResultShared> getFilteredData() {
+		Map<Integer, DataResultShared> dataResultMap = new HashMap<Integer, DataResultShared>();
 
+		Connection connection = ConnectionConfiguration.getConnection();
+		Statement statement = null;
 		try {
+			statement = connection.createStatement();
+			// for creating
+			// statements out of
+			// the established
+			// connection
+
+			// try {
 
 			String sqlQuery = "SELECT movies.id, countries.id, languages.id, genres.id, movies.name, movies.year, countries.name, languages.name, genres.name "
 					+ "FROM movies "
@@ -66,9 +55,7 @@ public class Query {
 			String countryName;
 			String languageName;
 			String genreName;
-			
-		
-			
+
 			while (queryResult.next()) {
 
 				// Retrieve data by column name
@@ -87,7 +74,7 @@ public class Query {
 					dataResultMap.get(movieId).addLanguage(languageName);
 					dataResultMap.get(movieId).addGenre(genreName);
 				} else {
-					DataResult movie = new DataResult();
+					DataResultShared movie = new DataResultShared();
 					movie.setMovieName(movieName);
 					movie.setYear(year);
 					movie.addCountry(countryName);
@@ -97,8 +84,12 @@ public class Query {
 				}
 			}
 
-		} catch (Exception exc) {
-			System.out.println(exc);
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+			// }
+			// } catch (Exception exc) {
+			// System.out.println(exc);
 		} finally {
 			try {
 				statement.close();
