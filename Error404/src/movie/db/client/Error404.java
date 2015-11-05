@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import movie.db.shared.DataResultShared;
+import movie.db.shared.Selection;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
@@ -180,39 +181,23 @@ public class Error404 implements EntryPoint {
 			}
 		}
 
-		String dummyTextAreaString = selectionToSQLString(selectedCountries,
-				"countries");
-
-		// dummyTextArea.setText(dummyTextAreaString);
-		someAsynchronStuff();
-		//((HorizontalPanel) mainPanel.getWidget(1)).add(dummyTextArea);
+		//String dummyTextAreaString = selectionToSQLString(selectedCountries,				"countries");
+		Selection selection = new Selection();
+		selection.setSelectedCountries(selectedCountries);
+		selection.setSelectedLanguages(selectedLanguages);
+		selection.setSelectedGenres(selectedGenres);
+		getFilteredData(selection);
 		((HorizontalPanel) mainPanel.getWidget(1)).add(resultFlexTable);
 
-	}
-
-	private String selectionToSQLString(ArrayList<String> selectionList,
-			String column) {
-		String selectionSQL;
-		if (selectionList.isEmpty()) {
-			selectionSQL = " ";
-		} else {
-			selectionSQL = "AND " + column + ".name IN ('";
-			for (String selection : selectionList) {
-				selectionSQL = selectionSQL + selection + "','";
-			}
-			selectionSQL = selectionSQL.substring(0, selectionSQL.length() - 2)
-					+ ")"; // removes ,' at the end
-		}
-		return selectionSQL;
 	}
 
 	private MyServiceAsync someService = (MyServiceAsync) GWT
 			.create(MyService.class);
 
-	private void someAsynchronStuff() {
+	private void getFilteredData(Selection selection) {
 
 		someService
-				.getFilteredData(new AsyncCallback<Map<Integer, DataResultShared>>() {
+				.getFilteredData(selection, new AsyncCallback<Map<Integer, DataResultShared>>() {
 					@Override
 					public void onFailure(Throwable caught) {
 					}

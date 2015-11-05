@@ -5,15 +5,17 @@ import java.util.*;
 
 import movie.db.client.MyService;
 import movie.db.shared.DataResultShared;
+import movie.db.shared.Selection;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 public class Query extends RemoteServiceServlet implements MyService {
 
 	@SuppressWarnings("finally")
-	public Map<Integer, DataResultShared> getFilteredData() {
+	public Map<Integer, DataResultShared> getFilteredData(Selection selection) {
 		Map<Integer, DataResultShared> dataResultMap = new HashMap<Integer, DataResultShared>();
-
+		String sqlClause = selectionToSQLWhereClause(selection);
+		
 		Connection connection = ConnectionConfiguration.getConnection();
 		Statement statement = null;
 		try {
@@ -38,9 +40,10 @@ public class Query extends RemoteServiceServlet implements MyService {
 					+ "JOIN movies_genres "
 					+ "ON movies.id=movies_genres.movie_id "
 					+ "JOIN genres "
-					+ "ON movies_genres.genre_id=genres.id " + "WHERE 1=1 "
+					+ "ON movies_genres.genre_id=genres.id " 
 					// +"WHERE genres.name = 'Horror' "
 					// +"AND languages.name = 'Deutsch'"
+					+ sqlClause
 					+ "ORDER BY movies.name ";
 
 			ResultSet queryResult = statement.executeQuery(sqlQuery);
@@ -102,5 +105,24 @@ public class Query extends RemoteServiceServlet implements MyService {
 
 			return dataResultMap;
 		}
+	}
+	private String selectionToSQLWhereClause(Selection selection) {		
+		String selectionSQLWhereClause = "WHERE 1 = 1 ";
+		if(selection.getSelectedMovieName() != null){
+			selectionSQLWhereClause = selectionSQLWhereClause + "AND name = " + selection.getSelectedMovieName() + " ";
+		}
+		if(selection.getSelectedYear() != null){
+			selectionSQLWhereClause = selectionSQLWhereClause + "AND year = " + Integer.toString(selection.getSelectedYear()) + " ";
+		}
+		if(!selection.getSelectedCountries().isEmpty()){
+			selectionSQLWhereClause = selectionSQLWhereClause + "AND countries.name IN (" + String.join(",", selection.getSelectedCountries()) + ") ";
+		}
+		if(!selection.getSelectedLanguages().isEmpty()){
+			selectionSQLWhereClause = selectionSQLWhereClause + "AND languages.name IN (" + String.join(",", selection.getSelectedLanguages()) + ") ";
+		}
+		if(!selection.getSelectedGenres().isEmpty()){
+			selectionSQLWhereClause = selectionSQLWhereClause + "AND genres.name IN (" + String.join(",", selection.getSelectedGenres()) + ") ";
+		}
+		return selectionSQLWhereClause;
 	}
 }
