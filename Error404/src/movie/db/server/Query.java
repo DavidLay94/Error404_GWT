@@ -6,10 +6,13 @@ import java.util.*;
 import movie.db.client.MyService;
 import movie.db.shared.DataResultShared;
 
+<<<<<<< HEAD
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 public class Query extends RemoteServiceServlet implements MyService {
 
+=======
+>>>>>>> refs/remotes/origin/master
 	@SuppressWarnings("finally")
 	public Map<Integer, DataResultShared> getFilteredData() {
 		Map<Integer, DataResultShared> dataResultMap = new HashMap<Integer, DataResultShared>();
@@ -47,9 +50,6 @@ public class Query extends RemoteServiceServlet implements MyService {
 			// int movieIndex = 0;
 
 			int movieId;
-			int countryId;
-			int languageId;
-			int genreId;
 			String movieName;
 			int year;
 			String countryName;
@@ -60,9 +60,6 @@ public class Query extends RemoteServiceServlet implements MyService {
 
 				// Retrieve data by column name
 				movieId = queryResult.getInt("movies.id");
-				countryId = queryResult.getInt("countries.id");
-				languageId = queryResult.getInt("languages.id");
-				genreId = queryResult.getInt("genres.id");
 				movieName = queryResult.getString("name");
 				year = queryResult.getInt("year");
 				countryName = queryResult.getString("countries.name");

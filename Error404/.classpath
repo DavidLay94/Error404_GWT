@@ -4,6 +4,10 @@
 	<classpathentry exported="true" kind="con" path="com.google.appengine.eclipse.core.GAE_CONTAINER"/>
 	<classpathentry exported="true" kind="con" path="com.google.gwt.eclipse.core.GWT_CONTAINER"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+<<<<<<< HEAD
 	<classpathentry exported="true" kind="lib" path="lib/mysql-connector-java-5.1.37-bin.jar"/>
+=======
+	<classpathentry kind="lib" path="lib/mysql-connector-java-5.1.37-bin.jar"/>
+>>>>>>> refs/remotes/origin/master
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>
