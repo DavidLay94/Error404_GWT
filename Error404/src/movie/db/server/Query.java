@@ -109,19 +109,19 @@ public class Query extends RemoteServiceServlet implements MyService {
 	private String selectionToSQLWhereClause(Selection selection) {		
 		String selectionSQLWhereClause = "WHERE 1 = 1 ";
 		if(selection.getSelectedMovieName() != null){
-			selectionSQLWhereClause = selectionSQLWhereClause + "AND name = " + selection.getSelectedMovieName() + " ";
+			selectionSQLWhereClause = selectionSQLWhereClause + "AND name = '" + selection.getSelectedMovieName() + "' ";
 		}
 		if(selection.getSelectedYear() != null){
 			selectionSQLWhereClause = selectionSQLWhereClause + "AND year = " + Integer.toString(selection.getSelectedYear()) + " ";
 		}
 		if(!selection.getSelectedCountries().isEmpty()){
-			selectionSQLWhereClause = selectionSQLWhereClause + "AND countries.name IN (" + String.join(",", selection.getSelectedCountries()) + ") ";
+			selectionSQLWhereClause = selectionSQLWhereClause + "AND countries.name IN ('" + String.join("','", selection.getSelectedCountries()) + "') ";
 		}
 		if(!selection.getSelectedLanguages().isEmpty()){
-			selectionSQLWhereClause = selectionSQLWhereClause + "AND languages.name IN (" + String.join(",", selection.getSelectedLanguages()) + ") ";
+			selectionSQLWhereClause = selectionSQLWhereClause + "AND languages.name IN ('" + String.join("','", selection.getSelectedLanguages()) + "') ";
 		}
 		if(!selection.getSelectedGenres().isEmpty()){
-			selectionSQLWhereClause = selectionSQLWhereClause + "AND genres.name IN (" + String.join(",", selection.getSelectedGenres()) + ") ";
+			selectionSQLWhereClause = selectionSQLWhereClause + "AND genres.name IN ('" + String.join("','", selection.getSelectedGenres()) + "') ";
 		}
 		return selectionSQLWhereClause;
 	}
