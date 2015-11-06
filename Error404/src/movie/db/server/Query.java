@@ -10,6 +10,11 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 public class Query extends RemoteServiceServlet implements MyService {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	@SuppressWarnings("finally")
 	public Map<Integer, DataResultShared> getFilteredData() {
 		Map<Integer, DataResultShared> dataResultMap = new HashMap<Integer, DataResultShared>();

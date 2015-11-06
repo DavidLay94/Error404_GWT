@@ -3,6 +3,10 @@ package movie.db.shared;
 import java.io.Serializable;
 
 public class DataResultAggregated implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String countryName;
 	private int aggregatedNumberOfMovies;
 	
