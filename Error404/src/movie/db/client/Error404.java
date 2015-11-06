@@ -177,31 +177,12 @@ public class Error404 implements EntryPoint {
 				}
 			}
 		}
-
-		String dummyTextAreaString = selectionToSQLString(selectedCountries,
-				"countries");
-
+		
 		// dummyTextArea.setText(dummyTextAreaString);
 		someAsynchronStuff();
 		//((HorizontalPanel) mainPanel.getWidget(1)).add(dummyTextArea);
 		((HorizontalPanel) mainPanel.getWidget(1)).add(resultFlexTable);
 
-	}
-
-	private String selectionToSQLString(ArrayList<String> selectionList,
-			String column) {
-		String selectionSQL;
-		if (selectionList.isEmpty()) {
-			selectionSQL = " ";
-		} else {
-			selectionSQL = "AND " + column + ".name IN ('";
-			for (String selection : selectionList) {
-				selectionSQL = selectionSQL + selection + "','";
-			}
-			selectionSQL = selectionSQL.substring(0, selectionSQL.length() - 2)
-					+ ")"; // removes ,' at the end
-		}
-		return selectionSQL;
 	}
 
 	private MyServiceAsync someService = (MyServiceAsync) GWT
