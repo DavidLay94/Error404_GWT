@@ -12,7 +12,6 @@ import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.Random;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlexTable;
@@ -21,7 +20,6 @@ import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextArea;
-import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 /**
@@ -179,31 +177,12 @@ public class Error404 implements EntryPoint {
 				}
 			}
 		}
-
-		String dummyTextAreaString = selectionToSQLString(selectedCountries,
-				"countries");
-
+		
 		// dummyTextArea.setText(dummyTextAreaString);
 		someAsynchronStuff();
 		//((HorizontalPanel) mainPanel.getWidget(1)).add(dummyTextArea);
 		((HorizontalPanel) mainPanel.getWidget(1)).add(resultFlexTable);
 
-	}
-
-	private String selectionToSQLString(ArrayList<String> selectionList,
-			String column) {
-		String selectionSQL;
-		if (selectionList.isEmpty()) {
-			selectionSQL = " ";
-		} else {
-			selectionSQL = "AND " + column + ".name IN ('";
-			for (String selection : selectionList) {
-				selectionSQL = selectionSQL + selection + "','";
-			}
-			selectionSQL = selectionSQL.substring(0, selectionSQL.length() - 2)
-					+ ")"; // removes ,' at the end
-		}
-		return selectionSQL;
 	}
 
 	private MyServiceAsync someService = (MyServiceAsync) GWT

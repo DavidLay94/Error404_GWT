@@ -6,6 +6,10 @@ import java.util.ArrayList;
 public class DataResultShared implements Serializable{
 
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String movieName;
 	private int year;
 	private ArrayList<String> countries = new ArrayList<String>();
