@@ -6,13 +6,10 @@ import java.util.*;
 import movie.db.client.MyService;
 import movie.db.shared.DataResultShared;
 
-<<<<<<< HEAD
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 public class Query extends RemoteServiceServlet implements MyService {
 
-=======
->>>>>>> refs/remotes/origin/master
 	@SuppressWarnings("finally")
 	public Map<Integer, DataResultShared> getFilteredData() {
 		Map<Integer, DataResultShared> dataResultMap = new HashMap<Integer, DataResultShared>();
@@ -25,8 +22,6 @@ public class Query extends RemoteServiceServlet implements MyService {
 			// statements out of
 			// the established
 			// connection
-
-			// try {
 
 			String sqlQuery = "SELECT movies.id, countries.id, languages.id, genres.id, movies.name, movies.year, countries.name, languages.name, genres.name "
 					+ "FROM movies "
@@ -47,7 +42,6 @@ public class Query extends RemoteServiceServlet implements MyService {
 					+ "ORDER BY movies.name ";
 
 			ResultSet queryResult = statement.executeQuery(sqlQuery);
-			// int movieIndex = 0;
 
 			int movieId;
 			String movieName;
@@ -84,9 +78,6 @@ public class Query extends RemoteServiceServlet implements MyService {
 		} catch (SQLException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
-			// }
-			// } catch (Exception exc) {
-			// System.out.println(exc);
 		} finally {
 			try {
 				statement.close();
