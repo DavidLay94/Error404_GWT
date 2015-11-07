@@ -3,38 +3,30 @@ package movie.db.server;
 import java.sql.*;
 import java.util.*;
 
-public class Query {
+import movie.db.client.MyService;
+import movie.db.shared.DataResultShared;
+import movie.db.shared.Selection;
 
-	/*
-	 * Connection connection = ConnectionConfiguration.getConnection(); private
-	 * Statement statement; private ResultSet result; private String movie;
-	 * private int year; private String country; private String language;
-	 * private String genre;
-	 * 
-	 * private int movieId = 0; private int movieIndex = 0; private int
-	 * countryId; private int languageId; private int genreId;
-	 * 
-	 * private Map<Integer, DataResult> dataResultList = new HashMap<Integer,
-	 * DataResult>(); private DataResult dataResult;
-	 */
+import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
-	/*
-	 * private Hashtable<Integer, String> countryList = new Hashtable<Integer,
-	 * String>(); private Hashtable<Integer, String> genreList = new
-	 * Hashtable<Integer, String>(); private Hashtable<Integer, String>
-	 * languageList = new Hashtable<Integer, String>();
-	 */
+public class Query extends RemoteServiceServlet implements MyService {
+
+
 	@SuppressWarnings("finally")
-	public Map<Integer, DataResult> getAllData() throws SQLException {
-		Map<Integer, DataResult> dataResultMap = new HashMap<Integer, DataResult>();
+	public Map<Integer, DataResultShared> getFilteredData(Selection selection) {
+		Map<Integer, DataResultShared> dataResultMap = new HashMap<Integer, DataResultShared>();
+		String sqlClause = selectionToSQLWhereClause(selection);
 		
 		Connection connection = ConnectionConfiguration.getConnection();
-		Statement statement = connection.createStatement(); // for creating
-															// statements out of
-															// the established
-															// connection
-
+		Statement statement = null;
 		try {
+			statement = connection.createStatement();
+			// for creating
+			// statements out of
+			// the established
+			// connection
+
+			// try {
 
 			String sqlQuery = "SELECT movies.id, countries.id, languages.id, genres.id, movies.name, movies.year, countries.name, languages.name, genres.name "
 					+ "FROM movies "
@@ -49,33 +41,26 @@ public class Query {
 					+ "JOIN movies_genres "
 					+ "ON movies.id=movies_genres.movie_id "
 					+ "JOIN genres "
-					+ "ON movies_genres.genre_id=genres.id " + "WHERE 1=1 "
+					+ "ON movies_genres.genre_id=genres.id " 
 					// +"WHERE genres.name = 'Horror' "
 					// +"AND languages.name = 'Deutsch'"
+					+ sqlClause
 					+ "ORDER BY movies.name ";
 
 			ResultSet queryResult = statement.executeQuery(sqlQuery);
 			// int movieIndex = 0;
 
 			int movieId;
-			int countryId;
-			int languageId;
-			int genreId;
 			String movieName;
 			int year;
 			String countryName;
 			String languageName;
 			String genreName;
-			
-		
-			
+
 			while (queryResult.next()) {
 
 				// Retrieve data by column name
 				movieId = queryResult.getInt("movies.id");
-				countryId = queryResult.getInt("countries.id");
-				languageId = queryResult.getInt("languages.id");
-				genreId = queryResult.getInt("genres.id");
 				movieName = queryResult.getString("name");
 				year = queryResult.getInt("year");
 				countryName = queryResult.getString("countries.name");
@@ -87,7 +72,7 @@ public class Query {
 					dataResultMap.get(movieId).addLanguage(languageName);
 					dataResultMap.get(movieId).addGenre(genreName);
 				} else {
-					DataResult movie = new DataResult();
+					DataResultShared movie = new DataResultShared();
 					movie.setMovieName(movieName);
 					movie.setYear(year);
 					movie.addCountry(countryName);
@@ -97,8 +82,12 @@ public class Query {
 				}
 			}
 
-		} catch (Exception exc) {
-			System.out.println(exc);
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+			// }
+			// } catch (Exception exc) {
+			// System.out.println(exc);
 		} finally {
 			try {
 				statement.close();
@@ -111,5 +100,24 @@ public class Query {
 
 			return dataResultMap;
 		}
+	}
+	private String selectionToSQLWhereClause(Selection selection) {		
+		String selectionSQLWhereClause = "WHERE 1 = 1 ";
+		if(selection.getSelectedMovieName() != null){
+			selectionSQLWhereClause = selectionSQLWhereClause + "AND name = '" + selection.getSelectedMovieName() + "' ";
+		}
+		if(selection.getSelectedYear() != null){
+			selectionSQLWhereClause = selectionSQLWhereClause + "AND year = " + Integer.toString(selection.getSelectedYear()) + " ";
+		}
+		if(!selection.getSelectedCountries().isEmpty()){
+			selectionSQLWhereClause = selectionSQLWhereClause + "AND countries.name IN ('" + String.join("','", selection.getSelectedCountries()) + "') ";
+		}
+		if(!selection.getSelectedLanguages().isEmpty()){
+			selectionSQLWhereClause = selectionSQLWhereClause + "AND languages.name IN ('" + String.join("','", selection.getSelectedLanguages()) + "') ";
+		}
+		if(!selection.getSelectedGenres().isEmpty()){
+			selectionSQLWhereClause = selectionSQLWhereClause + "AND genres.name IN ('" + String.join("','", selection.getSelectedGenres()) + "') ";
+		}
+		return selectionSQLWhereClause;
 	}
 }

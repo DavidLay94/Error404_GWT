@@ -6,7 +6,18 @@
          xmlns="http://java.sun.com/xml/ns/javaee">
 
   <!-- Servlets -->
+  <servlet>
+	<servlet-name>query</servlet-name>
+  	<servlet-class>
+		movie.db.server.Query
+  	</servlet-class>
+  </servlet>
   
+  <servlet-mapping>
+  	<servlet-name>query</servlet-name>
+	<url-pattern>/error404/myService</url-pattern>
+  </servlet-mapping>    
+
   <!-- Default page to serve -->
   <welcome-file-list>
     <welcome-file>Error404.html</welcome-file>
