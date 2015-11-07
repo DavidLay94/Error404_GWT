@@ -234,6 +234,7 @@ public class Error404 implements EntryPoint {
 									ArrayList<DataResultAggregated> result) {
 								//refreshWorldMap(result);
 								worldMapInputDataList = result; //	Cannot refer to a non-final variable list inside an inner class defined in a different method
+								refreshWorldMap();
 							}
 						});
 			} else {
@@ -322,14 +323,16 @@ public class Error404 implements EntryPoint {
 	private HorizontalPanel initializeWorldMap() {
 		worldmapPanel = new HorizontalPanel();
 		refreshWorldMap();
+
 		return worldmapPanel;
 	}
 	private void refreshWorldMap(){
+		worldmapPanel.clear();
 		Runnable onLoadCallback = new Runnable() {
-			public void run() {
-				WorldMap map = new WorldMap(worldMapInputDataList);
+			public void run() {						
+				WorldMap map = new WorldMap(worldMapInputDataList);				
 				worldmapPanel.add(map.getWorldMap());
-				map.getWorldMap().draw(map.getData(), map.getOptions());
+				map.getWorldMap().draw(map.getDataTable(), map.getOptions());
 			}
 		};
 		VisualizationUtils.loadVisualizationApi(onLoadCallback, GeoMap.PACKAGE);

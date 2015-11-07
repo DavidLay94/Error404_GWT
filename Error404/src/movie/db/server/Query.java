@@ -104,10 +104,10 @@ public class Query extends RemoteServiceServlet implements MyService {
 	@SuppressWarnings("finally")
 	public ArrayList<DataResultAggregated> getWorldMapData(int selectedYear) {
 		ArrayList<DataResultAggregated> resultArray = new ArrayList<DataResultAggregated>();
-		String sqlQuery = "SELECT movies_countries.name, count(countries.id) FROM movies JOIN movies_countries ON movies.id = movies_countries.movie_id"
-				+ " WHERE movies.year = "
-				+ selectedYear
-				+ " GROUP BY countries.id";
+		
+		String sqlQuery = "SELECT countries.name AS \"country\", count(countries.id) AS \"amount\" FROM movies JOIN movies_countries ON movies.id = movies_countries.movie_id "
+				+ "JOIN countries ON movies_countries.country_id = countries.id "
+				+ "WHERE movies.year = " + selectedYear + " group by countries.id";
 
 		Connection connection = ConnectionConfiguration.getConnection();
 		Statement statement = null;
@@ -118,9 +118,9 @@ public class Query extends RemoteServiceServlet implements MyService {
 			while (queryResult.next()) {
 				DataResultAggregated dataresult = new DataResultAggregated();
 				dataresult.setCountryName(queryResult
-						.getString("countries.name"));
+						.getString("country"));
 				dataresult.setAggregatedNumberOfMovies(queryResult
-						.getInt("year"));
+						.getInt("amount"));
 				resultArray.add(dataresult);
 			}
 		} catch (SQLException e) {
