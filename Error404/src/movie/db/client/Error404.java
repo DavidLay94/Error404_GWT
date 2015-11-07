@@ -176,39 +176,7 @@ public class Error404 implements EntryPoint {
 		
 		
 		String dummyTextAreaString = selectionToSQLString(selectedCountries,"countries");
-		/*
-		for(String selected : selectedGenres){
-			dummyTextAreaString = dummyTextAreaString + selected + "\n";			
-		}
-		dummyTextAreaString = dummyTextAreaString + "Connection: ";
-		if(genreRBAnd.getValue()){
-			dummyTextAreaString = dummyTextAreaString + "AND";
-		}else{
-			dummyTextAreaString = dummyTextAreaString + "OR";
-		}§§
-		
-		dummyTextAreaString = dummyTextAreaString + "\n\nCountries:\n";
-		for(String selected : selectedCountries){
-			dummyTextAreaString = dummyTextAreaString + selected + "\n";			
-		}
-		dummyTextAreaString = dummyTextAreaString + "Connection: ";
-		if(countryRBAnd.getValue()){
-			dummyTextAreaString = dummyTextAreaString + "AND";
-		}else{
-			dummyTextAreaString = dummyTextAreaString + "OR";
-		}
-		
-		dummyTextAreaString = dummyTextAreaString + "\n\nLanguages:\n";
-		for(String selected : selectedLanguages){
-			dummyTextAreaString = dummyTextAreaString + selected  + "\n";			
-		}
-		dummyTextAreaString = dummyTextAreaString + "Connection: ";
-		if(langRBAnd.getValue()){
-			dummyTextAreaString = dummyTextAreaString + "AND";
-		}else{
-			dummyTextAreaString = dummyTextAreaString + "OR";
-		}
-		*/
+
 		
 		dummyTextArea.setText(dummyTextAreaString);
 		((HorizontalPanel)mainPanel.getWidget(1)).add(dummyTextArea);	
