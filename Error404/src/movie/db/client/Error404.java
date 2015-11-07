@@ -36,6 +36,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.visualization.client.VisualizationUtils;
 import com.google.gwt.visualization.client.visualizations.GeoMap;
+import com.google.gwt.visualization.client.visualizations.Table;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
@@ -58,7 +59,8 @@ public class Error404 implements EntryPoint {
 	private VerticalPanel mainPanel = new VerticalPanel();
 	private SimpleLayoutPanel worldMapPanel;
 	private TextArea dummyTextArea = new TextArea();
-	private FlexTable resultFlexTable = new FlexTable();
+	//private FlexTable resultFlexTable = new FlexTable();
+	private HorizontalPanel resultTablePanel;
 	private RadioButton genreRBAnd = new RadioButton("genreRBGroup", "AND");
 	private RadioButton genreRBOR = new RadioButton("genreRBGroup", "OR");
 	private RadioButton countryRBAnd = new RadioButton("countryRBGroup", "AND");
@@ -71,6 +73,8 @@ public class Error404 implements EntryPoint {
 	private TextBox tbYear = new TextBox();
 	private ArrayList<DataResultAggregated> worldMapInputDataList = new ArrayList<DataResultAggregated>();
 	private TabPanel tabPanel = new TabPanel();
+	private Map<Integer, DataResultShared> resultTableInputDataList = new HashMap<Integer, DataResultShared>();
+	
 	private final static String TABPANELHEIGHT = "600px";
 	private final static String TABPANELWIDTH= "1200px";
 	
@@ -133,7 +137,8 @@ public class Error404 implements EntryPoint {
 
 		tabPanel.setSize(TABPANELWIDTH, TABPANELHEIGHT);
 		tabPanel.add(initializeWorldMap(),"Worldmap");
-		tabPanel.add(resultFlexTable,"Table");
+		//tabPanel.add(resultFlexTable,"Table");
+		tabPanel.add(initializeResultTable(),"Table");
 		tabPanel.selectTab(0);
 		mainPanel.add(tabPanel);
 		// mainPanel.add(worldmapPanel);
@@ -252,56 +257,41 @@ public class Error404 implements EntryPoint {
 		}
 	}
 
+
 	private void showResults(Selection selection) {
 
-		dbService.getFilteredData(selection,
-				new AsyncCallback<Map<Integer, DataResultShared>>() {
-					@Override
-					public void onFailure(Throwable caught) {
-					}
+		dbService.getFilteredData(selection, new AsyncCallback<Map<Integer, DataResultShared>>() {
+			@Override
+			public void onFailure(Throwable caught) {
+			}
 
-					@Override
-					public void onSuccess(Map<Integer, DataResultShared> result) {
-						int i = 1;
-						try {
-							resultFlexTable.setText(0, 0, "Movie");
-							resultFlexTable.setText(0, 1, "Year");
-							resultFlexTable.setText(0, 2, "Genres");
-							resultFlexTable.setText(0, 3, "Languages");
-							resultFlexTable.setText(0, 4, "Countries");
+			@Override
+			public void onSuccess(Map<Integer, DataResultShared> result) {
+				resultTableInputDataList = result;	
+				refreshResultTable();
+			}
+		});
+	}
+	
+	private HorizontalPanel initializeResultTable() {
+		resultTablePanel = new HorizontalPanel();
+		refreshResultTable();
 
-							for (DataResultShared entry : result.values()) {
-								resultFlexTable.setText(i, 0,
-										entry.getMovieName());
-								resultFlexTable.setText(i, 1,
-										Integer.toString(entry.getYear()));
-								resultFlexTable.setText(i, 2,
-										arrayListToStringConverter(entry
-												.getGenres()));
-								resultFlexTable.setText(i, 3,
-										arrayListToStringConverter(entry
-												.getLanguages()));
-								resultFlexTable.setText(i, 4,
-										arrayListToStringConverter(entry
-												.getCountries()));
-								i++;
-							}
-						} catch (Exception ex1) {
-							resultFlexTable.setText(i, 0, ex1.toString());
-						}
-					}
-				});
+		return resultTablePanel;
 	}
 
-	private String arrayListToStringConverter(ArrayList<String> alist) {
-		String returnString = "";
-		for (String s : alist) {
-			returnString = returnString + s + ", ";
-		}
-		returnString = returnString.substring(0, returnString.length() - 2);
-		return returnString;
-
+	private void refreshResultTable(){
+		resultTablePanel.clear();
+		Runnable onLoadCallback = new Runnable(){
+			public void run(){
+				ResultTable resultTable = new ResultTable(resultTableInputDataList);
+				resultTablePanel.add(resultTable.getResultTable());
+				resultTable.getResultTable().draw(resultTable.getDataTable(), resultTable.getOptions());
+			}
+		};
+		VisualizationUtils.loadVisualizationApi(onLoadCallback, Table.PACKAGE);
 	}
+	
 	private SimpleLayoutPanel initializeWorldMap() {
 		worldMapPanel = new SimpleLayoutPanel();
 		worldMapPanel.setSize(TABPANELWIDTH, TABPANELHEIGHT);
@@ -322,5 +312,13 @@ public class Error404 implements EntryPoint {
 		VisualizationUtils.loadVisualizationApi(onLoadCallback, GeoMap.PACKAGE);
 	}
 	
+	private String arrayListToStringConverter(ArrayList<String> alist) {
+		String returnString = "";
+		for (String s : alist) {
+			returnString = returnString + s + ", ";
+		}
+		returnString = returnString.substring(0, returnString.length() - 2);
+		return returnString;
 
+	}
 }

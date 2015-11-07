@@ -25,6 +25,8 @@ public class WorldMap {
 		options.setColors(new int[]{BRIGHT,DARK});
 		options.setWidth(width);
 		options.setHeight(height);
+		//options.setShowZoomOut(true);
+		//options.setRegion("002");
 		worldMap = new GeoMap();
 	}
 	
