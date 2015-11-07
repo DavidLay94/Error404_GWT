@@ -4,6 +4,7 @@ package movie.db.client;
 //blablablatestestest ich bin ned kreativ
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -20,11 +21,15 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.LayoutPanel;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.SimpleLayoutPanel;
+import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -51,7 +56,7 @@ public class Error404 implements EntryPoint {
 
 	/* Class Variables */
 	private VerticalPanel mainPanel = new VerticalPanel();
-	private HorizontalPanel worldmapPanel;
+	private SimpleLayoutPanel worldMapPanel;
 	private TextArea dummyTextArea = new TextArea();
 	private FlexTable resultFlexTable = new FlexTable();
 	private RadioButton genreRBAnd = new RadioButton("genreRBGroup", "AND");
@@ -64,13 +69,19 @@ public class Error404 implements EntryPoint {
 	private ListBox countryListBox = new ListBox();
 	private ListBox langListBox = new ListBox();
 	private TextBox tbYear = new TextBox();
-
+	private ArrayList<DataResultAggregated> worldMapInputDataList = new ArrayList<DataResultAggregated>();
+	private TabPanel tabPanel = new TabPanel();
+	private final static String TABPANELHEIGHT = "600px";
+	private final static String TABPANELWIDTH= "1200px";
+	
 	private void initializePanels() {
-
-		HorizontalPanel selectionPanel = new HorizontalPanel();
+		mainPanel.setSize("100vw", "82vh");
+		mainPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+		VerticalPanel selectionPanel = new VerticalPanel();
 		HorizontalPanel timebarPanel = new HorizontalPanel();
 
 		FlexTable selectionCriteriaTable = new FlexTable();
+		FlexTable worldMapCriteriaTable = new FlexTable();
 		Button showAsButton = new Button();
 		showAsButton.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
@@ -98,40 +109,39 @@ public class Error404 implements EntryPoint {
 		selectionCriteriaTable.setWidget(0, 1, genreListBox);
 		// selectionCriteriaTable.setWidget(0, 2, genreRBAnd);
 		// selectionCriteriaTable.setWidget(0, 3, genreRBOR);
-		selectionCriteriaTable.setText(1, 0, "Country:");
-		selectionCriteriaTable.setWidget(1, 1, countryListBox);
+		selectionCriteriaTable.setText(0, 2, "Country:");
+		selectionCriteriaTable.setWidget(0, 3, countryListBox);
 		// selectionCriteriaTable.setWidget(1, 2, countryRBAnd);
 		// selectionCriteriaTable.setWidget(1, 3, countryRBOR);
-		selectionCriteriaTable.setText(2, 0, "Language:");
-		selectionCriteriaTable.setWidget(2, 1, langListBox);
+		selectionCriteriaTable.setText(0, 4, "Language:");
+		selectionCriteriaTable.setWidget(0, 5, langListBox);
 		// selectionCriteriaTable.setWidget(2, 2, langRBAnd);
 		// selectionCriteriaTable.setWidget(2, 3, langRBOR);
-		selectionCriteriaTable.setWidget(3, 0, showAsButton);
-		selectionCriteriaTable.setWidget(3, 1, initializeFormats());
-		selectionCriteriaTable.setText(4, 0, "Year");
-		selectionCriteriaTable.setWidget(4, 1, tbYear);
-		selectionCriteriaTable.setWidget(4, 2, showMapButton);
+		selectionCriteriaTable.setWidget(0,7, showAsButton);
+		selectionCriteriaTable.setWidget(0, 8, initializeFormats());
+		worldMapCriteriaTable.setText(4, 0, "Year");
+		worldMapCriteriaTable.setWidget(4, 1, tbYear);
+		worldMapCriteriaTable.setWidget(4, 2, showMapButton);
 
 		selectionPanel.add(selectionCriteriaTable);
-
+		selectionPanel.add(worldMapCriteriaTable);
 		timebarPanel.setWidth("1500px");
 		timebarPanel.setHeight("250px");
 		timebarPanel.setBorderWidth(3);
 
-		/*
-		 * worldmapPanel.setWidth("1500px"); worldmapPanel.setHeight("500px");
-		 * worldmapPanel.setBorderWidth(3);
-		 */
+		mainPanel.add(selectionPanel);	
 
-		mainPanel.add(selectionPanel);
-		mainPanel.add(timebarPanel);
-		mainPanel.add(initializeWorldMap());
+		tabPanel.setSize(TABPANELWIDTH, TABPANELHEIGHT);
+		tabPanel.add(initializeWorldMap(),"Worldmap");
+		tabPanel.add(resultFlexTable,"Table");
+		tabPanel.selectTab(0);
+		mainPanel.add(tabPanel);
 		// mainPanel.add(worldmapPanel);
 
 		// Associate the Main panel with the HTML host page.
 		RootPanel.get("mainPage").add(mainPanel);
 	}
-
+	
 	private void initializeGenres() {
 		for (Genres genre : Genres.values()) {
 			genreListBox.addItem(genre.getName());
@@ -174,12 +184,10 @@ public class Error404 implements EntryPoint {
 
 	private final void showWorldMapClick() {
 		fillWorldmap();
+		tabPanel.selectTab(0);
 	}
 
 	private final void showAsButtonClick() {
-
-		dummyTextArea.setWidth("500px");
-		dummyTextArea.setHeight("200px");
 		ArrayList<String> selectedGenres = new ArrayList<String>();
 		if (genreListBox.getSelectedIndex() != -1) {
 			for (int i = 0; i < genreListBox.getItemCount(); i++) {
@@ -205,14 +213,13 @@ public class Error404 implements EntryPoint {
 			}
 		}
 
-		// String dummyTextAreaString = selectionToSQLString(selectedCountries,
-		// "countries");
 		Selection selection = new Selection();
 		selection.setSelectedCountries(selectedCountries);
 		selection.setSelectedLanguages(selectedLanguages);
 		selection.setSelectedGenres(selectedGenres);
-		((HorizontalPanel) mainPanel.getWidget(1)).add(resultFlexTable);
+		//((HorizontalPanel) mainPanel.getWidget(1)).add(resultFlexTable);
 		showResults(selection);
+		tabPanel.selectTab(1);
 	}
 
 	private MyServiceAsync dbService = (MyServiceAsync) GWT
@@ -232,8 +239,8 @@ public class Error404 implements EntryPoint {
 							@Override
 							public void onSuccess(
 									ArrayList<DataResultAggregated> result) {
-								//refreshWorldMap(result);
-								worldMapInputDataList = result; //	Cannot refer to a non-final variable list inside an inner class defined in a different method
+								// refreshWorldMap(result);
+								worldMapInputDataList = result; 
 								refreshWorldMap();
 							}
 						});
@@ -295,46 +302,25 @@ public class Error404 implements EntryPoint {
 		return returnString;
 
 	}
-
-	// /////////////////////////
-	private ArrayList<DataResultAggregated> worldMapInputDataList = new ArrayList<DataResultAggregated>();
-/*
-	private ArrayList<DataResultAggregated> generateList() { // DUMMY
-		ArrayList<DataResultAggregated> dataWorldMap = new ArrayList<DataResultAggregated>();
-		DataResultAggregated result1 = new DataResultAggregated();
-		DataResultAggregated result2 = new DataResultAggregated();
-		DataResultAggregated result3 = new DataResultAggregated();
-		DataResultAggregated result4 = new DataResultAggregated();
-		result1.setCountryName("United States");
-		result1.setAggregatedNumberOfMovies(400);
-		result2.setCountryName("Germany");
-		result2.setAggregatedNumberOfMovies(200);
-		result3.setCountryName("China");
-		result3.setAggregatedNumberOfMovies(1000);
-		result4.setCountryName("Brazil");
-		result4.setAggregatedNumberOfMovies(500);
-		dataWorldMap.add(result1);
-		dataWorldMap.add(result2);
-		dataWorldMap.add(result3);
-		dataWorldMap.add(result4);
-		return dataWorldMap;
-	}*/
-
-	private HorizontalPanel initializeWorldMap() {
-		worldmapPanel = new HorizontalPanel();
+	private SimpleLayoutPanel initializeWorldMap() {
+		worldMapPanel = new SimpleLayoutPanel();
+		worldMapPanel.setSize(TABPANELWIDTH, TABPANELHEIGHT);
 		refreshWorldMap();
-
-		return worldmapPanel;
+		
+		return worldMapPanel;
 	}
-	private void refreshWorldMap(){
-		worldmapPanel.clear();
+
+	private void refreshWorldMap() {
+		//worldMapPanel.clear();
 		Runnable onLoadCallback = new Runnable() {
-			public void run() {						
-				WorldMap map = new WorldMap(worldMapInputDataList);				
-				worldmapPanel.add(map.getWorldMap());
+			public void run() {				
+				WorldMap map = new WorldMap(worldMapInputDataList,TABPANELWIDTH,TABPANELHEIGHT);
+				worldMapPanel.setWidget(map.getWorldMap());
 				map.getWorldMap().draw(map.getDataTable(), map.getOptions());
 			}
 		};
 		VisualizationUtils.loadVisualizationApi(onLoadCallback, GeoMap.PACKAGE);
 	}
+	
+
 }

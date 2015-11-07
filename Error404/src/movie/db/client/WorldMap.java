@@ -18,13 +18,13 @@ public class WorldMap {
 	private DataTable dataTable;
 	private Options options;
 	
-	public WorldMap(ArrayList<DataResultAggregated> list){
+	public WorldMap(ArrayList<DataResultAggregated> list,String width, String height){
 		super();
 		dataTable = generateDataTable(list);
 		options = Options.create();
 		options.setColors(new int[]{BRIGHT,DARK});
-		options.setHeight("700px");
-		options.setWidth("1500px");
+		options.setWidth(width);
+		options.setHeight(height);
 		worldMap = new GeoMap();
 	}
 	
