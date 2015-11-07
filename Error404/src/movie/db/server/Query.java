@@ -19,6 +19,15 @@ public class Query extends RemoteServiceServlet implements MyService {
 
 		Connection connection = ConnectionConfiguration.getConnection();
 		Statement statement = null;
+		////////////////Testing (deployment issue)
+		/*DataResultShared errorRes =  new DataResultShared();
+		errorRes.setMovieName("I was here");
+		errorRes.setYear(1999);
+		errorRes.addLanguage("bla");
+		errorRes.addCountry("sd");
+		errorRes.addGenre("adsf");
+		dataResultMap.put(-1,errorRes );
+		*/
 		try {
 			statement = connection.createStatement();
 			// for creating
@@ -82,23 +91,23 @@ public class Query extends RemoteServiceServlet implements MyService {
 			}
 
 		} catch (SQLException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-			// }
-			// } catch (Exception exc) {
-			// System.out.println(exc);
+
+			DataResultShared errorRes =  new DataResultShared();
+			errorRes.setMovieName(e1.getMessage());
+			dataResultMap.put(-1,errorRes );
 		} finally {
 			try {
 				statement.close();
-			} catch (Exception e) { /* ignored */
+			} catch (Exception e) { 
 			}
 			try {
 				connection.close();
-			} catch (Exception e) { /* ignored */
+			} catch (Exception e) {
 			}
 
 			return dataResultMap;
 		}
+		//return dataResultMap;
 	}
 
 	@SuppressWarnings("finally")

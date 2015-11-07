@@ -1,2 +1,0 @@
-serviceClass: movie.db.client.MyService
-path: 702A1F0D23CEA96B955DE568823F793C.gwt.rpc

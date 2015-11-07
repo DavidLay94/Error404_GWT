@@ -75,7 +75,7 @@ public class Error404 implements EntryPoint {
 	private TabPanel tabPanel = new TabPanel();
 	private Map<Integer, DataResultShared> resultTableInputDataList = new HashMap<Integer, DataResultShared>();
 	
-	private final static String TABPANELHEIGHT = "600px";
+	private final static String TABPANELHEIGHT = "540px";
 	private final static String TABPANELWIDTH= "1200px";
 	
 	private void initializePanels() {
@@ -94,13 +94,29 @@ public class Error404 implements EntryPoint {
 		});
 		showAsButton.setText("Show as");
 
+		Button cleanSelectionButton = new Button();
+		cleanSelectionButton.addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				cleanSelectionClick();
+			}
+		});
+		cleanSelectionButton.setText("Clean Selection");
+		
+		Button cleanWorldMapButton = new Button();
+		cleanWorldMapButton.addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				cleanWorldMapClick();
+			}
+		});
+		cleanWorldMapButton.setText("Clean Worldmap");
+		
 		Button showMapButton = new Button();
 		showMapButton.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
 				showWorldMapClick();
 			}
 		});
-		showMapButton.setText("Show on Worldmap");
+		showMapButton.setText("Show Year on Worldmap");
 		initializeGenres();
 		initializeCountries();
 		initializeLanguages();
@@ -110,24 +126,29 @@ public class Error404 implements EntryPoint {
 		langRBAnd.setValue(true);
 
 		selectionCriteriaTable.setText(0, 0, "Genre:");
-		selectionCriteriaTable.setWidget(0, 1, genreListBox);
+		selectionCriteriaTable.setWidget(1,0, genreListBox);
 		// selectionCriteriaTable.setWidget(0, 2, genreRBAnd);
 		// selectionCriteriaTable.setWidget(0, 3, genreRBOR);
-		selectionCriteriaTable.setText(0, 2, "Country:");
-		selectionCriteriaTable.setWidget(0, 3, countryListBox);
+		selectionCriteriaTable.setText(0, 1, "Country:");
+		selectionCriteriaTable.setWidget(1, 1, countryListBox);
 		// selectionCriteriaTable.setWidget(1, 2, countryRBAnd);
 		// selectionCriteriaTable.setWidget(1, 3, countryRBOR);
-		selectionCriteriaTable.setText(0, 4, "Language:");
-		selectionCriteriaTable.setWidget(0, 5, langListBox);
+		selectionCriteriaTable.setText(0, 2, "Language:");
+		selectionCriteriaTable.setWidget(1, 2, langListBox);
 		// selectionCriteriaTable.setWidget(2, 2, langRBAnd);
 		// selectionCriteriaTable.setWidget(2, 3, langRBOR);
-		selectionCriteriaTable.setWidget(0,7, showAsButton);
-		selectionCriteriaTable.setWidget(0, 8, initializeFormats());
-		worldMapCriteriaTable.setText(4, 0, "Year");
-		worldMapCriteriaTable.setWidget(4, 1, tbYear);
-		worldMapCriteriaTable.setWidget(4, 2, showMapButton);
+		selectionCriteriaTable.setWidget(1,3, showAsButton);
+		selectionCriteriaTable.setWidget(1, 4, initializeFormats());
+		worldMapCriteriaTable.setText(0, 0, "Year:");
+		worldMapCriteriaTable.setWidget(1, 0, tbYear);
+		worldMapCriteriaTable.setWidget(1, 1, showMapButton);
+		worldMapCriteriaTable.setWidget(2,0, cleanSelectionButton);
+		worldMapCriteriaTable.setWidget(2,1, cleanWorldMapButton);
 
 		selectionPanel.add(selectionCriteriaTable);
+		SimpleLayoutPanel emptyPanel = new SimpleLayoutPanel();
+		emptyPanel.setSize("0px", "15px");
+		selectionPanel.add(emptyPanel);
 		selectionPanel.add(worldMapCriteriaTable);
 		timebarPanel.setWidth("1500px");
 		timebarPanel.setHeight("250px");
@@ -179,11 +200,19 @@ public class Error404 implements EntryPoint {
 
 	private VerticalPanel initializeFormats() {
 		VerticalPanel formatsPanel = new VerticalPanel();
-		for (Formats format : Formats.values()) {
-			formatsPanel
-					.add(new RadioButton("formatsRBGroup", format.getName()));
+
+		//Piechart and Barchart are greyed out until implemented!
+		for (Formats format : Formats.values()) { 
+			RadioButton rb = new RadioButton("formatsRBGroup", format.getName());
+			if(format.getName().equals("Table")){
+				rb.setEnabled(true);
+			}else{
+				rb.setEnabled(false);
+			}				
+			formatsPanel.add(rb);
 		}
 		((RadioButton) formatsPanel.getWidget(0)).setValue(true);
+		
 		return formatsPanel;
 	}
 
@@ -192,6 +221,31 @@ public class Error404 implements EntryPoint {
 		tabPanel.selectTab(0);
 	}
 
+	private final void cleanSelectionClick(){
+		genreListBox.setMultipleSelect(false);
+		genreListBox.setItemSelected(0,true);
+		genreListBox.setItemSelected(0,false);
+		
+		countryListBox.setMultipleSelect(false);
+		countryListBox.setItemSelected(0,true);
+		countryListBox.setItemSelected(0,false);
+		
+		langListBox.setMultipleSelect(false);
+		langListBox.setItemSelected(0,true);
+		langListBox.setItemSelected(0,false);
+
+		genreListBox.setMultipleSelect(true);
+		countryListBox.setMultipleSelect(true);
+		langListBox.setMultipleSelect(true);
+		resultTableInputDataList.clear();
+		refreshResultTable();
+	}
+	
+	private final void cleanWorldMapClick(){
+		worldMapInputDataList.clear();
+		refreshWorldMap();
+	}
+	
 	private final void showAsButtonClick() {
 		ArrayList<String> selectedGenres = new ArrayList<String>();
 		if (genreListBox.getSelectedIndex() != -1) {
