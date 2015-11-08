@@ -58,15 +58,7 @@ public class Error404 implements EntryPoint {
 	/* Class Variables */
 	private VerticalPanel mainPanel = new VerticalPanel();
 	private SimpleLayoutPanel worldMapPanel;
-	private TextArea dummyTextArea = new TextArea();
-	//private FlexTable resultFlexTable = new FlexTable();
 	private HorizontalPanel resultTablePanel;
-	private RadioButton genreRBAnd = new RadioButton("genreRBGroup", "AND");
-	private RadioButton genreRBOR = new RadioButton("genreRBGroup", "OR");
-	private RadioButton countryRBAnd = new RadioButton("countryRBGroup", "AND");
-	private RadioButton countryRBOR = new RadioButton("countryRBGroup", "OR");
-	private RadioButton langRBAnd = new RadioButton("langRBGroup", "AND");
-	private RadioButton langRBOR = new RadioButton("langRBGroup", "OR");
 	private ListBox genreListBox = new ListBox();
 	private ListBox countryListBox = new ListBox();
 	private ListBox langListBox = new ListBox();
@@ -82,19 +74,75 @@ public class Error404 implements EntryPoint {
 		mainPanel.setSize("100vw", "82vh");
 		mainPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
 		VerticalPanel selectionPanel = new VerticalPanel();
-		HorizontalPanel timebarPanel = new HorizontalPanel();
 
 		FlexTable selectionCriteriaTable = new FlexTable();
 		FlexTable worldMapCriteriaTable = new FlexTable();
+		
 		Button showAsButton = new Button();
+		Button showMapButton = new Button();
+		Button cleanSelectionButton = new Button();
+		Button cleanWorldMapButton = new Button();
+		initializeButtons(showAsButton,showMapButton,cleanSelectionButton,cleanWorldMapButton);
+		
+		initializeGenres();
+		initializeCountries();
+		initializeLanguages();
+
+		initializeSelectionCriteriaTable(selectionCriteriaTable, showAsButton);
+		initializeWorldMapCriteriaTable(worldMapCriteriaTable,showMapButton,cleanSelectionButton,cleanWorldMapButton);
+
+		selectionPanel.add(selectionCriteriaTable);
+		SimpleLayoutPanel emptyPanel = new SimpleLayoutPanel();
+		emptyPanel.setSize("0px", "15px");
+		selectionPanel.add(emptyPanel);
+		selectionPanel.add(worldMapCriteriaTable);
+		
+		mainPanel.add(selectionPanel);	
+
+		tabPanel.setSize(TABPANELWIDTH, TABPANELHEIGHT);
+		tabPanel.add(initializeWorldMap(),"Worldmap");
+		tabPanel.add(initializeResultTable(),"Table");
+		tabPanel.selectTab(0);
+		mainPanel.add(tabPanel);
+
+		// Associate the Main panel with the HTML host page.
+		RootPanel.get("mainPage").add(mainPanel);
+	}
+	
+	private void initializeSelectionCriteriaTable(FlexTable selectionCriteriaTable, Button showAsButton){
+		selectionCriteriaTable.setText(0, 0, "Genre:");
+		selectionCriteriaTable.setWidget(1,0, genreListBox);
+		selectionCriteriaTable.setText(0, 1, "Country:");
+		selectionCriteriaTable.setWidget(1, 1, countryListBox);
+		selectionCriteriaTable.setText(0, 2, "Language:");
+		selectionCriteriaTable.setWidget(1, 2, langListBox);
+		selectionCriteriaTable.setWidget(1,3, showAsButton);
+		selectionCriteriaTable.setWidget(1, 4, initializeFormats());
+	}
+	
+	private void initializeWorldMapCriteriaTable(FlexTable worldMapCriteriaTable,Button showMapButton, Button cleanSelectionButton,Button cleanWorldMapButton){
+		worldMapCriteriaTable.setText(0, 0, "Year:");
+		worldMapCriteriaTable.setWidget(1, 0, tbYear);
+		worldMapCriteriaTable.setWidget(1, 1, showMapButton);
+		worldMapCriteriaTable.setWidget(2,0, cleanSelectionButton);
+		worldMapCriteriaTable.setWidget(2,1, cleanWorldMapButton);
+	}
+	
+	private void initializeButtons(Button showAsButton,Button showMapButton, Button cleanSelectionButton,Button cleanWorldMapButton){
 		showAsButton.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
 				showAsButtonClick();
 			}
 		});
 		showAsButton.setText("Show as");
+		
+		showMapButton.addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				showWorldMapClick();
+			}
+		});
+		showMapButton.setText("Show Year on Worldmap");
 
-		Button cleanSelectionButton = new Button();
 		cleanSelectionButton.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
 				cleanSelectionClick();
@@ -102,70 +150,12 @@ public class Error404 implements EntryPoint {
 		});
 		cleanSelectionButton.setText("Clean Selection");
 		
-		Button cleanWorldMapButton = new Button();
 		cleanWorldMapButton.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
 				cleanWorldMapClick();
 			}
 		});
 		cleanWorldMapButton.setText("Clean Worldmap");
-		
-		Button showMapButton = new Button();
-		showMapButton.addClickHandler(new ClickHandler() {
-			public void onClick(ClickEvent event) {
-				showWorldMapClick();
-			}
-		});
-		showMapButton.setText("Show Year on Worldmap");
-		initializeGenres();
-		initializeCountries();
-		initializeLanguages();
-
-		genreRBAnd.setValue(true);
-		countryRBAnd.setValue(true);
-		langRBAnd.setValue(true);
-
-		selectionCriteriaTable.setText(0, 0, "Genre:");
-		selectionCriteriaTable.setWidget(1,0, genreListBox);
-		// selectionCriteriaTable.setWidget(0, 2, genreRBAnd);
-		// selectionCriteriaTable.setWidget(0, 3, genreRBOR);
-		selectionCriteriaTable.setText(0, 1, "Country:");
-		selectionCriteriaTable.setWidget(1, 1, countryListBox);
-		// selectionCriteriaTable.setWidget(1, 2, countryRBAnd);
-		// selectionCriteriaTable.setWidget(1, 3, countryRBOR);
-		selectionCriteriaTable.setText(0, 2, "Language:");
-		selectionCriteriaTable.setWidget(1, 2, langListBox);
-		// selectionCriteriaTable.setWidget(2, 2, langRBAnd);
-		// selectionCriteriaTable.setWidget(2, 3, langRBOR);
-		selectionCriteriaTable.setWidget(1,3, showAsButton);
-		selectionCriteriaTable.setWidget(1, 4, initializeFormats());
-		worldMapCriteriaTable.setText(0, 0, "Year:");
-		worldMapCriteriaTable.setWidget(1, 0, tbYear);
-		worldMapCriteriaTable.setWidget(1, 1, showMapButton);
-		worldMapCriteriaTable.setWidget(2,0, cleanSelectionButton);
-		worldMapCriteriaTable.setWidget(2,1, cleanWorldMapButton);
-
-		selectionPanel.add(selectionCriteriaTable);
-		SimpleLayoutPanel emptyPanel = new SimpleLayoutPanel();
-		emptyPanel.setSize("0px", "15px");
-		selectionPanel.add(emptyPanel);
-		selectionPanel.add(worldMapCriteriaTable);
-		timebarPanel.setWidth("1500px");
-		timebarPanel.setHeight("250px");
-		timebarPanel.setBorderWidth(3);
-
-		mainPanel.add(selectionPanel);	
-
-		tabPanel.setSize(TABPANELWIDTH, TABPANELHEIGHT);
-		tabPanel.add(initializeWorldMap(),"Worldmap");
-		//tabPanel.add(resultFlexTable,"Table");
-		tabPanel.add(initializeResultTable(),"Table");
-		tabPanel.selectTab(0);
-		mainPanel.add(tabPanel);
-		// mainPanel.add(worldmapPanel);
-
-		// Associate the Main panel with the HTML host page.
-		RootPanel.get("mainPage").add(mainPanel);
 	}
 	
 	private void initializeGenres() {
@@ -355,7 +345,6 @@ public class Error404 implements EntryPoint {
 	}
 
 	private void refreshWorldMap() {
-		//worldMapPanel.clear();
 		Runnable onLoadCallback = new Runnable() {
 			public void run() {				
 				WorldMap map = new WorldMap(worldMapInputDataList,TABPANELWIDTH,TABPANELHEIGHT);
@@ -364,15 +353,5 @@ public class Error404 implements EntryPoint {
 			}
 		};
 		VisualizationUtils.loadVisualizationApi(onLoadCallback, GeoMap.PACKAGE);
-	}
-	
-	private String arrayListToStringConverter(ArrayList<String> alist) {
-		String returnString = "";
-		for (String s : alist) {
-			returnString = returnString + s + ", ";
-		}
-		returnString = returnString.substring(0, returnString.length() - 2);
-		return returnString;
-
 	}
 }
