@@ -295,12 +295,28 @@ public class Error404 implements EntryPoint {
 		resultTableInputDataList.clear();
 		refreshResultTable();
 	}
+	
+	/**
+	 * Cleans the worldmap from entries and shows an empty map again.
+	 * Will be called after the cleanWorldMapButton is clicked. 
+	 * 
+	 * @Pre worldmap must be implemented
+	 * @post worldmap must be empty
+	 */
 	private final void cleanWorldMapClick() {
 		worldMapInputDataList.clear();
 		refreshWorldMap();
 	}
 
+	/**
+	 * Takes the selection of the selected genre, countries and languages and
+	 * builds an table in a separated tab. Only shows the filtered part of all movies 
+	 * in the table. Will be executed after clicking the showAsButton.
+	 * 
+	 * @Pre showAsButton Implemented and connection to database exists
+	 */
 	private final void showAsButtonClick() {
+		//gets all items selected in the genre box
 		ArrayList<String> selectedGenres = new ArrayList<String>();
 		if (genreListBox.getSelectedIndex() != -1) {
 			for (int i = 0; i < genreListBox.getItemCount(); i++) {
@@ -309,6 +325,8 @@ public class Error404 implements EntryPoint {
 				}
 			}
 		}
+		
+		//gets all items selected in the countries 
 		ArrayList<String> selectedCountries = new ArrayList<String>();
 		if (countryListBox.getSelectedIndex() != -1) {
 			for (int i = 0; i < countryListBox.getItemCount(); i++) {
@@ -317,6 +335,8 @@ public class Error404 implements EntryPoint {
 				}
 			}
 		}
+		
+		//gets all items selected in the language box
 		ArrayList<String> selectedLanguages = new ArrayList<String>();
 		if (langListBox.getSelectedIndex() != -1) {
 			for (int i = 0; i < langListBox.getItemCount(); i++) {
@@ -324,13 +344,14 @@ public class Error404 implements EntryPoint {
 					selectedLanguages.add(langListBox.getItemText(i));
 				}
 			}
-		}
-
-		Selection selection = new Selection();
+		}		
+		
+		Selection selection = new Selection(); //makes a new selection object
 		selection.setSelectedCountries(selectedCountries);
 		selection.setSelectedLanguages(selectedLanguages);
 		selection.setSelectedGenres(selectedGenres);
-		// ((HorizontalPanel) mainPanel.getWidget(1)).add(resultFlexTable);
+		
+		//gets all with the selected parameters and gives them back in a table format
 		showResults(selection);
 		tabPanel.selectTab(1);
 	}
