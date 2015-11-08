@@ -193,7 +193,16 @@ public class Error404 implements EntryPoint {
 		});
 		cleanWorldMapButton.setText("Clean Worldmap");
 	}
-
+	
+	/**
+	 * Initializes one selection Box with the entries from the database
+	 * by making an async call to Query.java class
+	 * 
+	 * @Pre data in database and connection
+	 * @param selectionListBox
+	 * @param column
+	 * @param columnId
+	 */
 	private void initializeSelectionListBox(final ListBox selectionListBox, String column, String columnId){		
 		dbService.getColumnEntries(column, columnId,
 				new AsyncCallback<ArrayList<String>>() {
@@ -356,9 +365,19 @@ public class Error404 implements EntryPoint {
 		tabPanel.selectTab(1);
 	}
 
+	
 	private MyServiceAsync dbService = (MyServiceAsync) GWT
 			.create(MyService.class);
 
+	/**
+	 * Called by the showWorldMapClick method, this method fills
+	 * the countries of the worldmap by calling the async method getWorldMapData, 
+	 * which gets the data from the database, filters the movies per year and gives
+	 * the back.
+	 * 
+	 * @Pre database connection 
+	 * @post worldmap filled
+	 */
 	private void fillWorldmap() {
 		try {
 			int selectedYear = Integer.parseInt(tbYear.getText());
@@ -377,7 +396,9 @@ public class Error404 implements EntryPoint {
 								worldMapInputDataList = result;
 								refreshWorldMap();
 							}
-						});
+					});
+			
+			//if the given year is out of range	
 			} else {
 				Window.alert("Please insert a valid number (1900-2100)");
 			}
@@ -386,6 +407,14 @@ public class Error404 implements EntryPoint {
 		}
 	}
 
+	/**
+	 * Gets the data of the selection, searches the database
+	 * for the given input and returns a table with the selected data. 
+	 * 
+	 * @Pre connection to database with data in it
+	 * @param selection
+	 * @post table with output printed
+	 */
 	private void showResults(Selection selection) {
 
 		dbService.getFilteredData(selection,
@@ -402,6 +431,11 @@ public class Error404 implements EntryPoint {
 				});
 	}
 
+	/**
+	 * Initializes a new horizontal panel and returns it.
+	 * 
+	 * @return HorizontalPanel resultTable
+	 */
 	private HorizontalPanel initializeResultTable() {
 		resultTablePanel = new HorizontalPanel();
 		refreshResultTable();
@@ -409,6 +443,12 @@ public class Error404 implements EntryPoint {
 		return resultTablePanel;
 	}
 
+	/**
+	 * Clears the table and loads a new one with the refreshed 
+	 * data.
+	 * 
+	 * @Pre ResultTable must be implemented
+	 */
 	private void refreshResultTable() {
 		resultTablePanel.clear();
 		Runnable onLoadCallback = new Runnable() {
@@ -423,6 +463,11 @@ public class Error404 implements EntryPoint {
 		VisualizationUtils.loadVisualizationApi(onLoadCallback, Table.PACKAGE);
 	}
 
+	/**
+	 * Initializes a worldMapPanel where the worldmap will be sent to
+	 * 
+	 * @return SimpleLayoutPanel worldMapPanel
+	 */
 	private SimpleLayoutPanel initializeWorldMap() {
 		worldMapPanel = new SimpleLayoutPanel();
 		worldMapPanel.setSize(TABPANELWIDTH, TABPANELHEIGHT);
@@ -431,6 +476,12 @@ public class Error404 implements EntryPoint {
 		return worldMapPanel;
 	}
 
+	/**
+	 * Refreshes the worldmap after new selection was chosen.
+	 * Shows a new map with the new given selection.
+	 * 
+	 * @Pre WorldMap must be implemented
+	 */
 	private void refreshWorldMap() {
 		Runnable onLoadCallback = new Runnable() {
 			public void run() {
@@ -443,3 +494,6 @@ public class Error404 implements EntryPoint {
 		VisualizationUtils.loadVisualizationApi(onLoadCallback, GeoMap.PACKAGE);
 	}
 }
+
+
+
