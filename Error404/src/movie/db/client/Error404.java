@@ -212,12 +212,15 @@ public class Error404 implements EntryPoint {
 
 					@Override
 					public void onSuccess(ArrayList<String> result) {
-						for (String entry : result) {
+						try{for (String entry : result) {
 							selectionListBox.addItem(entry);
 						}
 						selectionListBox.setVisibleItemCount(5);
 						selectionListBox.setMultipleSelect(true);
 						selectionListBox.setItemSelected(0, false); //first item is selected by default
+						}catch(Exception ex){	
+							System.out.println(ex.toString());
+						}
 					}
 				});	
 	}

@@ -43,20 +43,22 @@ public class DataResultShared implements Serializable{
 	}
 	
 	public void addCountry(String countryName){		
-		if(!countries.contains(countryName)){
+		if(!countries.contains(countryName) && countryName!=null){
 			countries.add(countryName);
 		}
 	}
 	
 	public void addLanguage(String languageName){
-		if(!languages.contains(languageName)){
+		if(!languages.contains(languageName) && languageName!=null){
 			languages.add(languageName);
 		}
 	}
 	
 	public void addGenre(String genreName){
-		if(!genres.contains(genreName)){
+		if(!genres.contains(genreName) && genreName!=null){
 			genres.add(genreName);
 		}
 	}
 }
+
+

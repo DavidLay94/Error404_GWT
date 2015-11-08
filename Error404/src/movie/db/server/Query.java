@@ -21,6 +21,7 @@ public class Query extends RemoteServiceServlet implements MyService {
 		Statement statement = null;
 
 		try {
+			statement.setQueryTimeout(30);
 			statement = connection.createStatement();
 	
 			String sqlQuery = "SELECT movies.id, countries.id, languages.id, genres.id, movies.name, movies.year, countries.name, languages.name, genres.name "
