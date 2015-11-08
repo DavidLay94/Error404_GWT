@@ -87,9 +87,6 @@ public class Error404 implements EntryPoint {
 		initializeSelectionListBox(genreListBox,"genres","genre");
 		initializeSelectionListBox(countryListBox,"countries","country");
 		initializeSelectionListBox(langListBox,"languages","language");
-		/*initializeGenres();
-		initializeCountries();
-		initializeLanguages();*/
 
 		initializeSelectionCriteriaTable(selectionCriteriaTable, showAsButton);
 		initializeWorldMapCriteriaTable(worldMapCriteriaTable, showMapButton,
@@ -252,26 +249,52 @@ public class Error404 implements EntryPoint {
 		tabPanel.selectTab(0);
 	}
 
-	private final void cleanSelectionClick() {
-		genreListBox.setMultipleSelect(false);
-		genreListBox.setItemSelected(0, true);
-		genreListBox.setItemSelected(0, false);
-
-		countryListBox.setMultipleSelect(false);
-		countryListBox.setItemSelected(0, true);
-		countryListBox.setItemSelected(0, false);
-
-		langListBox.setMultipleSelect(false);
-		langListBox.setItemSelected(0, true);
-		langListBox.setItemSelected(0, false);
-
+	/**
+	 * Cleans the selection of the selection boards and sets it back
+	 * to the standard value. Will be called after the clickhandler event 
+	 * of the cleanSelectionButton.
+	 * 
+	 * @Pre cleanSelectionButton must be implemented and clicked
+	 * @post no item of the selection is selected
+	 */
+	private final void cleanSelectionClick(){
+		
+		/*
+		 * First only one selection is allowed by now
+		 * then selects the first item, 
+		 * first item will be removed from the selection
+		 * multiple selection is allowed again.
+		 */
+		genreListBox.setMultipleSelect(false); 
+		genreListBox.setItemSelected(0,true);
+		genreListBox.setItemSelected(0,false);
 		genreListBox.setMultipleSelect(true);
+		
+		/*
+		 * First only one selection is allowed by now
+		 * then selects the first item, 
+		 * first item will be removed from the selection
+		 * multiple selection is allowed again.
+		 */
+		countryListBox.setMultipleSelect(false);
+		countryListBox.setItemSelected(0,true);
+		countryListBox.setItemSelected(0,false);
 		countryListBox.setMultipleSelect(true);
+		
+		/*
+		 * First only one selection is allowed by now
+		 * then selects the first item, 
+		 * first item will be removed from the selection
+		 * multiple selection is allowed again.
+		 */
+		langListBox.setMultipleSelect(false);
+		langListBox.setItemSelected(0,true);
+		langListBox.setItemSelected(0,false);
 		langListBox.setMultipleSelect(true);
+
 		resultTableInputDataList.clear();
 		refreshResultTable();
 	}
-
 	private final void cleanWorldMapClick() {
 		worldMapInputDataList.clear();
 		refreshWorldMap();

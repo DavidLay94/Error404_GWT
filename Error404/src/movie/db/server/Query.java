@@ -19,24 +19,10 @@ public class Query extends RemoteServiceServlet implements MyService {
 
 		Connection connection = ConnectionConfiguration.getConnection();
 		Statement statement = null;
-		////////////////Testing (deployment issue)
-		/*DataResultShared errorRes =  new DataResultShared();
-		errorRes.setMovieName("I was here");
-		errorRes.setYear(1999);
-		errorRes.addLanguage("bla");
-		errorRes.addCountry("sd");
-		errorRes.addGenre("adsf");
-		dataResultMap.put(-1,errorRes );
-		*/
+
 		try {
 			statement = connection.createStatement();
-			// for creating
-			// statements out of
-			// the established
-			// connection
-
-			// try {
-
+	
 			String sqlQuery = "SELECT movies.id, countries.id, languages.id, genres.id, movies.name, movies.year, countries.name, languages.name, genres.name "
 					+ "FROM movies "
 					+ "JOIN movies_countries "
@@ -51,12 +37,9 @@ public class Query extends RemoteServiceServlet implements MyService {
 					+ "ON movies.id=movies_genres.movie_id "
 					+ "JOIN genres "
 					+ "ON movies_genres.genre_id=genres.id "
-					// +"WHERE genres.name = 'Horror' "
-					// +"AND languages.name = 'Deutsch'"
 					+ sqlClause + "ORDER BY movies.name ";
 
 			ResultSet queryResult = statement.executeQuery(sqlQuery);
-			// int movieIndex = 0;
 
 			int movieId;
 			String movieName;
@@ -107,7 +90,6 @@ public class Query extends RemoteServiceServlet implements MyService {
 
 			return dataResultMap;
 		}
-		//return dataResultMap;
 	}
 
 	@SuppressWarnings("finally")
@@ -133,16 +115,15 @@ public class Query extends RemoteServiceServlet implements MyService {
 				resultArray.add(dataresult);
 			}
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} finally {
 			try {
 				statement.close();
-			} catch (Exception e) { /* ignored */
+			} catch (Exception e) { 
 			}
 			try {
 				connection.close();
-			} catch (Exception e) { /* ignored */
+			} catch (Exception e) { 
 			}
 
 			return resultArray;
@@ -152,10 +133,7 @@ public class Query extends RemoteServiceServlet implements MyService {
 	@SuppressWarnings("finally")
 	public ArrayList<String> getColumnEntries(String column, String columnId) {
 		ArrayList<String> resultArray = new ArrayList<String>();
-		
-		/*String sqlQuery = "SELECT countries.name AS \"country\", count(countries.id) AS \"amount\" FROM movies "
-				+ "JOIN movies_countries ON movies.id = movies_countries.movie_id "
-				+ "JOIN countries ON movies_countries.country_id = countries.id group by countries.id";*/
+
 		String sqlQuery = "SELECT " + column + ".name AS \"" + columnId +"\" FROM movies "
 				+ "JOIN movies_" + column + " ON movies.id = movies_" + column + ".movie_id "
 				+ "JOIN " + column + " ON movies_" + column + "."+ columnId + "_id = " + column + ".id group by " + column + ".id";
@@ -170,16 +148,15 @@ public class Query extends RemoteServiceServlet implements MyService {
 				resultArray.add(queryResult.getString(columnId));
 			}
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} finally {
 			try {
 				statement.close();
-			} catch (Exception e) { /* ignored */
+			} catch (Exception e) {
 			}
 			try {
 				connection.close();
-			} catch (Exception e) { /* ignored */
+			} catch (Exception e) {
 			}
 
 			return resultArray;
@@ -188,7 +165,7 @@ public class Query extends RemoteServiceServlet implements MyService {
 	
 	private String selectionToSQLWhereClause(Selection selection) {
 		String selectionSQLWhereClause = "WHERE 1 = 1 ";
-		if (selection.getSelectedMovieName() != null) {
+		/*if (selection.getSelectedMovieName() != null) {
 			selectionSQLWhereClause = selectionSQLWhereClause + "AND name = '"
 					+ selection.getSelectedMovieName() + "' ";
 		}
@@ -196,22 +173,30 @@ public class Query extends RemoteServiceServlet implements MyService {
 			selectionSQLWhereClause = selectionSQLWhereClause + "AND year = "
 					+ Integer.toString(selection.getSelectedYear()) + " ";
 		}
+		*/		
+
 		if (!selection.getSelectedCountries().isEmpty()) {
 			selectionSQLWhereClause = selectionSQLWhereClause
-					+ "AND countries.name IN ('"
-					+ String.join("','", selection.getSelectedCountries())
-					+ "') ";
+					+ "AND (SELECT count(*) from movies_countries "  
+					+ "JOIN countries ON movies_countries.country_id = countries.id "
+					+ "WHERE countries.name IN ('"
+					+ String.join("','", selection.getSelectedCountries()) + "') AND movie_id = movies.id) > 0 ";
 		}
+
 		if (!selection.getSelectedLanguages().isEmpty()) {
 			selectionSQLWhereClause = selectionSQLWhereClause
-					+ "AND languages.name IN ('"
-					+ String.join("','", selection.getSelectedLanguages())
-					+ "') ";
+					+ "AND (SELECT count(*) from movies_languages "  
+					+ "JOIN languages ON movies_languages.language_id = languages.id "
+					+ "WHERE languages.name IN ('"
+					+ String.join("','", selection.getSelectedLanguages()) + "') AND movie_id = movies.id) > 0 ";
 		}
+				
 		if (!selection.getSelectedGenres().isEmpty()) {
 			selectionSQLWhereClause = selectionSQLWhereClause
-					+ "AND genres.name IN ('"
-					+ String.join("','", selection.getSelectedGenres()) + "') ";
+					+ "AND (SELECT count(*) from movies_genres "  
+					+ "JOIN genres ON movies_genres.genre_id = genres.id "
+					+ "WHERE genres.name IN ('"
+					+ String.join("','", selection.getSelectedGenres()) + "') AND movie_id = movies.id) > 0 ";
 		}
 		return selectionSQLWhereClause;
 	}
