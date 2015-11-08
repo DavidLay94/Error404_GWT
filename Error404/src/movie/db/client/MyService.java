@@ -16,5 +16,6 @@ public interface MyService extends RemoteService {
 	//public String myMethod(String s);
 	public Map<Integer, DataResultShared> getFilteredData(Selection selection);
 	public ArrayList<DataResultAggregated> getWorldMapData(int selectedYear);
+	public ArrayList<String> getColumnEntries(String column, String columnId);
 }
 

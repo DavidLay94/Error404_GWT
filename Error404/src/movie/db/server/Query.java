@@ -149,6 +149,43 @@ public class Query extends RemoteServiceServlet implements MyService {
 		}
 	}
 
+	@SuppressWarnings("finally")
+	public ArrayList<String> getColumnEntries(String column, String columnId) {
+		ArrayList<String> resultArray = new ArrayList<String>();
+		
+		/*String sqlQuery = "SELECT countries.name AS \"country\", count(countries.id) AS \"amount\" FROM movies "
+				+ "JOIN movies_countries ON movies.id = movies_countries.movie_id "
+				+ "JOIN countries ON movies_countries.country_id = countries.id group by countries.id";*/
+		String sqlQuery = "SELECT " + column + ".name AS \"" + columnId +"\" FROM movies "
+				+ "JOIN movies_" + column + " ON movies.id = movies_" + column + ".movie_id "
+				+ "JOIN " + column + " ON movies_" + column + "."+ columnId + "_id = " + column + ".id group by " + column + ".id";
+
+		Connection connection = ConnectionConfiguration.getConnection();
+		Statement statement = null;
+		try {
+			statement = connection.createStatement();
+			ResultSet queryResult = statement.executeQuery(sqlQuery);
+
+			while (queryResult.next()) {
+				resultArray.add(queryResult.getString(columnId));
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			try {
+				statement.close();
+			} catch (Exception e) { /* ignored */
+			}
+			try {
+				connection.close();
+			} catch (Exception e) { /* ignored */
+			}
+
+			return resultArray;
+		}
+	}
+	
 	private String selectionToSQLWhereClause(Selection selection) {
 		String selectionSQLWhereClause = "WHERE 1 = 1 ";
 		if (selection.getSelectedMovieName() != null) {

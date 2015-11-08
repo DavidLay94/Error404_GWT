@@ -14,5 +14,7 @@ public interface MyServiceAsync {
 	public void getFilteredData(Selection selection, AsyncCallback<Map<Integer, DataResultShared>> callback);
 
 	public void getWorldMapData(int selectedYear, AsyncCallback<ArrayList<DataResultAggregated>> asyncCallback);
+	
+	public void getColumnEntries(String column, String columnId, AsyncCallback<ArrayList<String>> callback);
 }
 
