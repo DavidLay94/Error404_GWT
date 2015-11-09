@@ -76,13 +76,14 @@ public class ResultTable {
 	}
 
 	private String arrayListToStringConverter(ArrayList<String> alist) {
-		String returnString = "";
+		String returnString = " ";
+		if(!alist.isEmpty()){
 		for (String s : alist) {
 			returnString = returnString + s + ", ";
 		}
 		returnString = returnString.substring(0, returnString.length() - 2);
-		return returnString;
-
+		}
+		return returnString;		
 	}
 
 	

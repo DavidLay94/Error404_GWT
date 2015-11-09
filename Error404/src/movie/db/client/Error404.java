@@ -84,9 +84,9 @@ public class Error404 implements EntryPoint {
 		initializeButtons(showAsButton, showMapButton, cleanSelectionButton,
 				cleanWorldMapButton);
 
-		initializeSelectionListBox(genreListBox,"genres","genre");
-		initializeSelectionListBox(countryListBox,"countries","country");
-		initializeSelectionListBox(langListBox,"languages","language");
+		initializeSelectionListBox(genreListBox,"genre");
+		initializeSelectionListBox(countryListBox,"country");
+		initializeSelectionListBox(langListBox,"language");
 
 		initializeSelectionCriteriaTable(selectionCriteriaTable, showAsButton);
 		initializeWorldMapCriteriaTable(worldMapCriteriaTable, showMapButton,
@@ -203,8 +203,8 @@ public class Error404 implements EntryPoint {
 	 * @param column
 	 * @param columnId
 	 */
-	private void initializeSelectionListBox(final ListBox selectionListBox, String column, String columnId){		
-		dbService.getColumnEntries(column, columnId,
+	private void initializeSelectionListBox(final ListBox selectionListBox, String column){		
+		dbService.getColumnEntries(column, 
 				new AsyncCallback<ArrayList<String>>() {
 					@Override
 					public void onFailure(Throwable caught) {

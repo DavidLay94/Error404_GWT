@@ -42,22 +42,16 @@ public class DataResultShared implements Serializable{
 		this.year = movieYear;
 	}
 	
-	public void addCountry(String countryName){		
-		if(!countries.contains(countryName) && countryName!=null){
-			countries.add(countryName);
-		}
+	public void setCountries(ArrayList<String> countries){		
+		this.countries = countries;
 	}
 	
-	public void addLanguage(String languageName){
-		if(!languages.contains(languageName) && languageName!=null){
-			languages.add(languageName);
-		}
+	public void setLanguages(ArrayList<String> languages){		
+		this.languages = languages;
 	}
 	
-	public void addGenre(String genreName){
-		if(!genres.contains(genreName) && genreName!=null){
-			genres.add(genreName);
-		}
+	public void setGenres(ArrayList<String> genres){		
+		this.genres = genres;
 	}
 }
 
