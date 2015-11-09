@@ -189,36 +189,33 @@ public class Query extends RemoteServiceServlet implements MyService {
 		}
 	}
 
-	private String selectionToSQLWhereClause(Selection selection) {
-		String selectionSQLWhereClause = "WHERE 1 = 1 ";
-		/*
-		 * if (selection.getSelectedMovieName() != null) {
-		 * selectionSQLWhereClause = selectionSQLWhereClause + "AND name = '" +
-		 * selection.getSelectedMovieName() + "' "; } if
-		 * (selection.getSelectedYear() != null) { selectionSQLWhereClause =
-		 * selectionSQLWhereClause + "AND year = " +
-		 * Integer.toString(selection.getSelectedYear()) + " "; }
-		 */
+	public String selectionToSQLWhereClause(Selection selection) {
+		String selectionSQLWhereClause;
+		if (selection == null) {
+			selectionSQLWhereClause = " ";
+		} else {
+			selectionSQLWhereClause = "WHERE 1 = 1 ";
 
-		if (!selection.getSelectedCountries().isEmpty()) {
-			selectionSQLWhereClause = selectionSQLWhereClause
-					+ "AND (country LIKE '%"
-					+ String.join("%' OR country LIKE '%",
-							selection.getSelectedCountries()) + "%')";
-		}
+			if (!selection.getSelectedCountries().isEmpty()) {
+				selectionSQLWhereClause = selectionSQLWhereClause
+						+ "AND (country LIKE '%"
+						+ String.join("%' OR country LIKE '%",
+								selection.getSelectedCountries()) + "%')";
+			}
 
-		if (!selection.getSelectedLanguages().isEmpty()) {
-			selectionSQLWhereClause = selectionSQLWhereClause
-					+ "AND (language LIKE '%"
-					+ String.join("%' OR language LIKE '%",
-							selection.getSelectedLanguages()) + "%')";
-		}
+			if (!selection.getSelectedLanguages().isEmpty()) {
+				selectionSQLWhereClause = selectionSQLWhereClause
+						+ "AND (language LIKE '%"
+						+ String.join("%' OR language LIKE '%",
+								selection.getSelectedLanguages()) + "%')";
+			}
 
-		if (!selection.getSelectedGenres().isEmpty()) {
-			selectionSQLWhereClause = selectionSQLWhereClause
-					+ "AND (genre LIKE '%"
-					+ String.join("%' OR genre LIKE '%",
-							selection.getSelectedGenres()) + "%')";
+			if (!selection.getSelectedGenres().isEmpty()) {
+				selectionSQLWhereClause = selectionSQLWhereClause
+						+ "AND (genre LIKE '%"
+						+ String.join("%' OR genre LIKE '%",
+								selection.getSelectedGenres()) + "%')";
+			}
 		}
 		return selectionSQLWhereClause;
 	}
