@@ -3,8 +3,16 @@ package movie.db.server;
 import java.sql.Connection;
 import java.sql.DriverManager;
 
-public class ConnectionConfiguration {
-
+/*
+ * This class offers a database connection through a static method.
+ */
+public class ConnectionConfiguration {	
+	/**
+	 * Establishes and returns a database connection 
+	 * 
+	 * @pre none
+	 * @post connection was established
+	 */
 	public static Connection getConnection() {
 		Connection connection = null;
 

@@ -12,6 +12,9 @@ import com.google.gwt.visualization.client.visualizations.Table.Options.Policy;
 
 import movie.db.shared.DataResultShared;
 
+/*
+ * This class is needed for the visualization in table format after the database delivered the movies.
+ */
 public class ResultTable {
 
 	private Table resultTable;
@@ -40,6 +43,13 @@ public class ResultTable {
 		return options;
 	}
 
+	/**
+	 * Generates a datatable which can be used by a widget and then be shown on the user interface 
+	 * 
+	 * @pre Database query must have delivered some results
+	 * @param Map<Integer, DataResultShared> result
+	 * @post datatable contains the result entered in the different columns
+	 */
 	public DataTable generateDataTable(Map<Integer, DataResultShared> result) {
 
 		DataTable dataTable = DataTable.create();
@@ -74,7 +84,14 @@ public class ResultTable {
 		}
 		return dataTable;
 	}
-
+	
+	/**
+	 * Concatenates all String entries of an ArrayList together
+	 * 
+	 * @pre input ArrayList<String> is not null
+	 * @param ArrayList<String> alist
+	 * @post String contains all entries concateneted together
+	 */
 	private String arrayListToStringConverter(ArrayList<String> alist) {
 		String returnString = " ";
 		if(!alist.isEmpty()){

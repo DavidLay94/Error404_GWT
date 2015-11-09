@@ -2,7 +2,10 @@ package movie.db.shared;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-
+/*
+ * This class is used to put together the selections made by the user on the GUI 
+ * so they are easily transferable to the server side.
+ */
 public class Selection implements Serializable {
 
 	private String selectedMovieName;
@@ -35,7 +38,7 @@ public class Selection implements Serializable {
 		this.selectedMovieName = selectedMovieName;
 	}
 
-	public void setSelectedYear(int selectedYear) {
+	public void setSelectedYear(Integer selectedYear) {
 		this.selectedYear = selectedYear;
 	}
 

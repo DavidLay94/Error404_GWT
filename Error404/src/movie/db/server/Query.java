@@ -9,10 +9,21 @@ import movie.db.shared.DataResultShared;
 import movie.db.shared.Selection;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
-
+/*
+ * The class offers database access to the client package so queries can be processed and be formed into suitable 
+ * Objects which are sent back to the client side 
+ */
 public class Query extends RemoteServiceServlet implements MyService {
 
-	@SuppressWarnings("finally")
+	/**
+	 * Generates a Map<Integer, DataResultShared> with the movie-ID as key and the data-result with holding
+	 * the metadata of the different movies.
+	 * 
+	 * @pre a Selection object must have been created. selection != null
+	 * @param Selection selection
+	 * @post Map<Integer, DataResultShared> contains every movie with it's metadata corresponding to the selection
+	 */
+	@SuppressWarnings("finally")	
 	public Map<Integer, DataResultShared> getFilteredData(Selection selection) {
 		Map<Integer, DataResultShared> dataResultMap = new HashMap<Integer, DataResultShared>();
 		String sqlClause = selectionToSQLWhereClause(selection);
@@ -25,18 +36,6 @@ public class Query extends RemoteServiceServlet implements MyService {
 
 			String sqlQuery = "SELECT id, name, year, country, language, genre FROM moviesAllInOne "
 					+ sqlClause + " ORDER BY name LIMIT 0,500";
-			/*
-			 * "SELECT movies.id, countries.id, languages.id, genres.id, movies.name, movies.year, countries.name, languages.name, genres.name "
-			 * + "FROM movies " + "JOIN movies_countries " +
-			 * "ON movies.id=movies_countries.movie_id " + "JOIN countries " +
-			 * "ON movies_countries.country_id=countries.id " +
-			 * "JOIN movies_languages " +
-			 * "ON movies.id=movies_languages.movie_id " + "JOIN languages " +
-			 * "ON movies_languages.language_id=languages.id " +
-			 * "JOIN movies_genres " + "ON movies.id=movies_genres.movie_id " +
-			 * "JOIN genres " + "ON movies_genres.genre_id=genres.id " +
-			 * sqlClause + "ORDER BY movies.name ";
-			 */
 
 			ResultSet queryResult = statement.executeQuery(sqlQuery);
 
@@ -80,17 +79,6 @@ public class Query extends RemoteServiceServlet implements MyService {
 				}
 
 				dataResultMap.put(movieId, movie);
-				/*
-				 * if (dataResultMap.containsKey(movieId)) {
-				 * dataResultMap.get(movieId).addCountry(countryName);
-				 * dataResultMap.get(movieId).addLanguage(languageName);
-				 * dataResultMap.get(movieId).addGenre(genreName); } else {
-				 * DataResultShared movie = new DataResultShared();
-				 * movie.setMovieName(movieName); movie.setYear(year);
-				 * movie.addCountry(countryName);
-				 * movie.addLanguage(languageName); movie.addGenre(genreName);
-				 * dataResultMap.put(movieId, movie); }
-				 */
 			}
 
 		} catch (SQLException e1) {
@@ -114,6 +102,14 @@ public class Query extends RemoteServiceServlet implements MyService {
 		}
 	}
 
+	/**
+	 * Generates a ArrayList<DataResultAggregated> which is used as input to show the number of movies per country 
+	 * on an interactive worldmap.
+	 * 
+	 * @pre year must be a valid int
+	 * @param int selectedYear
+	 * @post ArrayList<DataResultAggregated> contains every country with the amount of movies generated in it
+	 */
 	@SuppressWarnings("finally")
 	public ArrayList<DataResultAggregated> getWorldMapData(int selectedYear) {
 		ArrayList<DataResultAggregated> resultArray = new ArrayList<DataResultAggregated>();
@@ -149,6 +145,13 @@ public class Query extends RemoteServiceServlet implements MyService {
 		}
 	}
 
+	/**
+	 * Generates a ArrayList<String> which is used to fill the selection-listboxes in the UI.
+	 * 
+	 * @pre Input "column" must be a valid column in the database-table
+	 * @param String column
+	 * @post ArrayList<String> contains every entry in the selected column 
+	 */
 	@SuppressWarnings("finally")
 	public ArrayList<String> getColumnEntries(String column) {
 		ArrayList<String> resultArrayList = new ArrayList<String>();
@@ -188,7 +191,14 @@ public class Query extends RemoteServiceServlet implements MyService {
 			return resultArrayList;
 		}
 	}
-
+	
+	/**
+	 * Generates a String in the correct syntax which can be put in the WHERE-clause of an SQL-query
+	 * 
+	 * @pre every Input (including null) of type Selection is accepted. 
+	 * @param Selection selection
+	 * @post String must be in proper syntax to be added in the part of the "WHERE-clause" of the sql query
+	 */
 	public String selectionToSQLWhereClause(Selection selection) {
 		String selectionSQLWhereClause;
 		if (selection == null) {

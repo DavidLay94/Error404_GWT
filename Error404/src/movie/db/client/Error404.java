@@ -30,18 +30,13 @@ import com.google.gwt.visualization.client.visualizations.GeoMap;
 import com.google.gwt.visualization.client.visualizations.Table;
 
 /**
- * Entry point classes define <code>onModuleLoad()</code>.
+ * This is the Main Class, containing the entry point method and managing all the GUI components.
  */
 public class Error404 implements EntryPoint {
-	/**
-	 * The message displayed to the user when the server cannot be reached or
-	 * returns an error.
-	 */
 
 	/**
 	 * This is the entry point method.
 	 */
-
 	public void onModuleLoad() {
 		initializePanels();
 	}
