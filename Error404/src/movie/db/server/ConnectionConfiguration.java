@@ -17,6 +17,7 @@ public class ConnectionConfiguration {
 		Connection connection = null;
 
 		try {
+			Class.forName("com.mysql.jdbc.GoogleDriver");
 			connection = DriverManager.getConnection("jdbc:mysql://login-83.hoststar.ch:3306/data", "project", "SOE2015chdalupa!");
 		} catch (Exception e) {
 			e.printStackTrace();
