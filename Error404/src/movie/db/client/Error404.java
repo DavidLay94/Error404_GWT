@@ -18,27 +18,32 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
+import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
-import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.SimpleLayoutPanel;
 import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.visualization.client.VisualizationUtils;
 import com.google.gwt.visualization.client.visualizations.GeoMap;
 import com.google.gwt.visualization.client.visualizations.Table;
+import com.google.gwt.widgetideas.client.SliderBar;
+import com.google.gwt.widgetideas.client.SliderBar.LabelFormatter;
 
 /**
  * This is the Main Class, containing the entry point method and managing all
  * the GUI components.
  */
+@SuppressWarnings("deprecation")
 public class Error404 implements EntryPoint {
 
 	/**
@@ -46,6 +51,7 @@ public class Error404 implements EntryPoint {
 	 */
 	public void onModuleLoad() {
 		initializePanels();
+		initializeTimeBar();
 	}
 
 	/* Class Variables */
@@ -56,11 +62,22 @@ public class Error404 implements EntryPoint {
 	private ListBox countryListBox = new ListBox();
 	private ListBox langListBox = new ListBox();
 	private ListBox durationListBox = new ListBox();
-	private TextBox tbYear = new TextBox();
+	private TextBox tbYearWorldmap = new TextBox();
+	private TextBox tbNameTable = new TextBox();
+	private TextBox tbYearTable = new TextBox();
 	private ArrayList<DataResultAggregated> worldMapInputDataList = new ArrayList<DataResultAggregated>();
 	private TabPanel tabPanel = new TabPanel();
 	private Map<Integer, DataResultShared> resultTableInputDataList = new HashMap<Integer, DataResultShared>();
 
+	private SliderBar timeBar = new SliderBar(YEAR_OLDEST_MOVIE, CURRENT_YEAR,
+			new LabelFormatter() {
+				public String formatLabel(SliderBar slider, double value) {
+					return (int) (10 * value) / 10 + "";
+				}
+			});
+
+	private final static double YEAR_OLDEST_MOVIE = 1888;
+	private final static double CURRENT_YEAR = 2015; 
 	private final static String TABPANELHEIGHT = "540px";
 	private final static String TABPANELWIDTH = "1200px";
 
@@ -77,6 +94,7 @@ public class Error404 implements EntryPoint {
 	private void initializePanels() {
 		mainPanel.setSize("100vw", "82vh");
 		mainPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+		mainPanel.setSpacing(5);
 		String introString = "Welcome to our Movie Database!\n"
 				+ "Enter a year and see the number of movies in the different countries in the \"Worldmap\" panel.\n"
 				+ "Switch to the tab \"Table\" and perform more detailed research based on the offered criteria.";
@@ -84,46 +102,37 @@ public class Error404 implements EntryPoint {
 		Label introductionText = new HTML(new SafeHtmlBuilder()
 				.appendEscapedLines(introString).toSafeHtml());
 		mainPanel.add(introductionText);
+
 		// VerticalPanel selectionPanel = new VerticalPanel();
 
-		FlexTable selectionCriteriaTable = new FlexTable();
+		VerticalPanel selectionCriteriaTable = new VerticalPanel();
 		FlexTable worldMapCriteriaTable = new FlexTable();
 
-		Button showAsButton = new Button();
 		Button showMapButton = new Button();
-		Button cleanSelectionButton = new Button();
+
 		Button cleanWorldMapButton = new Button();
-		initializeButtons(showAsButton, showMapButton, cleanSelectionButton,
-				cleanWorldMapButton);
+		initializeButtons(showMapButton, cleanWorldMapButton);
 
 		initializeSelectionListBox(genreListBox, "genre");
 		initializeSelectionListBox(countryListBox, "country");
 		initializeSelectionListBox(langListBox, "language");
 		initializeDurationSelListBox();
-		// selectionPanel.add(selectionCriteriaTable);
-		// SimpleLayoutPanel emptyPanel = new SimpleLayoutPanel();
-		// emptyPanel.setSize("0px", "15px");
-		// selectionPanel.add(emptyPanel);
-		// selectionPanel.add(worldMapCriteriaTable);
 
 		initializeWorldMapCriteriaTable(worldMapCriteriaTable, showMapButton,
 				cleanWorldMapButton);
 		VerticalPanel worldMapVP = new VerticalPanel();
 		worldMapVP.add(worldMapCriteriaTable);
 		worldMapVP.add(initializeWorldMap());
+		worldMapVP.add(initializeTimeBar());
 
-		initializeSelectionCriteriaTable(selectionCriteriaTable, showAsButton,
-				cleanSelectionButton);
+		initializeSelectionCriteriaTable(selectionCriteriaTable);
 		VerticalPanel tableVP = new VerticalPanel();
 		tableVP.add(selectionCriteriaTable);
 		tableVP.add(initializeResultTable());
-		// mainPanel.add(selectionPanel);
 
 		tabPanel.setSize(TABPANELWIDTH, TABPANELHEIGHT);
-		// tabPanel.add(initializeWorldMap(), "Worldmap");
 		tabPanel.add(worldMapVP, "Worldmap");
 		tabPanel.add(tableVP, "Table");
-		// tabPanel.add(initializeResultTable(), "Table");
 		tabPanel.selectTab(0);
 		mainPanel.add(tabPanel);
 
@@ -136,25 +145,92 @@ public class Error404 implements EntryPoint {
 	 * selection criteria boxes to a flextable on the main page and makes it
 	 * visible.
 	 * 
-	 * @Pre selectionCriteria table and showAsButton must be implemented
+	 * @Pre selectionCriteria table must be implemented
 	 * @param selectionCriteriaTable
-	 * @param showAsButton
-	 * @param cleanSelectionButton
 	 */
 	private void initializeSelectionCriteriaTable(
-			FlexTable selectionCriteriaTable, Button showAsButton,
-			Button cleanSelectionButton) {
-		selectionCriteriaTable.setText(0, 0, "Genre:");
-		selectionCriteriaTable.setWidget(1, 0, genreListBox);
-		selectionCriteriaTable.setText(0, 1, "Country:");
-		selectionCriteriaTable.setWidget(1, 1, countryListBox);
-		selectionCriteriaTable.setText(0, 2, "Language:");
-		selectionCriteriaTable.setWidget(1, 2, langListBox);
-		selectionCriteriaTable.setText(0, 3, "Duration:");
-		selectionCriteriaTable.setWidget(1, 3, durationListBox);
-		selectionCriteriaTable.setWidget(1, 4, showAsButton);
-		selectionCriteriaTable.setWidget(1, 5, initializeFormats());
-		selectionCriteriaTable.setWidget(2, 0, cleanSelectionButton);
+			VerticalPanel selectionCriteriaTable) {
+		Button showAsButton = new Button();
+		showAsButton.addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				showButtonClick();
+			}
+		});
+		Button cleanSelectionButton = new Button();
+		cleanSelectionButton.addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				cleanSelectionClick();
+			}
+		});
+		showAsButton.setText("Show");
+
+		VerticalPanel genreVP = new VerticalPanel();
+		Label genreLabel = new Label("Genre:");
+		genreLabel.setHeight("2em");
+		genreVP.add(genreLabel);
+		genreVP.add(genreListBox);
+
+		VerticalPanel countryVP = new VerticalPanel();
+		Label countryLabel = new Label("Country:");
+		countryLabel.setHeight("2em");
+		countryVP.add(countryLabel);
+		countryVP.add(countryListBox);
+
+		VerticalPanel languageVP = new VerticalPanel();
+		Label languageLabel = new Label("Language:");
+		languageLabel.setHeight("2em");
+		languageVP.add(languageLabel);
+		languageVP.add(langListBox);
+
+		VerticalPanel durationVP = new VerticalPanel();
+		Label durationLabel = new Label("Duration:");
+		durationLabel.setHeight("2em");
+		durationVP.add(durationLabel);
+		durationVP.add(durationListBox);
+
+		VerticalPanel nameVP = new VerticalPanel();
+		Label nameLabel = new Label(
+				"Name: (use % as wildcard, e.g. %of the Rings%)");
+		nameLabel.setHeight("2em");
+		nameVP.add(nameLabel);
+		tbNameTable.setWidth("39em");
+		nameVP.add(tbNameTable);
+
+		VerticalPanel yearVP = new VerticalPanel();
+		yearVP.setVerticalAlignment(HasVerticalAlignment.ALIGN_TOP);
+		Label yearLabel = new Label("Year:");
+		yearLabel.setHeight("2em");
+		yearVP.add(yearLabel);
+		tbYearTable.setWidth("4em");
+		yearVP.add(tbYearTable);
+
+		HorizontalPanel selectionHorizontal1 = new HorizontalPanel();
+		selectionHorizontal1.setSpacing(5);
+		selectionHorizontal1.add(nameVP);
+		selectionHorizontal1.add(yearVP);
+
+		HorizontalPanel selectionHorizontal2 = new HorizontalPanel();
+		selectionHorizontal2.setSpacing(5);
+		selectionHorizontal2.add(genreVP);
+		selectionHorizontal2.add(countryVP);
+		selectionHorizontal2.add(languageVP);
+		selectionHorizontal2.add(durationVP);
+
+		HorizontalPanel selectionHorizontal3 = new HorizontalPanel();
+		selectionHorizontal3
+				.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
+		selectionHorizontal3.setSpacing(5);
+		showAsButton.setWidth("8em");
+		selectionHorizontal3.add(showAsButton);
+		cleanSelectionButton.setText("Clean");
+		cleanSelectionButton.setWidth("8em");
+		selectionHorizontal3.add(cleanSelectionButton);
+
+		selectionCriteriaTable.setSpacing(4);
+		selectionCriteriaTable.add(selectionHorizontal1);
+		selectionCriteriaTable.add(selectionHorizontal2);
+		selectionCriteriaTable.add(selectionHorizontal3);
+
 	}
 
 	/**
@@ -171,7 +247,8 @@ public class Error404 implements EntryPoint {
 			FlexTable worldMapCriteriaTable, Button showMapButton,
 			Button cleanWorldMapButton) {
 		worldMapCriteriaTable.setText(0, 0, "Year:");
-		worldMapCriteriaTable.setWidget(1, 0, tbYear);
+		tbYearWorldmap.setWidth("4em");
+		worldMapCriteriaTable.setWidget(1, 0, tbYearWorldmap);
 		worldMapCriteriaTable.setWidget(1, 1, showMapButton);
 		worldMapCriteriaTable.setWidget(1, 2, cleanWorldMapButton);
 	}
@@ -187,14 +264,8 @@ public class Error404 implements EntryPoint {
 	 * @param cleanWorldMapButton
 	 * @Post every clcikHandlerMethod must be correctly implemented.
 	 */
-	private void initializeButtons(Button showAsButton, Button showMapButton,
-			Button cleanSelectionButton, Button cleanWorldMapButton) {
-		showAsButton.addClickHandler(new ClickHandler() {
-			public void onClick(ClickEvent event) {
-				showAsButtonClick();
-			}
-		});
-		showAsButton.setText("Show as");
+	private void initializeButtons(Button showMapButton,
+			Button cleanWorldMapButton) {
 
 		showMapButton.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
@@ -202,13 +273,6 @@ public class Error404 implements EntryPoint {
 			}
 		});
 		showMapButton.setText("Show Year on Worldmap");
-
-		cleanSelectionButton.addClickHandler(new ClickHandler() {
-			public void onClick(ClickEvent event) {
-				cleanSelectionClick();
-			}
-		});
-		cleanSelectionButton.setText("Clean Selection");
 
 		cleanWorldMapButton.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
@@ -279,23 +343,19 @@ public class Error404 implements EntryPoint {
 	 * @Pre the criteria table of the main page must be implemented
 	 * @return VerticalPanel with content
 	 */
-	private VerticalPanel initializeFormats() {
-		VerticalPanel formatsPanel = new VerticalPanel();
-
-		// Piechart and Barchart are greyed out until implemented!
-		for (Formats format : Formats.values()) {
-			RadioButton rb = new RadioButton("formatsRBGroup", format.getName());
-			if (format.getName().equals("Table")) {
-				rb.setEnabled(true);
-			} else {
-				rb.setEnabled(false);
-			}
-			formatsPanel.add(rb);
-		}
-		((RadioButton) formatsPanel.getWidget(0)).setValue(true);
-
-		return formatsPanel;
-	}
+	/*
+	 * private VerticalPanel initializeFormats() { VerticalPanel formatsPanel =
+	 * new VerticalPanel();
+	 * 
+	 * // Piechart and Barchart are greyed out until implemented! for (Formats
+	 * format : Formats.values()) { RadioButton rb = new
+	 * RadioButton("formatsRBGroup", format.getName()); if
+	 * (format.getName().equals("Table")) { rb.setEnabled(true); } else {
+	 * rb.setEnabled(false); } formatsPanel.add(rb); } ((RadioButton)
+	 * formatsPanel.getWidget(0)).setValue(true);
+	 * 
+	 * return formatsPanel; }
+	 */
 
 	/**
 	 * After the click on the showMapButton this method is called. It calls the
@@ -380,7 +440,7 @@ public class Error404 implements EntryPoint {
 	 * 
 	 * @Pre showAsButton Implemented and connection to database exists
 	 */
-	private final void showAsButtonClick() {
+	private final void showButtonClick() {
 		// gets all items selected in the genre box
 		ArrayList<String> selectedGenres = new ArrayList<String>();
 		if (genreListBox.getSelectedIndex() != -1) {
@@ -422,14 +482,36 @@ public class Error404 implements EntryPoint {
 		}
 
 		Selection selection = new Selection(); // makes a new selection object
+		selection.setSelectedMovieName(tbNameTable.getText());
+		
+		if (tbYearTable.getText().length() > 0) {
+			try {
+				int selectedYear = Integer.parseInt(tbYearTable.getText());
+				if (selectedYear >= (int) YEAR_OLDEST_MOVIE
+						&& selectedYear <= (int) CURRENT_YEAR) {
+					selection.setSelectedYear(selectedYear);
+					// if the given year is out of range
+				} else {
+					Window.alert("Please insert a valid number ("
+							+ (int) YEAR_OLDEST_MOVIE + "-"
+							+ (int) CURRENT_YEAR + ")");
+				}
+			} catch (Exception ex) {
+				Window.alert("Please insert a valid number ("
+						+ (int) YEAR_OLDEST_MOVIE + "-" + (int) CURRENT_YEAR
+						+ ")");
+			}
+		}
 		selection.setSelectedCountries(selectedCountries);
 		selection.setSelectedLanguages(selectedLanguages);
 		selection.setSelectedGenres(selectedGenres);
 		selection.setSelectedDuration(selectedDurations);
+
 		// gets all with the selected parameters and gives them back in a table
 		// format
 		showResults(selection);
 		tabPanel.selectTab(1);
+
 	}
 
 	private MyServiceAsync dbService = (MyServiceAsync) GWT
@@ -446,8 +528,9 @@ public class Error404 implements EntryPoint {
 	 */
 	private void fillWorldmap() {
 		try {
-			int selectedYear = Integer.parseInt(tbYear.getText());
-			if (selectedYear >= 1900 && selectedYear <= 2100) {
+			int selectedYear = Integer.parseInt(tbYearWorldmap.getText());
+			if (selectedYear >= (int) YEAR_OLDEST_MOVIE
+					&& selectedYear <= (int) CURRENT_YEAR) {
 
 				dbService.getWorldMapData(selectedYear,
 						new AsyncCallback<ArrayList<DataResultAggregated>>() {
@@ -466,12 +549,47 @@ public class Error404 implements EntryPoint {
 
 				// if the given year is out of range
 			} else {
-				Window.alert("Please insert a valid number (1900-2100)");
+				Window.alert("Please insert a valid number ("
+						+ (int) YEAR_OLDEST_MOVIE + "-" + (int) CURRENT_YEAR
+						+ ")");
 			}
 		} catch (Exception ex) {
-			Window.alert("Please insert a valid number (1900-2100)");
+			Window.alert("Please insert a valid number ("
+					+ (int) YEAR_OLDEST_MOVIE + "-" + (int) CURRENT_YEAR + ")");
 		}
 	}
+
+	/*private void fillWorldmap(int selectedYear) {
+		try {
+			if (selectedYear >= (int) YEAR_OLDEST_MOVIE
+					&& selectedYear <= (int) CURRENT_YEAR) {
+
+				dbService.getWorldMapData(selectedYear,
+						new AsyncCallback<ArrayList<DataResultAggregated>>() {
+							@Override
+							public void onFailure(Throwable caught) {
+							}
+
+							@Override
+							public void onSuccess(
+									ArrayList<DataResultAggregated> result) {
+								// refreshWorldMap(result);
+								worldMapInputDataList = result;
+								refreshWorldMap();
+							}
+						});
+
+				// if the given year is out of range
+			} else {
+				Window.alert("Please insert a valid number ("
+						+ (int) YEAR_OLDEST_MOVIE + "-" + (int) CURRENT_YEAR
+						+ ")");
+			}
+		} catch (Exception ex) {
+			Window.alert("Please insert a valid number ("
+					+ (int) YEAR_OLDEST_MOVIE + "-" + (int) CURRENT_YEAR + ")");
+		}
+	}*/
 
 	/**
 	 * Gets the data of the selection, searches the database for the given input
@@ -562,5 +680,22 @@ public class Error404 implements EntryPoint {
 			}
 		};
 		VisualizationUtils.loadVisualizationApi(onLoadCallback, GeoMap.PACKAGE);
+	}
+
+	@SuppressWarnings("deprecation")
+	private SliderBar initializeTimeBar() {
+		timeBar.setStepSize(1.0);
+		timeBar.setCurrentValue(2015.0);
+		timeBar.setNumTicks((int) (CURRENT_YEAR - YEAR_OLDEST_MOVIE));
+		timeBar.setNumLabels(13);
+		timeBar.addChangeListener(new ChangeListener() {
+			public void onChange(Widget sender) {				
+				tbYearWorldmap.setText((int) timeBar.getCurrentValue() + "");
+				fillWorldmap();
+				//fillWorldmap((int) timeBar.getCurrentValue());
+			}
+		});
+		// RootPanel.get().add(timeBar);
+		return timeBar;
 	}
 }

@@ -49,7 +49,7 @@ public class WorldMap {
 	 * @param ArrayList<DataResultAggregated> data
 	 * @post datatable contains the result entered in the different columns
 	 */
-	public DataTable generateDataTable(ArrayList<DataResultAggregated> data){
+	public DataTable generateDataTable(ArrayList<DataResultAggregated> data){	
 		
 		DataTable dataTable = DataTable.create();
 		dataTable.addColumn(ColumnType.STRING, "Country");

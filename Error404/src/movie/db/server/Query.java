@@ -277,6 +277,16 @@ public class Query extends RemoteServiceServlet implements MyService {
 		} else {
 			selectionSQLWhereClause = " WHERE 1 = 1 ";
 
+			if(selection.getSelectedMovieName() != null){
+				if(selection.getSelectedMovieName().length() > 0){
+				selectionSQLWhereClause = selectionSQLWhereClause + "AND name like '" 
+						+ selection.getSelectedMovieName() + "' ";
+				}				
+			}
+			if(selection.getSelectedYear() != null){
+				selectionSQLWhereClause = selectionSQLWhereClause + "AND year = " 
+						+ selection.getSelectedYear() + " ";
+			}
 			if (!selection.getSelectedCountries().isEmpty()) {
 				selectionSQLWhereClause = selectionSQLWhereClause
 						+ "AND (country LIKE '%"
