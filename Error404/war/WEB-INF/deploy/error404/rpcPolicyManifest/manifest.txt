@@ -1,3 +1,2 @@
 # Module error404
 # RPC service class, partial path of RPC policy file
-movie.db.client.MyService, 341B42F77F8DAFE901E1155C08ADDDA0.gwt.rpc

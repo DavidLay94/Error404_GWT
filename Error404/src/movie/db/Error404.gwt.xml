@@ -27,6 +27,7 @@
   <source path='shared'/>  
 
   <!-- allow Super Dev Mode -->
+  <inherits name="com.google.gwt.logging.Logging"/>
   <inherits name='com.google.gwt.visualization.Visualization'/>
   <add-linker name="xsiframe"/>
 </module>

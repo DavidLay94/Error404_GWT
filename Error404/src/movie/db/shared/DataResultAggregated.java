@@ -4,6 +4,7 @@ import java.io.Serializable;
 /*
  * This class provides the objects which are visualized on the worldmap.
  */
+@SuppressWarnings("serial")
 public class DataResultAggregated implements Serializable{
 	private String countryName;
 	private int aggregatedNumberOfMovies;

@@ -34,7 +34,6 @@ public class ResultTable {
 		return resultTable;
 	}
 
-
 	public DataTable getDataTable() {
 		return dataTable;
 	}
@@ -44,10 +43,12 @@ public class ResultTable {
 	}
 
 	/**
-	 * Generates a datatable which can be used by a widget and then be shown on the user interface 
+	 * Generates a datatable which can be used by a widget and then be shown on
+	 * the user interface
 	 * 
 	 * @pre Database query must have delivered some results
-	 * @param Map<Integer, DataResultShared> result
+	 * @param Map
+	 *            <Integer, DataResultShared> result
 	 * @post datatable contains the result entered in the different columns
 	 */
 	public DataTable generateDataTable(Map<Integer, DataResultShared> result) {
@@ -55,6 +56,7 @@ public class ResultTable {
 		DataTable dataTable = DataTable.create();
 		dataTable.addColumn(ColumnType.STRING, "Movie");
 		dataTable.addColumn(ColumnType.NUMBER, "Year");
+		dataTable.addColumn(ColumnType.NUMBER, "Duration");
 		dataTable.addColumn(ColumnType.STRING, "Genres");
 		dataTable.addColumn(ColumnType.STRING, "Languages");
 		dataTable.addColumn(ColumnType.STRING, "Countries");
@@ -69,10 +71,18 @@ public class ResultTable {
 				for (DataResultShared entry : result.values()) {
 					dataTable.addRow();
 					dataTable.setValue(z, 0, entry.getMovieName());
-					dataTable.setValue(z, 1, entry.getYear());
-					dataTable.setValue(z, 2, arrayListToStringConverter(entry.getGenres()));
-					dataTable.setValue(z, 3, arrayListToStringConverter(entry.getLanguages()));
-					dataTable.setValue(z, 4, arrayListToStringConverter(entry.getCountries()));
+					if (entry.getYear() != -1) {
+						dataTable.setValue(z, 1, entry.getYear());
+					}
+					if (entry.getDuration() != -1) {
+						dataTable.setValue(z, 2, entry.getDuration());
+					}
+					dataTable.setValue(z, 3,
+							arrayListToStringConverter(entry.getGenres()));
+					dataTable.setValue(z, 4,
+							arrayListToStringConverter(entry.getLanguages()));
+					dataTable.setValue(z, 5,
+							arrayListToStringConverter(entry.getCountries()));
 					z++;
 				}
 			}
@@ -84,26 +94,24 @@ public class ResultTable {
 		}
 		return dataTable;
 	}
-	
+
 	/**
 	 * Concatenates all String entries of an ArrayList together
 	 * 
 	 * @pre input ArrayList<String> is not null
-	 * @param ArrayList<String> alist
+	 * @param ArrayList
+	 *            <String> alist
 	 * @post String contains all entries concateneted together
 	 */
 	private String arrayListToStringConverter(ArrayList<String> alist) {
 		String returnString = " ";
-		if(!alist.isEmpty()){
-		for (String s : alist) {
-			returnString = returnString + s + ", ";
+		if (!alist.isEmpty()) {
+			for (String s : alist) {
+				returnString = returnString + s + ", ";
+			}
+			returnString = returnString.substring(0, returnString.length() - 2);
 		}
-		returnString = returnString.substring(0, returnString.length() - 2);
-		}
-		return returnString;		
+		return returnString;
 	}
 
-	
-
 }
-

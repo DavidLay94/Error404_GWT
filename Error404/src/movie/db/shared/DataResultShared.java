@@ -6,11 +6,12 @@ import java.util.ArrayList;
 /*
  * This class provides the objects which are visualized in the table.
  */
+@SuppressWarnings("serial")
 public class DataResultShared implements Serializable{
-
 
 	private String movieName;
 	private int year;
+	private int duration;
 	private ArrayList<String> countries = new ArrayList<String>();
 	private ArrayList<String> languages = new ArrayList<String>();
 	private ArrayList<String> genres = new ArrayList<String>();
@@ -21,8 +22,11 @@ public class DataResultShared implements Serializable{
 	}
 	
 	public int getYear(){
-		return year;	
-		
+		return year;			
+	}	
+	
+	public int getDuration(){
+		return duration;			
 	}
 	
 	public ArrayList<String> getCountries(){
@@ -43,6 +47,10 @@ public class DataResultShared implements Serializable{
 	
 	public void setYear(int movieYear){
 		this.year = movieYear;
+	}
+	
+	public void setDuration(int duration){
+		this.duration = duration;
 	}
 	
 	public void setCountries(ArrayList<String> countries){		
