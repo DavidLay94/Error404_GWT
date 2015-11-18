@@ -352,27 +352,31 @@ public class Query extends RemoteServiceServlet implements MyService {
 	 * prevent SQL Exceptions
 	 * 
 	 * @Author Christoph Weber
-	 * @pre every Input (including null) of type Selection is accepted.
-	 * @param String
-	 *            separator, ArrayList<String> aList *
+	 * @pre separator != null && aList != null
+	 * @param String separator, ArrayList<String> aList 
 	 * @post all Elements are concatenated or emptystring if aList is empty.
 	 *       Apostroph's are escaped
 	 */
-	private String concatStrings(String separator, ArrayList<String> aList) {
-		String returnString = "";
-		for (String s : aList) {
-			/*
-			 * The apostroph needs to be escaped, else the sql statement throws
-			 * an exception because it thinks that the string is already
-			 * finished (e.g. 'Children's Fantasy' -> String is 'Children'
-			 */
-			returnString = returnString + s.replace("'", "''") + separator;
-		}
-		if (aList.size() > 0) {
-			returnString = returnString.substring(0, returnString.length()
-					- separator.length());
-		}
+	public String concatStrings(String separator, ArrayList<String> aList) {
+		if (separator != null && aList != null) {
+			String returnString = "";
+			for (String s : aList) {
+				/*
+				 * The apostroph needs to be escaped, else the sql statement
+				 * throws an exception because it thinks that the string is
+				 * already finished (e.g. 'Children's Fantasy' -> String is
+				 * 'Children'
+				 */
+				returnString = returnString + s.replace("'", "''") + separator;
+			}
+			if (aList.size() > 0) {
+				returnString = returnString.substring(0, returnString.length()
+						- separator.length());
+			}
 
-		return returnString;
+			return returnString;
+		} else {
+			return null;
+		}
 	}
 }
