@@ -1,10 +1,13 @@
 package movie.db.client;
 
 import java.util.ArrayList;
+import java.util.EventListener;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.swing.event.EventListenerList;
 
 import movie.db.shared.DataResultAggregated;
 import movie.db.shared.DataResultShared;
@@ -82,13 +85,14 @@ public class Error404 implements EntryPoint {
 	private final static String TABPANELWIDTH = "1200px";
 
 	private final static Logger logger = Logger.getLogger("Error404");
-
+	private VerticalPanel worldMapVP;
+	
 	/**
 	 * Initializes most of the important panels and buttons by calling smaller
 	 * methods in its body. These methods initialize parts of the mainPanel as
 	 * well. Buttons, panels etc. are visible and working at the end of the
 	 * method.
-	 * 
+	 * @Author Christoph Weber
 	 * @Pre EntryPoint class must be loaded correctly
 	 */
 	private void initializePanels() {
@@ -108,23 +112,20 @@ public class Error404 implements EntryPoint {
 		VerticalPanel selectionCriteriaTable = new VerticalPanel();
 		FlexTable worldMapCriteriaTable = new FlexTable();
 
-		Button showMapButton = new Button();
-
-		Button cleanWorldMapButton = new Button();
-		initializeButtons(showMapButton, cleanWorldMapButton);
 
 		initializeSelectionListBox(genreListBox, "genre");
 		initializeSelectionListBox(countryListBox, "country");
 		initializeSelectionListBox(langListBox, "language");
 		initializeDurationSelListBox();
 
-		initializeWorldMapCriteriaTable(worldMapCriteriaTable, showMapButton,
-				cleanWorldMapButton);
-		VerticalPanel worldMapVP = new VerticalPanel();
+		initializeWorldMapCriteriaTable(worldMapCriteriaTable);
+		worldMapVP = new VerticalPanel();
 		worldMapVP.add(worldMapCriteriaTable);
-		worldMapVP.add(initializeWorldMap());
-		worldMapVP.add(initializeTimeBar());
-
+		//worldMapVP.add(initializeWorldMap());
+		//worldMapVP.add(initializeTimeBar());
+		initializeWorldMapAndTimeBar();
+		
+		
 		initializeSelectionCriteriaTable(selectionCriteriaTable);
 		VerticalPanel tableVP = new VerticalPanel();
 		tableVP.add(selectionCriteriaTable);
@@ -144,7 +145,8 @@ public class Error404 implements EntryPoint {
 	 * Initializes a table for the selection part of the website. Adds all
 	 * selection criteria boxes to a flextable on the main page and makes it
 	 * visible.
-	 * 
+	 * 	 
+	 * @Author Christoph Weber
 	 * @Pre selectionCriteria table must be implemented
 	 * @param selectionCriteriaTable
 	 */
@@ -238,54 +240,41 @@ public class Error404 implements EntryPoint {
 	 * textbox and three buttons to the flextable. The flextable is localized
 	 * underneath selection part of the website.
 	 * 
+	 * @Author Christoph Weber
 	 * @Pre Parameters have to be implemented
 	 * @param worldMapCriteriaTable
-	 * @param showMapButton
-	 * @param cleanWorldMapButton
 	 */
 	private void initializeWorldMapCriteriaTable(
-			FlexTable worldMapCriteriaTable, Button showMapButton,
-			Button cleanWorldMapButton) {
+			FlexTable worldMapCriteriaTable) {
 		worldMapCriteriaTable.setText(0, 0, "Year:");
 		tbYearWorldmap.setWidth("4em");
 		worldMapCriteriaTable.setWidget(1, 0, tbYearWorldmap);
-		worldMapCriteriaTable.setWidget(1, 1, showMapButton);
-		worldMapCriteriaTable.setWidget(1, 2, cleanWorldMapButton);
-	}
-
-	/**
-	 * Initializes all the buttons visible on the main page. Adds an click
-	 * handler to every button and calls a specific method when it's clicked.
-	 * 
-	 * @Pre Buttons have to be implemented in initalizePanelMethod.
-	 * @param showAsButton
-	 * @param showMapButton
-	 * @param cleanSelectionButton
-	 * @param cleanWorldMapButton
-	 * @Post every clcikHandlerMethod must be correctly implemented.
-	 */
-	private void initializeButtons(Button showMapButton,
-			Button cleanWorldMapButton) {
-
+		
+		Button showMapButton = new Button();
+		Button cleanWorldMapButton = new Button();
 		showMapButton.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
 				showWorldMapClick();
 			}
 		});
 		showMapButton.setText("Show Year on Worldmap");
-
+		worldMapCriteriaTable.setWidget(1, 1, showMapButton);
+		
 		cleanWorldMapButton.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
 				cleanWorldMapClick();
 			}
 		});
 		cleanWorldMapButton.setText("Clean Worldmap");
+	
+		worldMapCriteriaTable.setWidget(1, 2, cleanWorldMapButton);
 	}
 
 	/**
 	 * Initializes one selection Box with the entries from the database by
 	 * making an async call to Query.java class
 	 * 
+	 * @Author Christoph Weber
 	 * @Pre data in database and connection
 	 * @param selectionListBox
 	 * @param column
@@ -323,6 +312,7 @@ public class Error404 implements EntryPoint {
 	/**
 	 * Initializes one selection Box with all the Entries in the Enum "Duration"
 	 * 
+	 * @Author Christoph Weber
 	 * @Pre Enum is not empty
 	 */
 	private void initializeDurationSelListBox() {
@@ -337,34 +327,31 @@ public class Error404 implements EntryPoint {
 	}
 
 	/**
-	 * Initializes a vertical panel with a single selection. At this time only
-	 * "table" is selectable since its working progress.
-	 * 
-	 * @Pre the criteria table of the main page must be implemented
-	 * @return VerticalPanel with content
-	 */
-	/*
-	 * private VerticalPanel initializeFormats() { VerticalPanel formatsPanel =
-	 * new VerticalPanel();
-	 * 
-	 * // Piechart and Barchart are greyed out until implemented! for (Formats
-	 * format : Formats.values()) { RadioButton rb = new
-	 * RadioButton("formatsRBGroup", format.getName()); if
-	 * (format.getName().equals("Table")) { rb.setEnabled(true); } else {
-	 * rb.setEnabled(false); } formatsPanel.add(rb); } ((RadioButton)
-	 * formatsPanel.getWidget(0)).setValue(true);
-	 * 
-	 * return formatsPanel; }
-	 */
-
-	/**
 	 * After the click on the showMapButton this method is called. It calls the
 	 * method fillWorldmap and selects the tab with the worldmap on it.
 	 * 
+	 * @Author Patrick Muntwyler
 	 * @Pre showMapButton must be implemented and clicked
 	 */
 	private final void showWorldMapClick() {
-		fillWorldmap();
+		//fillWorldmap();
+		try {
+			int selectedYear = Integer.parseInt(tbYearWorldmap.getText());
+			if (selectedYear >= (int) YEAR_OLDEST_MOVIE
+					&& selectedYear <= (int) CURRENT_YEAR) {
+
+				timeBar.setCurrentValue(selectedYear);
+				// if the given year is out of range
+			} else {
+				Window.alert("Please insert a valid number ("
+						+ (int) YEAR_OLDEST_MOVIE + "-" + (int) CURRENT_YEAR
+						+ ")");
+			}
+		} catch (Exception ex) {
+			Window.alert("Please insert a valid number ("
+					+ (int) YEAR_OLDEST_MOVIE + "-" + (int) CURRENT_YEAR + ")");
+		}
+
 		tabPanel.selectTab(0);
 	}
 
@@ -373,10 +360,14 @@ public class Error404 implements EntryPoint {
 	 * standard value. Will be called after the clickhandler event of the
 	 * cleanSelectionButton.
 	 * 
+	 * @Author Christoph Weber
 	 * @Pre cleanSelectionButton must be implemented and clicked
 	 * @post no item of the selection is selected
 	 */
 	private final void cleanSelectionClick() {
+		tbNameTable.setText("");
+		tbYearTable.setText("");
+		
 		/*
 		 * First only one selection is allowed by now then selects the first
 		 * item, first item will be removed from the selection multiple
@@ -425,6 +416,7 @@ public class Error404 implements EntryPoint {
 	 * Cleans the worldmap from entries and shows an empty map again. Will be
 	 * called after the cleanWorldMapButton is clicked.
 	 * 
+	 * @Author Christoph Weber
 	 * @Pre worldmap must be implemented
 	 * @post worldmap must be empty
 	 */
@@ -438,6 +430,7 @@ public class Error404 implements EntryPoint {
 	 * builds an table in a separated tab. Only shows the filtered part of all
 	 * movies in the table. Will be executed after clicking the showAsButton.
 	 * 
+	 * @Author Christoph Weber
 	 * @Pre showAsButton Implemented and connection to database exists
 	 */
 	private final void showButtonClick() {
@@ -523,6 +516,7 @@ public class Error404 implements EntryPoint {
 	 * the data from the database, filters the movies per year and gives the
 	 * back.
 	 * 
+	 * @Author Patrick Muntwyler
 	 * @Pre database connection
 	 * @post worldmap filled
 	 */
@@ -559,42 +553,11 @@ public class Error404 implements EntryPoint {
 		}
 	}
 
-	/*private void fillWorldmap(int selectedYear) {
-		try {
-			if (selectedYear >= (int) YEAR_OLDEST_MOVIE
-					&& selectedYear <= (int) CURRENT_YEAR) {
-
-				dbService.getWorldMapData(selectedYear,
-						new AsyncCallback<ArrayList<DataResultAggregated>>() {
-							@Override
-							public void onFailure(Throwable caught) {
-							}
-
-							@Override
-							public void onSuccess(
-									ArrayList<DataResultAggregated> result) {
-								// refreshWorldMap(result);
-								worldMapInputDataList = result;
-								refreshWorldMap();
-							}
-						});
-
-				// if the given year is out of range
-			} else {
-				Window.alert("Please insert a valid number ("
-						+ (int) YEAR_OLDEST_MOVIE + "-" + (int) CURRENT_YEAR
-						+ ")");
-			}
-		} catch (Exception ex) {
-			Window.alert("Please insert a valid number ("
-					+ (int) YEAR_OLDEST_MOVIE + "-" + (int) CURRENT_YEAR + ")");
-		}
-	}*/
-
 	/**
 	 * Gets the data of the selection, searches the database for the given input
 	 * and returns a table with the selected data.
 	 * 
+	 * @Author Christoph Weber
 	 * @Pre connection to database with data in it
 	 * @param selection
 	 * @post table with output printed
@@ -623,6 +586,7 @@ public class Error404 implements EntryPoint {
 	/**
 	 * Initializes a new horizontal panel and returns it.
 	 * 
+	 * @Author Christoph Weber
 	 * @return HorizontalPanel resultTable
 	 */
 	private HorizontalPanel initializeResultTable() {
@@ -634,7 +598,7 @@ public class Error404 implements EntryPoint {
 
 	/**
 	 * Clears the table and loads a new one with the refreshed data.
-	 * 
+	 * @Author Patrick Muntwyler
 	 * @Pre ResultTable must be implemented
 	 */
 	private void refreshResultTable() {
@@ -652,22 +616,10 @@ public class Error404 implements EntryPoint {
 	}
 
 	/**
-	 * Initializes a worldMapPanel where the worldmap will be sent to
-	 * 
-	 * @return SimpleLayoutPanel worldMapPanel
-	 */
-	private SimpleLayoutPanel initializeWorldMap() {
-		worldMapPanel = new SimpleLayoutPanel();
-		worldMapPanel.setSize(TABPANELWIDTH, TABPANELHEIGHT);
-		refreshWorldMap();
-
-		return worldMapPanel;
-	}
-
-	/**
 	 * Refreshes the worldmap after new selection was chosen. Shows a new map
 	 * with the new given selection.
 	 * 
+	 * @Author Patrick Muntwyler
 	 * @Pre WorldMap must be implemented
 	 */
 	private void refreshWorldMap() {
@@ -681,9 +633,14 @@ public class Error404 implements EntryPoint {
 		};
 		VisualizationUtils.loadVisualizationApi(onLoadCallback, GeoMap.PACKAGE);
 	}
-
-	@SuppressWarnings("deprecation")
-	private SliderBar initializeTimeBar() {
+	
+	/**
+	 * Creates a new Timebar object, adds a change listener to detect changes made on the timebar
+	 * 
+	 * @Author Patrick Muntwyler
+	 * @Pre WorldMap must be implemented
+	 */
+	private void initializeTimeBar() {
 		timeBar.setStepSize(1.0);
 		timeBar.setCurrentValue(2015.0);
 		timeBar.setNumTicks((int) (CURRENT_YEAR - YEAR_OLDEST_MOVIE));
@@ -692,10 +649,32 @@ public class Error404 implements EntryPoint {
 			public void onChange(Widget sender) {				
 				tbYearWorldmap.setText((int) timeBar.getCurrentValue() + "");
 				fillWorldmap();
-				//fillWorldmap((int) timeBar.getCurrentValue());
 			}
 		});
-		// RootPanel.get().add(timeBar);
-		return timeBar;
+		worldMapVP.add(timeBar);
+	}
+ 
+	/**
+	 * Creates a new Timebar object, adds a change listener to detect changes made on the timebar
+	 * 
+	 * @Author Christoph Weber
+	 * @pre Mainpanel was initialized
+	 * @post Worldmap and Timebar were initialized and added to the mainpanel
+	 */
+	private void initializeWorldMapAndTimeBar(){
+		worldMapPanel = new SimpleLayoutPanel();
+		worldMapPanel.setSize(TABPANELWIDTH, TABPANELHEIGHT);
+		Runnable onLoadCallback = new Runnable() {
+			public void run() {
+				WorldMap map = new WorldMap(worldMapInputDataList,
+						TABPANELWIDTH, TABPANELHEIGHT);
+				worldMapPanel.setWidget(map.getWorldMap());
+				map.getWorldMap().draw(map.getDataTable(), map.getOptions());
+				worldMapVP.add(worldMapPanel);
+				initializeTimeBar();
+			}
+		};
+		VisualizationUtils.loadVisualizationApi(onLoadCallback, GeoMap.PACKAGE);
+
 	}
 }

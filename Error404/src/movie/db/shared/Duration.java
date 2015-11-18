@@ -1,6 +1,7 @@
 package movie.db.shared;
 /**
  * Enum to sort duration in 4 classes.
+ * @Author Christoph Weber
  */
 public enum Duration {
 	Short,

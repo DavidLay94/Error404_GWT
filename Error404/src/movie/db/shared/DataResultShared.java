@@ -3,8 +3,9 @@ package movie.db.shared;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-/*
+/**
  * This class provides the objects which are visualized in the table.
+ * @Author Christoph Weber
  */
 @SuppressWarnings("serial")
 public class DataResultShared implements Serializable{

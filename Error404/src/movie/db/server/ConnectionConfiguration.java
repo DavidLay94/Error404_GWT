@@ -4,8 +4,9 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-/*
+/**
  * This class offers a database connection through a static method.
+ * @Author Lukas Enggist
  */
 public class ConnectionConfiguration {
 	/**
@@ -14,13 +15,13 @@ public class ConnectionConfiguration {
 	 * @throws ClassNotFoundException
 	 * @throws SQLException
 	 * 
+	 * @Author Lukas Enggist
 	 * @pre none
 	 * @post connection was established
 	 */
 	public static Connection getConnection() throws ClassNotFoundException,
 			SQLException {
-		Connection connection = null;
-		//Class.forName("com.mysql.jdbc.GoogleDriver");
+		Connection connection = null;		
 		Class.forName("com.mysql.jdbc.Driver");
 		connection = DriverManager
 				.getConnection(

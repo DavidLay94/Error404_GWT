@@ -25,9 +25,9 @@ public class Query extends RemoteServiceServlet implements MyService {
 	 * Generates a Map<Integer, DataResultShared> with the movie-ID as key and
 	 * the data-result with holding the metadata of the different movies.
 	 * 
+	 * @Author Christoph Weber
 	 * @pre a Selection object must have been created. selection != null
-	 * @param Selection
-	 *            selection
+	 * @param Selection selection
 	 * @post Map<Integer, DataResultShared> contains every movie with it's
 	 *       metadata corresponding to the selection
 	 */
@@ -161,6 +161,7 @@ public class Query extends RemoteServiceServlet implements MyService {
 	 * Generates a ArrayList<DataResultAggregated> which is used as input to
 	 * show the number of movies per country on an interactive worldmap.
 	 * 
+	 * @Author Christoph Weber
 	 * @pre year must be a valid int
 	 * @param int selectedYear
 	 * @post ArrayList<DataResultAggregated> contains every country with the
@@ -211,6 +212,7 @@ public class Query extends RemoteServiceServlet implements MyService {
 	 * Generates a ArrayList<String> which is used to fill the
 	 * selection-listboxes in the UI.
 	 * 
+	 * @Author Christoph Weber
 	 * @pre Input "column" must be a valid column in the database-table
 	 * @param String
 	 *            column
@@ -264,6 +266,7 @@ public class Query extends RemoteServiceServlet implements MyService {
 	 * Generates a String in the correct syntax which can be put in the
 	 * WHERE-clause of an SQL-query
 	 * 
+	 * @Author Christoph Weber
 	 * @pre every Input (including null) of type Selection is accepted.
 	 * @param Selection
 	 *            selection
@@ -342,6 +345,7 @@ public class Query extends RemoteServiceServlet implements MyService {
 	 * String.join() in Java 1.8) Also replaces apostroph with dual apostroph to
 	 * prevent SQL Exceptions
 	 * 
+	 * @Author Christoph Weber
 	 * @pre every Input (including null) of type Selection is accepted.
 	 * @param String
 	 *            separator, ArrayList<String> aList *

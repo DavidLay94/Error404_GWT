@@ -14,10 +14,11 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
 /**
  * Service Interface for getting the data from the server
- * to the client side code.  
+ * to the client side code. 
+ *  
+ * @Author Christoph Weber
  */
 public interface MyService extends RemoteService {
-	//public String myMethod(String s);
 	public Map<Integer, DataResultShared> getFilteredData(Selection selection);
 	public ArrayList<DataResultAggregated> getWorldMapData(int selectedYear);
 	public ArrayList<String> getColumnEntries(String column);

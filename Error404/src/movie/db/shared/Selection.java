@@ -3,9 +3,11 @@ package movie.db.shared;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-/*
+/**
  * This class is used to put together the selections made by the user on the GUI 
  * so they are easily transferable to the server side.
+ * 
+ * @Author Christoph Weber
  */
 @SuppressWarnings("serial")
 public class Selection implements Serializable {
