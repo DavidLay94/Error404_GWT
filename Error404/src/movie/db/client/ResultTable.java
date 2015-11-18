@@ -26,7 +26,7 @@ public class ResultTable {
 		dataTable = generateDataTable(result);
 		options = Options.create();
 		options.setPage(Policy.ENABLE);
-		options.setPageSize(20);
+		options.setPageSize(15);
 		resultTable = new Table();
 	}
 

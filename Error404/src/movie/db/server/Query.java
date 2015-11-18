@@ -180,12 +180,21 @@ public class Query extends RemoteServiceServlet implements MyService {
 			try {
 				statement = connection.createStatement();
 				ResultSet queryResult = statement.executeQuery(sqlQuery);
-
+				
+				Map<String, Integer> aggregatedCountries = new HashMap<String, Integer>();
 				while (queryResult.next()) {
+					for(String singleCountry : queryResult.getString("country").split(",")){
+						if(aggregatedCountries.containsKey(singleCountry)){
+							aggregatedCountries.put(singleCountry,aggregatedCountries.get(singleCountry) + queryResult.getInt("amount"));
+						}else{
+							aggregatedCountries.put(singleCountry,queryResult.getInt("amount"));
+						}
+					}	
+				}
+				for(Map.Entry<String,Integer> kvp : aggregatedCountries.entrySet()){
 					DataResultAggregated dataresult = new DataResultAggregated();
-					dataresult.setCountryName(queryResult.getString("country"));
-					dataresult.setAggregatedNumberOfMovies(queryResult
-							.getInt("amount"));
+					dataresult.setCountryName(kvp.getKey());
+					dataresult.setAggregatedNumberOfMovies(kvp.getValue());
 					resultArray.add(dataresult);
 				}
 			} catch (SQLException e) {
@@ -199,13 +208,10 @@ public class Query extends RemoteServiceServlet implements MyService {
 					connection.close();
 				} catch (Exception e) {
 				}
-
-				return resultArray;
 			}
 		} catch (Exception ex) {
-
-			return resultArray;
 		}
+		return resultArray;
 	}
 
 	/**

@@ -21,13 +21,17 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.ChangeListener;
+import com.google.gwt.user.client.ui.DisclosurePanel;
+import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.RootPanel;
@@ -36,6 +40,7 @@ import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment.HorizontalAlignmentConstant;
 import com.google.gwt.visualization.client.VisualizationUtils;
 import com.google.gwt.visualization.client.visualizations.GeoMap;
 import com.google.gwt.visualization.client.visualizations.Table;
@@ -58,9 +63,15 @@ public class Error404 implements EntryPoint {
 	}
 
 	/* Class Variables */
-	private VerticalPanel mainPanel = new VerticalPanel();
+	private HorizontalPanel mainPanel = new HorizontalPanel();
 	private SimpleLayoutPanel worldMapPanel;
 	private HorizontalPanel resultTablePanel;
+	
+	private VerticalPanel rootPanel = new VerticalPanel();
+	private VerticalPanel advertisementPanel1 = new VerticalPanel();
+	private VerticalPanel advertisementPanel2 = new VerticalPanel();
+	private DisclosurePanel disclosureSourcePanel = new DisclosurePanel("Source",false);
+	
 	private ListBox genreListBox = new ListBox();
 	private ListBox countryListBox = new ListBox();
 	private ListBox langListBox = new ListBox();
@@ -82,7 +93,8 @@ public class Error404 implements EntryPoint {
 	private final static double YEAR_OLDEST_MOVIE = 1888;
 	private final static double CURRENT_YEAR = 2015; 
 	private final static String TABPANELHEIGHT = "540px";
-	private final static String TABPANELWIDTH = "1200px";
+	private final static String TABPANELWIDTH = "1400px";
+	private final static String MAINPANELHEIGHT = "690px";
 
 	private final static Logger logger = Logger.getLogger("Error404");
 	private VerticalPanel worldMapVP;
@@ -92,20 +104,16 @@ public class Error404 implements EntryPoint {
 	 * methods in its body. These methods initialize parts of the mainPanel as
 	 * well. Buttons, panels etc. are visible and working at the end of the
 	 * method.
-	 * @Author Christoph Weber
+	 * @author Christoph Weber
 	 * @Pre EntryPoint class must be loaded correctly
 	 */
 	private void initializePanels() {
-		mainPanel.setSize("100vw", "82vh");
-		mainPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
-		mainPanel.setSpacing(5);
-		String introString = "Welcome to our Movie Database!\n"
-				+ "Enter a year and see the number of movies in the different countries in the \"Worldmap\" panel.\n"
-				+ "Switch to the tab \"Table\" and perform more detailed research based on the offered criteria.";
+		//mainPanel.setSize("100vw", "82vh");
+		//rootPanel.setSize("100vw", "82vh");
+		//mainPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+		rootPanel.setSpacing(5);
 
-		Label introductionText = new HTML(new SafeHtmlBuilder()
-				.appendEscapedLines(introString).toSafeHtml());
-		mainPanel.add(introductionText);
+		//mainPanel.add(introductionText);
 
 		// VerticalPanel selectionPanel = new VerticalPanel();
 
@@ -121,8 +129,6 @@ public class Error404 implements EntryPoint {
 		initializeWorldMapCriteriaTable(worldMapCriteriaTable);
 		worldMapVP = new VerticalPanel();
 		worldMapVP.add(worldMapCriteriaTable);
-		//worldMapVP.add(initializeWorldMap());
-		//worldMapVP.add(initializeTimeBar());
 		initializeWorldMapAndTimeBar();
 		
 		
@@ -131,14 +137,46 @@ public class Error404 implements EntryPoint {
 		tableVP.add(selectionCriteriaTable);
 		tableVP.add(initializeResultTable());
 
-		tabPanel.setSize(TABPANELWIDTH, TABPANELHEIGHT);
+		//tabPanel.setSize(TABPANELWIDTH, TABPANELHEIGHT);
+		tabPanel.setSize("1415px", TABPANELHEIGHT);
+		//tabPanel.setWidth("1215px");
 		tabPanel.add(worldMapVP, "Worldmap");
 		tabPanel.add(tableVP, "Table");
-		tabPanel.selectTab(0);
+		tabPanel.selectTab(0);	
+		
+		Label lb = new Label();
+		lb.setText("Movie Database by Error 404");
+		lb.addStyleName("customHeader");
+		initializeAdvertPanels();
+		
+		rootPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+		rootPanel.add(lb);
+		
+		String introString = "Welcome to our Movie Database!\n"
+				+ "Enter a year and see the number of movies in the different countries in the \"Worldmap\" panel.\n"
+				+ "Switch to the tab \"Table\" and perform more detailed research based on the offered criteria.";
+		Label introductionText = new HTML(new SafeHtmlBuilder()
+				.appendEscapedLines(introString).toSafeHtml());		
+		rootPanel.add(introductionText);
+		
+		mainPanel.setHeight(MAINPANELHEIGHT);
+		mainPanel.add(advertisementPanel1);		
 		mainPanel.add(tabPanel);
-
+		mainPanel.add(advertisementPanel2);
+		rootPanel.add(mainPanel);
+		
+		initializeSourcePanel();
+		rootPanel.add(disclosureSourcePanel);
+		/*rootPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+		rootPanel.setVerticalAlignment(HasVerticalAlignment.ALIGN_BOTTOM);
+		rootPanel.add(lb,DockPanel.NORTH);
+		rootPanel.add(mainPanel,DockPanel.CENTER);
+		rootPanel.add(advertisementPanel1,DockPanel.WEST);
+		rootPanel.add(advertisementPanel2,DockPanel.EAST);
+		
+		rootPanel.addStyleName("customCenter");*/
 		// Associate the Main panel with the HTML host page.
-		RootPanel.get("mainPage").add(mainPanel);
+		RootPanel.get("mainPage").add(rootPanel);
 	}
 
 	/**
@@ -146,7 +184,7 @@ public class Error404 implements EntryPoint {
 	 * selection criteria boxes to a flextable on the main page and makes it
 	 * visible.
 	 * 	 
-	 * @Author Christoph Weber
+	 * @author Christoph Weber
 	 * @Pre selectionCriteria table must be implemented
 	 * @param selectionCriteriaTable
 	 */
@@ -240,7 +278,7 @@ public class Error404 implements EntryPoint {
 	 * textbox and three buttons to the flextable. The flextable is localized
 	 * underneath selection part of the website.
 	 * 
-	 * @Author Christoph Weber
+	 * @author Christoph Weber
 	 * @Pre Parameters have to be implemented
 	 * @param worldMapCriteriaTable
 	 */
@@ -274,7 +312,7 @@ public class Error404 implements EntryPoint {
 	 * Initializes one selection Box with the entries from the database by
 	 * making an async call to Query.java class
 	 * 
-	 * @Author Christoph Weber
+	 * @author Christoph Weber
 	 * @Pre data in database and connection
 	 * @param selectionListBox
 	 * @param column
@@ -312,7 +350,7 @@ public class Error404 implements EntryPoint {
 	/**
 	 * Initializes one selection Box with all the Entries in the Enum "Duration"
 	 * 
-	 * @Author Christoph Weber
+	 * @author Christoph Weber
 	 * @Pre Enum is not empty
 	 */
 	private void initializeDurationSelListBox() {
@@ -330,7 +368,7 @@ public class Error404 implements EntryPoint {
 	 * After the click on the showMapButton this method is called. It calls the
 	 * method fillWorldmap and selects the tab with the worldmap on it.
 	 * 
-	 * @Author Patrick Muntwyler
+	 * @author Patrick Muntwyler
 	 * @Pre showMapButton must be implemented and clicked
 	 */
 	private final void showWorldMapClick() {
@@ -360,7 +398,7 @@ public class Error404 implements EntryPoint {
 	 * standard value. Will be called after the clickhandler event of the
 	 * cleanSelectionButton.
 	 * 
-	 * @Author Christoph Weber
+	 * @author Christoph Weber
 	 * @Pre cleanSelectionButton must be implemented and clicked
 	 * @post no item of the selection is selected
 	 */
@@ -416,7 +454,7 @@ public class Error404 implements EntryPoint {
 	 * Cleans the worldmap from entries and shows an empty map again. Will be
 	 * called after the cleanWorldMapButton is clicked.
 	 * 
-	 * @Author Christoph Weber
+	 * @author Christoph Weber
 	 * @Pre worldmap must be implemented
 	 * @post worldmap must be empty
 	 */
@@ -430,7 +468,7 @@ public class Error404 implements EntryPoint {
 	 * builds an table in a separated tab. Only shows the filtered part of all
 	 * movies in the table. Will be executed after clicking the showAsButton.
 	 * 
-	 * @Author Christoph Weber
+	 * @author Christoph Weber
 	 * @Pre showAsButton Implemented and connection to database exists
 	 */
 	private final void showButtonClick() {
@@ -516,7 +554,7 @@ public class Error404 implements EntryPoint {
 	 * the data from the database, filters the movies per year and gives the
 	 * back.
 	 * 
-	 * @Author Patrick Muntwyler
+	 * @author Patrick Muntwyler
 	 * @Pre database connection
 	 * @post worldmap filled
 	 */
@@ -557,7 +595,7 @@ public class Error404 implements EntryPoint {
 	 * Gets the data of the selection, searches the database for the given input
 	 * and returns a table with the selected data.
 	 * 
-	 * @Author Christoph Weber
+	 * @author Christoph Weber
 	 * @Pre connection to database with data in it
 	 * @param selection
 	 * @post table with output printed
@@ -586,7 +624,7 @@ public class Error404 implements EntryPoint {
 	/**
 	 * Initializes a new horizontal panel and returns it.
 	 * 
-	 * @Author Christoph Weber
+	 * @author Christoph Weber
 	 * @return HorizontalPanel resultTable
 	 */
 	private HorizontalPanel initializeResultTable() {
@@ -598,7 +636,7 @@ public class Error404 implements EntryPoint {
 
 	/**
 	 * Clears the table and loads a new one with the refreshed data.
-	 * @Author Patrick Muntwyler
+	 * @author Patrick Muntwyler
 	 * @Pre ResultTable must be implemented
 	 */
 	private void refreshResultTable() {
@@ -619,7 +657,7 @@ public class Error404 implements EntryPoint {
 	 * Refreshes the worldmap after new selection was chosen. Shows a new map
 	 * with the new given selection.
 	 * 
-	 * @Author Patrick Muntwyler
+	 * @author Patrick Muntwyler
 	 * @Pre WorldMap must be implemented
 	 */
 	private void refreshWorldMap() {
@@ -637,7 +675,7 @@ public class Error404 implements EntryPoint {
 	/**
 	 * Creates a new Timebar object, adds a change listener to detect changes made on the timebar
 	 * 
-	 * @Author Patrick Muntwyler
+	 * @author Patrick Muntwyler
 	 * @Pre WorldMap must be implemented
 	 */
 	private void initializeTimeBar() {
@@ -657,7 +695,7 @@ public class Error404 implements EntryPoint {
 	/**
 	 * Creates a new Timebar object, adds a change listener to detect changes made on the timebar
 	 * 
-	 * @Author Christoph Weber
+	 * @author Christoph Weber
 	 * @pre Mainpanel was initialized
 	 * @post Worldmap and Timebar were initialized and added to the mainpanel
 	 */
@@ -676,5 +714,56 @@ public class Error404 implements EntryPoint {
 		};
 		VisualizationUtils.loadVisualizationApi(onLoadCallback, GeoMap.PACKAGE);
 
+	}
+	
+	/**
+	 * Initializes the two advertPanels and adds pictures to it.
+	 * The Pictures have all the same sizes and are saved under the images
+	 * folder in war.
+	 * 
+	 * @author David Lay 
+	 * @Pre advertisement panels are implemented
+	 * @post pictures shown on the website 
+	 */
+	private void initializeAdvertPanels(){		
+		//initializes new images
+		Image img1 = new Image("Images/header_advertise_hor.jpg");
+		img1.setHeight(MAINPANELHEIGHT);
+		Image img2 = new Image("Images/header_advertise_hor.jpg");		
+		img2.setHeight(MAINPANELHEIGHT);
+
+		//adds the images to the different panels
+		advertisementPanel1.setWidth("5vw");
+		advertisementPanel1.add(img1);
+		advertisementPanel2.setWidth("5vw");
+		advertisementPanel2.add(img2);
+	}
+	
+	/**
+	 * Initializes the source panel and adds an anchor as well as a new label to it.
+	 * 
+	 * @author David Lay 
+	 * @Pre SourcePanel must be implemented
+	 * @post anchor sends to creativecommons website and source panel can
+	 * 		 be opened and closed at any time
+	 */
+	private void initializeSourcePanel(){
+		VerticalPanel sourcePanel = new VerticalPanel();
+		
+		//new anchor to the creative commons website
+		Anchor anchor = new Anchor("Commons Attribution-ShareAlike License",
+				"http://creativecommons.org/licenses/by-sa/4.0/");
+		
+		//opens link in a new tab
+		anchor.setTarget("_blank");
+		
+		// adds simple text to the source panel
+		sourcePanel.add(new Label("Source: David Bamman, Brendan O'Connor and Noah Smith, "
+				+ "\"Learning Latent Personas of Film Characters,\" in: Proceedings "
+				+ "of the Annual Meeting of the Association for Computational Linguistics (ACL 2013), Sofia, Bulgaria, August 2013."));
+		
+		sourcePanel.add(anchor);		
+		disclosureSourcePanel.add(sourcePanel);
+		disclosureSourcePanel.setOpen(true);
 	}
 }
