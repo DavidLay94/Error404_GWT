@@ -22,5 +22,7 @@ public interface MyServiceAsync {
 	public void getWorldMapData(int selectedYear, AsyncCallback<ArrayList<DataResultAggregated>> asyncCallback);
 	
 	public void getColumnEntries(String column, AsyncCallback<ArrayList<String>> callback);
+	
+	public void getBarChartData(String country, String genre, int yearFrom, int yearTo, AsyncCallback<Map<Integer,Integer>> callback);
 }
 

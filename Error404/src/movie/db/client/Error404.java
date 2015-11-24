@@ -1,5 +1,6 @@
 package movie.db.client;
 
+import java.io.Console;
 import java.util.ArrayList;
 import java.util.EventListener;
 import java.util.HashMap;
@@ -66,12 +67,13 @@ public class Error404 implements EntryPoint {
 	private HorizontalPanel mainPanel = new HorizontalPanel();
 	private SimpleLayoutPanel worldMapPanel;
 	private HorizontalPanel resultTablePanel;
-	
+
 	private VerticalPanel rootPanel = new VerticalPanel();
 	private VerticalPanel advertisementPanel1 = new VerticalPanel();
 	private VerticalPanel advertisementPanel2 = new VerticalPanel();
-	private DisclosurePanel disclosureSourcePanel = new DisclosurePanel("Source",false);
-	
+	private DisclosurePanel disclosureSourcePanel = new DisclosurePanel(
+			"Source", false);
+
 	private ListBox genreListBox = new ListBox();
 	private ListBox countryListBox = new ListBox();
 	private ListBox langListBox = new ListBox();
@@ -91,35 +93,35 @@ public class Error404 implements EntryPoint {
 			});
 
 	private final static double YEAR_OLDEST_MOVIE = 1888;
-	private final static double CURRENT_YEAR = 2015; 
+	private final static double CURRENT_YEAR = 2015;
 	private final static String TABPANELHEIGHT = "540px";
 	private final static String TABPANELWIDTH = "1400px";
 	private final static String MAINPANELHEIGHT = "690px";
 
 	private final static Logger logger = Logger.getLogger("Error404");
 	private VerticalPanel worldMapVP;
-	
+
 	/**
 	 * Initializes most of the important panels and buttons by calling smaller
 	 * methods in its body. These methods initialize parts of the mainPanel as
 	 * well. Buttons, panels etc. are visible and working at the end of the
 	 * method.
+	 * 
 	 * @author Christoph Weber
 	 * @Pre EntryPoint class must be loaded correctly
 	 */
 	private void initializePanels() {
-		//mainPanel.setSize("100vw", "82vh");
-		//rootPanel.setSize("100vw", "82vh");
-		//mainPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+		// mainPanel.setSize("100vw", "82vh");
+		// rootPanel.setSize("100vw", "82vh");
+		// mainPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+		showYearsBarChartTest();
 		rootPanel.setSpacing(5);
-
-		//mainPanel.add(introductionText);
+		// mainPanel.add(introductionText);
 
 		// VerticalPanel selectionPanel = new VerticalPanel();
 
 		VerticalPanel selectionCriteriaTable = new VerticalPanel();
 		FlexTable worldMapCriteriaTable = new FlexTable();
-
 
 		initializeSelectionListBox(genreListBox, "genre");
 		initializeSelectionListBox(countryListBox, "country");
@@ -130,51 +132,52 @@ public class Error404 implements EntryPoint {
 		worldMapVP = new VerticalPanel();
 		worldMapVP.add(worldMapCriteriaTable);
 		initializeWorldMapAndTimeBar();
-		
-		
+
 		initializeSelectionCriteriaTable(selectionCriteriaTable);
 		VerticalPanel tableVP = new VerticalPanel();
 		tableVP.add(selectionCriteriaTable);
 		tableVP.add(initializeResultTable());
 
-		//tabPanel.setSize(TABPANELWIDTH, TABPANELHEIGHT);
+		// tabPanel.setSize(TABPANELWIDTH, TABPANELHEIGHT);
 		tabPanel.setSize("1415px", TABPANELHEIGHT);
-		//tabPanel.setWidth("1215px");
+		// tabPanel.setWidth("1215px");
 		tabPanel.add(worldMapVP, "Worldmap");
 		tabPanel.add(tableVP, "Table");
-		tabPanel.selectTab(0);	
-		
+		tabPanel.selectTab(0);
+
 		Label lb = new Label();
 		lb.setText("Movie Database by Error 404");
 		lb.addStyleName("customHeader");
 		initializeAdvertPanels();
-		
+
 		rootPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
 		rootPanel.add(lb);
-		
+
 		String introString = "Welcome to our Movie Database!\n"
 				+ "Enter a year and see the number of movies in the different countries in the \"Worldmap\" panel.\n"
 				+ "Switch to the tab \"Table\" and perform more detailed research based on the offered criteria.";
 		Label introductionText = new HTML(new SafeHtmlBuilder()
-				.appendEscapedLines(introString).toSafeHtml());		
+				.appendEscapedLines(introString).toSafeHtml());
 		rootPanel.add(introductionText);
-		
+
 		mainPanel.setHeight(MAINPANELHEIGHT);
-		mainPanel.add(advertisementPanel1);		
+		mainPanel.add(advertisementPanel1);
 		mainPanel.add(tabPanel);
 		mainPanel.add(advertisementPanel2);
 		rootPanel.add(mainPanel);
-		
+
 		initializeSourcePanel();
 		rootPanel.add(disclosureSourcePanel);
-		/*rootPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
-		rootPanel.setVerticalAlignment(HasVerticalAlignment.ALIGN_BOTTOM);
-		rootPanel.add(lb,DockPanel.NORTH);
-		rootPanel.add(mainPanel,DockPanel.CENTER);
-		rootPanel.add(advertisementPanel1,DockPanel.WEST);
-		rootPanel.add(advertisementPanel2,DockPanel.EAST);
-		
-		rootPanel.addStyleName("customCenter");*/
+		/*
+		 * rootPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+		 * rootPanel.setVerticalAlignment(HasVerticalAlignment.ALIGN_BOTTOM);
+		 * rootPanel.add(lb,DockPanel.NORTH);
+		 * rootPanel.add(mainPanel,DockPanel.CENTER);
+		 * rootPanel.add(advertisementPanel1,DockPanel.WEST);
+		 * rootPanel.add(advertisementPanel2,DockPanel.EAST);
+		 * 
+		 * rootPanel.addStyleName("customCenter");
+		 */
 		// Associate the Main panel with the HTML host page.
 		RootPanel.get("mainPage").add(rootPanel);
 	}
@@ -183,7 +186,7 @@ public class Error404 implements EntryPoint {
 	 * Initializes a table for the selection part of the website. Adds all
 	 * selection criteria boxes to a flextable on the main page and makes it
 	 * visible.
-	 * 	 
+	 * 
 	 * @author Christoph Weber
 	 * @Pre selectionCriteria table must be implemented
 	 * @param selectionCriteriaTable
@@ -282,12 +285,11 @@ public class Error404 implements EntryPoint {
 	 * @Pre Parameters have to be implemented
 	 * @param worldMapCriteriaTable
 	 */
-	private void initializeWorldMapCriteriaTable(
-			FlexTable worldMapCriteriaTable) {
+	private void initializeWorldMapCriteriaTable(FlexTable worldMapCriteriaTable) {
 		worldMapCriteriaTable.setText(0, 0, "Year:");
 		tbYearWorldmap.setWidth("4em");
 		worldMapCriteriaTable.setWidget(1, 0, tbYearWorldmap);
-		
+
 		Button showMapButton = new Button();
 		Button cleanWorldMapButton = new Button();
 		showMapButton.addClickHandler(new ClickHandler() {
@@ -297,14 +299,14 @@ public class Error404 implements EntryPoint {
 		});
 		showMapButton.setText("Show Year on Worldmap");
 		worldMapCriteriaTable.setWidget(1, 1, showMapButton);
-		
+
 		cleanWorldMapButton.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
 				cleanWorldMapClick();
 			}
 		});
 		cleanWorldMapButton.setText("Clean Worldmap");
-	
+
 		worldMapCriteriaTable.setWidget(1, 2, cleanWorldMapButton);
 	}
 
@@ -372,7 +374,7 @@ public class Error404 implements EntryPoint {
 	 * @Pre showMapButton must be implemented and clicked
 	 */
 	private final void showWorldMapClick() {
-		//fillWorldmap();
+		// fillWorldmap();
 		try {
 			int selectedYear = Integer.parseInt(tbYearWorldmap.getText());
 			if (selectedYear >= (int) YEAR_OLDEST_MOVIE
@@ -405,7 +407,7 @@ public class Error404 implements EntryPoint {
 	private final void cleanSelectionClick() {
 		tbNameTable.setText("");
 		tbYearTable.setText("");
-		
+
 		/*
 		 * First only one selection is allowed by now then selects the first
 		 * item, first item will be removed from the selection multiple
@@ -514,7 +516,7 @@ public class Error404 implements EntryPoint {
 
 		Selection selection = new Selection(); // makes a new selection object
 		selection.setSelectedMovieName(tbNameTable.getText());
-		
+
 		if (tbYearTable.getText().length() > 0) {
 			try {
 				int selectedYear = Integer.parseInt(tbYearTable.getText());
@@ -636,6 +638,7 @@ public class Error404 implements EntryPoint {
 
 	/**
 	 * Clears the table and loads a new one with the refreshed data.
+	 * 
 	 * @author Patrick Muntwyler
 	 * @Pre ResultTable must be implemented
 	 */
@@ -671,9 +674,10 @@ public class Error404 implements EntryPoint {
 		};
 		VisualizationUtils.loadVisualizationApi(onLoadCallback, GeoMap.PACKAGE);
 	}
-	
+
 	/**
-	 * Creates a new Timebar object, adds a change listener to detect changes made on the timebar
+	 * Creates a new Timebar object, adds a change listener to detect changes
+	 * made on the timebar
 	 * 
 	 * @author Patrick Muntwyler
 	 * @Pre WorldMap must be implemented
@@ -684,22 +688,23 @@ public class Error404 implements EntryPoint {
 		timeBar.setNumTicks((int) (CURRENT_YEAR - YEAR_OLDEST_MOVIE));
 		timeBar.setNumLabels(13);
 		timeBar.addChangeListener(new ChangeListener() {
-			public void onChange(Widget sender) {				
+			public void onChange(Widget sender) {
 				tbYearWorldmap.setText((int) timeBar.getCurrentValue() + "");
 				fillWorldmap();
 			}
 		});
 		worldMapVP.add(timeBar);
 	}
- 
+
 	/**
-	 * Creates a new Timebar object, adds a change listener to detect changes made on the timebar
+	 * Creates a new Timebar object, adds a change listener to detect changes
+	 * made on the timebar
 	 * 
 	 * @author Christoph Weber
 	 * @pre Mainpanel was initialized
 	 * @post Worldmap and Timebar were initialized and added to the mainpanel
 	 */
-	private void initializeWorldMapAndTimeBar(){
+	private void initializeWorldMapAndTimeBar() {
 		worldMapPanel = new SimpleLayoutPanel();
 		worldMapPanel.setSize(TABPANELWIDTH, TABPANELHEIGHT);
 		Runnable onLoadCallback = new Runnable() {
@@ -715,55 +720,81 @@ public class Error404 implements EntryPoint {
 		VisualizationUtils.loadVisualizationApi(onLoadCallback, GeoMap.PACKAGE);
 
 	}
-	
+
 	/**
-	 * Initializes the two advertPanels and adds pictures to it.
-	 * The Pictures have all the same sizes and are saved under the images
-	 * folder in war.
+	 * Initializes the two advertPanels and adds pictures to it. The Pictures
+	 * have all the same sizes and are saved under the images folder in war.
 	 * 
-	 * @author David Lay 
+	 * @author David Lay
 	 * @Pre advertisement panels are implemented
-	 * @post pictures shown on the website 
+	 * @post pictures shown on the website
 	 */
-	private void initializeAdvertPanels(){		
-		//initializes new images
+	private void initializeAdvertPanels() {
+		// initializes new images
 		Image img1 = new Image("Images/header_advertise_hor.jpg");
 		img1.setHeight(MAINPANELHEIGHT);
-		Image img2 = new Image("Images/header_advertise_hor.jpg");		
+		Image img2 = new Image("Images/header_advertise_hor.jpg");
 		img2.setHeight(MAINPANELHEIGHT);
 
-		//adds the images to the different panels
+		// adds the images to the different panels
 		advertisementPanel1.setWidth("5vw");
 		advertisementPanel1.add(img1);
 		advertisementPanel2.setWidth("5vw");
 		advertisementPanel2.add(img2);
 	}
-	
+
 	/**
-	 * Initializes the source panel and adds an anchor as well as a new label to it.
+	 * Initializes the source panel and adds an anchor as well as a new label to
+	 * it.
 	 * 
-	 * @author David Lay 
+	 * @author David Lay
 	 * @Pre SourcePanel must be implemented
-	 * @post anchor sends to creativecommons website and source panel can
-	 * 		 be opened and closed at any time
+	 * @post anchor sends to creativecommons website and source panel can be
+	 *       opened and closed at any time
 	 */
-	private void initializeSourcePanel(){
+	private void initializeSourcePanel() {
 		VerticalPanel sourcePanel = new VerticalPanel();
-		
-		//new anchor to the creative commons website
+
+		// new anchor to the creative commons website
 		Anchor anchor = new Anchor("Commons Attribution-ShareAlike License",
 				"http://creativecommons.org/licenses/by-sa/4.0/");
-		
-		//opens link in a new tab
+
+		// opens link in a new tab
 		anchor.setTarget("_blank");
-		
+
 		// adds simple text to the source panel
-		sourcePanel.add(new Label("Source: David Bamman, Brendan O'Connor and Noah Smith, "
-				+ "\"Learning Latent Personas of Film Characters,\" in: Proceedings "
-				+ "of the Annual Meeting of the Association for Computational Linguistics (ACL 2013), Sofia, Bulgaria, August 2013."));
-		
-		sourcePanel.add(anchor);		
+		sourcePanel
+				.add(new Label(
+						"Source: David Bamman, Brendan O'Connor and Noah Smith, "
+								+ "\"Learning Latent Personas of Film Characters,\" in: Proceedings "
+								+ "of the Annual Meeting of the Association for Computational Linguistics (ACL 2013), Sofia, Bulgaria, August 2013."));
+
+		sourcePanel.add(anchor);
 		disclosureSourcePanel.add(sourcePanel);
 		disclosureSourcePanel.setOpen(true);
+	}
+
+	private void showYearsBarChartTest() {
+
+		dbService.getBarChartData("China", null, 2004, 2005,
+				new AsyncCallback<Map<Integer, Integer>>() {
+					@Override
+					public void onFailure(Throwable caught) {
+						logger.log(Level.SEVERE, caught.getMessage());
+
+						for (StackTraceElement t : caught.getStackTrace()) {
+							logger.log(Level.SEVERE, t.toString());
+						}
+					}
+
+					@Override
+					public void onSuccess(Map<Integer, Integer> result) {
+						for (Map.Entry<Integer, Integer> kvp : result
+								.entrySet()) {
+							String s = "year: " + kvp.getKey() + " amount: " + kvp.getValue();
+							logger.log(Level.SEVERE, s);
+						}
+					}
+				});
 	}
 }

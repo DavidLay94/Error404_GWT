@@ -27,7 +27,8 @@ public class Query extends RemoteServiceServlet implements MyService {
 	 * 
 	 * @Author Christoph Weber
 	 * @pre a Selection object must have been created. selection != null
-	 * @param Selection selection
+	 * @param Selection
+	 *            selection
 	 * @post Map<Integer, DataResultShared> contains every movie with it's
 	 *       metadata corresponding to the selection
 	 */
@@ -158,6 +159,73 @@ public class Query extends RemoteServiceServlet implements MyService {
 	}
 
 	/**
+	 * Generates a Map<Integer, DataResultShared> with the movie-ID as key and
+	 * the data-result with holding the metadata of the different movies.
+	 * 
+	 * @Author Christoph Weber
+	 * @pre country and the timespan must be given
+	 * @param String country, String genre,	int yearFrom, int yearTo
+	 * @post Map<Integer, Integer> contains the years with the corresponding number of films in that year
+	 */
+	@SuppressWarnings("finally")
+	public Map<Integer, Integer> getBarChartData(String country, String genre,
+			int yearFrom, int yearTo) {
+		Map<Integer, Integer> dataResultMap = new HashMap<Integer, Integer>();
+
+		String genreNullable = genre != null ? "AND genre REGEXP '(^|,)" + genre + "($|,)' "
+				: " ";
+
+		// logger.log(Level.INFO, sqlClause);
+		try {
+			Connection connection = ConnectionConfiguration.getConnection();
+			Statement statement = null;
+
+			try {
+				statement = connection.createStatement();
+
+				String sqlQuery = "SELECT year, count(*) as \"amount\" FROM moviesAllInOne WHERE 1 = 1 AND year >= "
+						+ yearFrom
+						+ " AND year <= "
+						+ yearTo
+						+ " AND country REGEXP '(^|,)"
+						+ country
+						+ "($|,)' "
+						+ genreNullable
+						+ "group by year";
+
+				ResultSet queryResult = statement.executeQuery(sqlQuery);
+
+				int year;
+				int amount;
+
+				while (queryResult.next()) {
+
+					// Retrieve data by column name
+					year = queryResult.getInt("year");
+					amount = queryResult.getInt("amount");
+
+					dataResultMap.put(year, amount);
+				}
+
+			} catch (Exception ex) {
+
+			} finally {
+				try {
+					statement.close();
+				} catch (Exception e) {
+				}
+				try {
+					connection.close();
+				} catch (Exception e) {
+				}
+			}
+		} catch (Exception ex) {
+
+		}
+		return dataResultMap;
+	}
+
+	/**
 	 * Generates a ArrayList<DataResultAggregated> which is used as input to
 	 * show the number of movies per country on an interactive worldmap.
 	 * 
@@ -180,18 +248,23 @@ public class Query extends RemoteServiceServlet implements MyService {
 			try {
 				statement = connection.createStatement();
 				ResultSet queryResult = statement.executeQuery(sqlQuery);
-				
+
 				Map<String, Integer> aggregatedCountries = new HashMap<String, Integer>();
 				while (queryResult.next()) {
-					for(String singleCountry : queryResult.getString("country").split(",")){
-						if(aggregatedCountries.containsKey(singleCountry)){
-							aggregatedCountries.put(singleCountry,aggregatedCountries.get(singleCountry) + queryResult.getInt("amount"));
-						}else{
-							aggregatedCountries.put(singleCountry,queryResult.getInt("amount"));
+					for (String singleCountry : queryResult
+							.getString("country").split(",")) {
+						if (aggregatedCountries.containsKey(singleCountry)) {
+							aggregatedCountries.put(singleCountry,
+									aggregatedCountries.get(singleCountry)
+											+ queryResult.getInt("amount"));
+						} else {
+							aggregatedCountries.put(singleCountry,
+									queryResult.getInt("amount"));
 						}
-					}	
+					}
 				}
-				for(Map.Entry<String,Integer> kvp : aggregatedCountries.entrySet()){
+				for (Map.Entry<String, Integer> kvp : aggregatedCountries
+						.entrySet()) {
 					DataResultAggregated dataresult = new DataResultAggregated();
 					dataresult.setCountryName(kvp.getKey());
 					dataresult.setAggregatedNumberOfMovies(kvp.getValue());
@@ -286,15 +359,16 @@ public class Query extends RemoteServiceServlet implements MyService {
 		} else {
 			selectionSQLWhereClause = " WHERE 1 = 1 ";
 
-			if(selection.getSelectedMovieName() != null){
-				if(selection.getSelectedMovieName().length() > 0){
-				selectionSQLWhereClause = selectionSQLWhereClause + "AND name like '" 
-						+ selection.getSelectedMovieName() + "' ";
-				}				
+			if (selection.getSelectedMovieName() != null) {
+				if (selection.getSelectedMovieName().length() > 0) {
+					selectionSQLWhereClause = selectionSQLWhereClause
+							+ "AND name like '"
+							+ selection.getSelectedMovieName() + "' ";
+				}
 			}
-			if(selection.getSelectedYear() != null){
-				selectionSQLWhereClause = selectionSQLWhereClause + "AND year = " 
-						+ selection.getSelectedYear() + " ";
+			if (selection.getSelectedYear() != null) {
+				selectionSQLWhereClause = selectionSQLWhereClause
+						+ "AND year = " + selection.getSelectedYear() + " ";
 			}
 			if (!selection.getSelectedCountries().isEmpty()) {
 				selectionSQLWhereClause = selectionSQLWhereClause
@@ -353,7 +427,8 @@ public class Query extends RemoteServiceServlet implements MyService {
 	 * 
 	 * @Author Christoph Weber
 	 * @pre separator != null && aList != null
-	 * @param String separator, ArrayList<String> aList 
+	 * @param String
+	 *            separator, ArrayList<String> aList
 	 * @post all Elements are concatenated or emptystring if aList is empty.
 	 *       Apostroph's are escaped
 	 */
