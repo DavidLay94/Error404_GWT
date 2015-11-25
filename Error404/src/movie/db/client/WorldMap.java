@@ -4,6 +4,8 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.annotation.processing.RoundEnvironment;
+
 import movie.db.shared.DataResultAggregated;
 
 import com.google.gwt.visualization.client.AbstractDataTable.ColumnType;
@@ -22,9 +24,14 @@ public class WorldMap {
 	private DataTable dataTable;
 	private Options options;
 	private final static Logger logger = Logger.getLogger("Error404");
-	public WorldMap(ArrayList<DataResultAggregated> list, String width, String height) {
+
+	public WorldMap(ArrayList<DataResultAggregated> movieData, Map<String, Integer> populationData, String width, String height) {
 		super();
-		dataTable = generateDataTable(list);
+		if (populationData == null) {
+			dataTable = generateDataTable(movieData);
+		} else {
+			dataTable = generateDataTable(movieData, populationData);
+		}
 		options = Options.create();
 		options.setColors(new int[] { BRIGHT, DARK });
 		options.setWidth(width);
@@ -49,17 +56,17 @@ public class WorldMap {
 	 *         GeoMap
 	 * 
 	 * @pre Database query must have delivered some results
-	 * @param ArrayList<DataResultAggregated>
-	 *            data
+	 * @param ArrayList
+	 *            <DataResultAggregated> data
 	 * @post DataTable contains the result entered in the different columns
 	 */
-	public DataTable generateDataTable(ArrayList<DataResultAggregated> data) {
+	public DataTable generateDataTable(ArrayList<DataResultAggregated> movieData) {
 
 		DataTable dataTable = DataTable.create();
 		dataTable.addColumn(ColumnType.STRING, "Country");
 		dataTable.addColumn(ColumnType.NUMBER, "Number of movies");
 		dataTable.addColumn(ColumnType.STRING, "additional information");
-		ArrayList<InputObjectWorldMap> inputList = createWorldMapInputArrayList(data);
+		ArrayList<InputObjectWorldMap> inputList = createWorldMapInputArrayList(movieData);
 
 		int sizeInputList = inputList.size();
 		int z = 0;
@@ -68,16 +75,13 @@ public class WorldMap {
 			dataTable.addRow();
 		} else {
 			while (z < sizeInputList) {
-				if (data.get(z).getCountryName() == null) {
+				if (movieData.get(z).getCountryName() == null) {
 					z++;
 				} else {
 					dataTable.addRow();
 					dataTable.setValue(z, 0, inputList.get(z).getOSICountryName());
 					dataTable.setValue(z, 1, inputList.get(z).getNumberOfMovies());
 					dataTable.setValue(z, 2, inputList.get(z).getShowedCountryName());
-					if( inputList.get(z).getShowedCountryName().equals(" ")){
-					//logger.log(Level.SEVERE, inputList.get(z).getOSICountryName());
-					}
 					z++;
 				}
 
@@ -90,13 +94,53 @@ public class WorldMap {
 
 		return dataTable;
 	}
-	
+
+	public DataTable generateDataTable(ArrayList<DataResultAggregated> movieData, Map<String, Integer> populationData) {
+
+		DataTable dataTable = DataTable.create();
+		dataTable.addColumn(ColumnType.STRING, "Country");
+		dataTable.addColumn(ColumnType.NUMBER, "Number of movies per 1 mio capita");
+		dataTable.addColumn(ColumnType.STRING, "additional information");
+		ArrayList<InputObjectWorldMap> inputList = createWorldMapInputArrayList(movieData);
+
+		int sizeInputList = inputList.size();
+		int z = 0;
+		try {
+			if (sizeInputList == 0) {
+				dataTable.addRow();
+			} else {
+				while (z < sizeInputList) {
+					dataTable.addRow();
+					if (movieData.get(z).getCountryName() == null) {
+					} else {
+						if (populationData.containsKey(inputList.get(z).getShowedCountryName())) {
+							dataTable.addRow();
+							dataTable.setValue(z, 0, inputList.get(z).getOSICountryName());
+
+							int population = populationData.get(inputList.get(z).getShowedCountryName());
+							double capitaAmount = Math.round(1000000000.0 * inputList.get(z).getNumberOfMovies() / population) / 1000d;
+							dataTable.setValue(z, 1, capitaAmount);
+							dataTable.setValue(z, 2, inputList.get(z).getShowedCountryName());
+						}
+					}
+					z++;
+				}
+			}
+		} catch (Exception ex) {
+			logger.log(Level.WARNING, ex.getMessage());
+		}
+		return dataTable;
+	}
+
 	/**
 	 * @author Patrick Muntwyler
-	 * @param ArrayList<DataResultAggregated> which is needed to fill the 2D-String-Array. This 2D-String-Array
-	 * replaces the DataTable which is needed for the GeoMap. Because JUnit Tests don't work with this DataTable
-	 * this 2D-String-Array should simulate the DataTable. This method is only for the JUnit Test. It is not needed
-	 * for the webpage.
+	 * @param ArrayList
+	 *            <DataResultAggregated> which is needed to fill the
+	 *            2D-String-Array. This 2D-String-Array replaces the DataTable
+	 *            which is needed for the GeoMap. Because JUnit Tests don't work
+	 *            with this DataTable this 2D-String-Array should simulate the
+	 *            DataTable. This method is only for the JUnit Test. It is not
+	 *            needed for the webpage.
 	 * @return
 	 */
 	public String[][] generateDataTableTest(ArrayList<DataResultAggregated> data) {
@@ -105,11 +149,10 @@ public class WorldMap {
 		int sizeInputList = inputList.size();
 
 		// this line substitutes DataTable dataTable = DataTable.create();
-		//dataTable.addColumn(ColumnType.STRING, "Country");
-		//dataTable.addColumn(ColumnType.NUMBER, "Number of movies");
-		//dataTable.addColumn(ColumnType.STRING, "additional information");
+		// dataTable.addColumn(ColumnType.STRING, "Country");
+		// dataTable.addColumn(ColumnType.NUMBER, "Number of movies");
+		// dataTable.addColumn(ColumnType.STRING, "additional information");
 		String[][] testArray = new String[sizeInputList][3];
-		
 
 		int z = 0;
 		if (sizeInputList == 0) {
@@ -128,7 +171,8 @@ public class WorldMap {
 				// this line substitutes "dataTable.setValue(z, 1,
 				// data.get(z).getAggregatedNumberOfMovies());"
 				testArray[z][1] = inputList.get(z).getNumberOfMovies() + "";
-				//this line substitutes "dataTable.setValue(z, 2, inputList.get(z).getShowedCountryName());"
+				// this line substitutes
+				// "dataTable.setValue(z, 2, inputList.get(z).getShowedCountryName());"
 				testArray[z][2] = inputList.get(z).getShowedCountryName();
 				z++;
 			}
@@ -146,8 +190,8 @@ public class WorldMap {
 	 *         if they were split in the past or not shown on the GeoMap because
 	 *         they are too small.
 	 * 
-	 * @param inputData:
-	 *            An ArrayList of the type DataResultAggregated which is
+	 * @param inputData
+	 *            : An ArrayList of the type DataResultAggregated which is
 	 *            provided by the query
 	 * @return An ArrayList of the type InputObjectWorldMap which is required to
 	 *         build the DataTable for the GeoMap
@@ -168,17 +212,15 @@ public class WorldMap {
 				String country = inputData.get(i).getCountryName();
 				country.trim();
 				country = country.replaceAll("\\s+", "");
-				if(country.equals(" ")){}
-				else if (country.equals("Aruba")) {
+				if (country.equals(" ")) {
+				} else if (country.equals("Aruba")) {
 					outputList = handleExceptionalCountry(inputData, outputList, i, "Netherlands", "Netherlands");
-				}
-				else if (country.equals("Netherlands")) {
+				} else if (country.equals("Netherlands")) {
 					outputList = handleExceptionalCountry(inputData, outputList, i, "Netherlands", "Netherlands");
 				}
 
 				else if (country.equalsIgnoreCase("UnitedStatesofAmerica")) {
-					outputList = handleExceptionalCountry(inputData, outputList, i, "United States",
-							"United States of America");
+					outputList = handleExceptionalCountry(inputData, outputList, i, "United States", "United States of America");
 
 				} else if (country.equalsIgnoreCase("BosniaandHerzegovina")) {
 					outputList = handleExceptionalCountry(inputData, outputList, i, "BA", "Bosnia and Herzegovina");
@@ -187,16 +229,13 @@ public class WorldMap {
 					outputList = handleExceptionalCountry(inputData, outputList, i, "Myanmar", "Myanmar (also Burma)");
 
 				} else if (country.equals("Congo")) {
-					outputList = handleExceptionalCountry(inputData, outputList, i, "CD",
-							"the Democratic Republic of the Congo");
+					outputList = handleExceptionalCountry(inputData, outputList, i, "CD", "the Democratic Republic of the Congo");
 
 				} else if (country.equals("DemocraticRepublicoftheCongo")) {
-					outputList = handleExceptionalCountry(inputData, outputList, i, "CD",
-							"the Democratic Republic of the Congo");
+					outputList = handleExceptionalCountry(inputData, outputList, i, "CD", "the Democratic Republic of the Congo");
 
 				} else if (country.equals("England")) {
-					outputList = handleExceptionalCountry(inputData, outputList, i, "GB",
-							"the United Kingdom of Great Britain and Northern Ireland");
+					outputList = handleExceptionalCountry(inputData, outputList, i, "GB", "the United Kingdom of Great Britain and Northern Ireland");
 
 				} else if (country.equals("Georgia")) {
 					outputList = handleExceptionalCountry(inputData, outputList, i, "Georgia", "Georgia");
@@ -223,12 +262,10 @@ public class WorldMap {
 					outputList = handleExceptionalCountry(inputData, outputList, i, "Iraq", "Iraq");
 
 				} else if (country.equals("IsleofMan")) {
-					outputList = handleExceptionalCountry(inputData, outputList, i, "GB",
-							"the United Kingdom of Great Britain and Northern Ireland");
+					outputList = handleExceptionalCountry(inputData, outputList, i, "GB", "the United Kingdom of Great Britain and Northern Ireland");
 
 				} else if (country.equals("KingdomofGreatBritain")) {
-					outputList = handleExceptionalCountry(inputData, outputList, i, "GB",
-							"the United Kingdom of Great Britain and Northern Ireland");
+					outputList = handleExceptionalCountry(inputData, outputList, i, "GB", "the United Kingdom of Great Britain and Northern Ireland");
 
 				} else if (country.equals("KingdomofItaly")) {
 					outputList = handleExceptionalCountry(inputData, outputList, i, "Italy", "Italy");
@@ -246,8 +283,7 @@ public class WorldMap {
 					outputList = handleExceptionalCountry(inputData, outputList, i, "Germany", "Germany");
 
 				} else if (country.equals("NorthernIreland")) {
-					outputList = handleExceptionalCountry(inputData, outputList, i, "GB",
-							"the United Kingdom of Great Britain and Northern Ireland");
+					outputList = handleExceptionalCountry(inputData, outputList, i, "GB", "the United Kingdom of Great Britain and Northern Ireland");
 
 				} else if (country.equals("RepublicofChina")) {
 					outputList = handleExceptionalCountry(inputData, outputList, i, "China", "China");
@@ -256,8 +292,7 @@ public class WorldMap {
 					outputList = handleExceptionalCountry(inputData, outputList, i, "MK", "Macedonia");
 
 				} else if (country.equals("Scotland")) {
-					outputList = handleExceptionalCountry(inputData, outputList, i, "GB",
-							"the United Kingdom of Great Britain and Northern Ireland");
+					outputList = handleExceptionalCountry(inputData, outputList, i, "GB", "the United Kingdom of Great Britain and Northern Ireland");
 
 				} else if (country.equals("SlovakRepublic")) {
 					outputList = handleExceptionalCountry(inputData, outputList, i, "Slovakia", "Slovakia");
@@ -278,8 +313,7 @@ public class WorldMap {
 					outputList = handleExceptionalCountry(inputData, outputList, i, "Ukraine", "Ukraine");
 
 				} else if (country.equals("UnitedKingdom")) {
-					outputList = handleExceptionalCountry(inputData, outputList, i, "GB",
-							"the United Kingdom of Great Britain and Northern Ireland");
+					outputList = handleExceptionalCountry(inputData, outputList, i, "GB", "the United Kingdom of Great Britain and Northern Ireland");
 
 				} else if (country.equals("Uzbekistan")) {
 					outputList = handleExceptionalCountry(inputData, outputList, i, "Uzbekistan", "Uzbekistan");
@@ -288,8 +322,7 @@ public class WorldMap {
 					outputList = handleExceptionalCountry(inputData, outputList, i, "Uzbekistan", "Uzbekistan");
 
 				} else if (country.equals("Wales")) {
-					outputList = handleExceptionalCountry(inputData, outputList, i, "GB",
-							"the United Kingdom of Great Britain and Northern Ireland");
+					outputList = handleExceptionalCountry(inputData, outputList, i, "GB", "the United Kingdom of Great Britain and Northern Ireland");
 
 				} else if (country.equals("WeimarRepublic")) {
 					outputList = handleExceptionalCountry(inputData, outputList, i, "Germany", "Germany");
@@ -372,8 +405,8 @@ public class WorldMap {
 				}
 
 				else {
-					InputObjectWorldMap newInputObject = new InputObjectWorldMap(correctCountry,
-							inputData.get(i).getAggregatedNumberOfMovies(), correctCountry);
+					InputObjectWorldMap newInputObject = new InputObjectWorldMap(correctCountry, inputData.get(i).getAggregatedNumberOfMovies(),
+							correctCountry);
 					outputList.add(newInputObject);
 				}
 
@@ -496,16 +529,11 @@ public class WorldMap {
 		 * ArrayList<InputObjectWorldMap>.
 		 */
 		else {
-			InputObjectWorldMap Aruba = new InputObjectWorldMap(OSICountryName,
-					inputData.get(index).getAggregatedNumberOfMovies(), showedCountryName);
+			InputObjectWorldMap Aruba = new InputObjectWorldMap(OSICountryName, inputData.get(index).getAggregatedNumberOfMovies(), showedCountryName);
 			outputList.add(Aruba);
 		}
 
 		return outputList;
 	}
-	
-	
-
-	
 
 }

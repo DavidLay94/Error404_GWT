@@ -22,6 +22,7 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 public interface MyService extends RemoteService {
 	public Map<Integer, DataResultShared> getFilteredData(Selection selection);
 	public ArrayList<DataResultAggregated> getWorldMapData(int selectedYear);
+	public Map<String,Integer> getPopulation(int selectedYear);
 	public ArrayList<String> getColumnEntries(String column);
 	public Map<Integer, Integer> getBarChartData(String country, String genre, int yearFrom, int yearTo);
 

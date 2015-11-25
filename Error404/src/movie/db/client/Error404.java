@@ -24,6 +24,7 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.ChangeListener;
+import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.DisclosurePanel;
 import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.HTML;
@@ -72,8 +73,7 @@ public class Error404 implements EntryPoint {
 	private VerticalPanel rootPanel = new VerticalPanel();
 	private VerticalPanel advertisementPanel1 = new VerticalPanel();
 	private VerticalPanel advertisementPanel2 = new VerticalPanel();
-	private DisclosurePanel disclosureSourcePanel = new DisclosurePanel(
-			"Source", false);
+	private DisclosurePanel disclosureSourcePanel = new DisclosurePanel("Source", false);
 
 	private ListBox genreListBox = new ListBox();
 	private ListBox countryListBox = new ListBox();
@@ -83,18 +83,22 @@ public class Error404 implements EntryPoint {
 	private TextBox tbNameTable = new TextBox();
 	private TextBox tbYearTable = new TextBox();
 	private ArrayList<DataResultAggregated> worldMapInputDataList = new ArrayList<DataResultAggregated>();
+	private int selectedYear;
+	private Map<String, Integer> worldMapInputDataListPopulation = new HashMap<String, Integer>();
 	private TabPanel tabPanel = new TabPanel();
 	private Map<Integer, DataResultShared> resultTableInputDataList = new HashMap<Integer, DataResultShared>();
+	private RadioButton absoluteRB;
+	private RadioButton percapitaRB;
+	private double YEAR_OLDEST_MOVIE = 1888;
+	private double CURRENT_YEAR = 2015;
+	private SliderBar timeBar = new SliderBar(YEAR_OLDEST_MOVIE, CURRENT_YEAR, new LabelFormatter() {
+		public String formatLabel(SliderBar slider, double value) {
+			return (int) (10 * value) / 10 + "";
+		}
+	});
 
-	private SliderBar timeBar = new SliderBar(YEAR_OLDEST_MOVIE, CURRENT_YEAR,
-			new LabelFormatter() {
-				public String formatLabel(SliderBar slider, double value) {
-					return (int) (10 * value) / 10 + "";
-				}
-			});
-
-	private final static double YEAR_OLDEST_MOVIE = 1888;
-	private final static double CURRENT_YEAR = 2015;
+	// private final static double YEAR_OLDEST_MOVIE = 1888;
+	// private final static double CURRENT_YEAR = 2015;
 	private final static String TABPANELHEIGHT = "540px";
 	private final static String TABPANELWIDTH = "1400px";
 	private final static String MAINPANELHEIGHT = "690px";
@@ -115,7 +119,7 @@ public class Error404 implements EntryPoint {
 		// mainPanel.setSize("100vw", "82vh");
 		// rootPanel.setSize("100vw", "82vh");
 		// mainPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
-		//showYearsBarChartTest();
+		// showYearsBarChartTest();
 		rootPanel.setSpacing(5);
 		// mainPanel.add(introductionText);
 
@@ -157,8 +161,7 @@ public class Error404 implements EntryPoint {
 		String introString = "Welcome to our Movie Database!\n"
 				+ "Enter a year and see the number of movies in the different countries in the \"Worldmap\" panel.\n"
 				+ "Switch to the tab \"Table\" and perform more detailed research based on the offered criteria.";
-		Label introductionText = new HTML(new SafeHtmlBuilder()
-				.appendEscapedLines(introString).toSafeHtml());
+		Label introductionText = new HTML(new SafeHtmlBuilder().appendEscapedLines(introString).toSafeHtml());
 		rootPanel.add(introductionText);
 
 		mainPanel.setHeight(MAINPANELHEIGHT);
@@ -192,8 +195,7 @@ public class Error404 implements EntryPoint {
 	 * @Pre selectionCriteria table must be implemented
 	 * @param selectionCriteriaTable
 	 */
-	private void initializeSelectionCriteriaTable(
-			VerticalPanel selectionCriteriaTable) {
+	private void initializeSelectionCriteriaTable(VerticalPanel selectionCriteriaTable) {
 		Button showAsButton = new Button();
 		showAsButton.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
@@ -233,8 +235,7 @@ public class Error404 implements EntryPoint {
 		durationVP.add(durationListBox);
 
 		VerticalPanel nameVP = new VerticalPanel();
-		Label nameLabel = new Label(
-				"Name: (use % as wildcard, e.g. %of the Rings%)");
+		Label nameLabel = new Label("Name: (use % as wildcard, e.g. %of the Rings%)");
 		nameLabel.setHeight("2em");
 		nameVP.add(nameLabel);
 		tbNameTable.setWidth("39em");
@@ -261,8 +262,7 @@ public class Error404 implements EntryPoint {
 		selectionHorizontal2.add(durationVP);
 
 		HorizontalPanel selectionHorizontal3 = new HorizontalPanel();
-		selectionHorizontal3
-				.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
+		selectionHorizontal3.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
 		selectionHorizontal3.setSpacing(5);
 		showAsButton.setWidth("8em");
 		selectionHorizontal3.add(showAsButton);
@@ -286,7 +286,7 @@ public class Error404 implements EntryPoint {
 	 * @Pre Parameters have to be implemented
 	 * @param worldMapCriteriaTable
 	 */
-	private void initializeWorldMapCriteriaTable(HorizontalPanel worldMapCriteriaTable) {		
+	private void initializeWorldMapCriteriaTable(HorizontalPanel worldMapCriteriaTable) {
 		worldMapCriteriaTable.setWidth(TABPANELWIDTH);
 		FlexTable selectionLeft = new FlexTable();
 		worldMapCriteriaTable.add(selectionLeft);
@@ -313,8 +313,51 @@ public class Error404 implements EntryPoint {
 
 		selectionLeft.setWidget(1, 2, cleanWorldMapButton);
 
-		RadioButton absoluteRB = new RadioButton("valueType", "absolute numbers");
-		RadioButton percapitaRB = new RadioButton("valueType","per capita amount");
+		absoluteRB = new RadioButton("valueType", "absolute numbers");
+		absoluteRB.addClickListener(new ClickListener() {
+
+			@Override
+			public void onClick(Widget sender) {
+				YEAR_OLDEST_MOVIE = 1888;
+				CURRENT_YEAR = 2015;
+				timeBar.setMinValue(YEAR_OLDEST_MOVIE);
+				timeBar.setMaxValue(CURRENT_YEAR);
+				initializeTimeBar();
+			}
+		});
+		/*
+		 * timeBar.addChangeListener(new ChangeListener() { public void
+		 * onChange(Widget sender) { tbYearWorldmap.setText((int)
+		 * timeBar.getCurrentValue() + ""); fillWorldmap(); } });
+		 */
+		percapitaRB = new RadioButton("valueType", "per capita amount");
+		percapitaRB.addClickListener(new ClickListener() {
+
+			@Override
+			public void onClick(Widget sender) {
+				YEAR_OLDEST_MOVIE = 1960;
+				CURRENT_YEAR = 2014;
+				try {
+					int selectedYear = Integer.parseInt(tbYearWorldmap.getText());
+
+					if (selectedYear >= (int) YEAR_OLDEST_MOVIE && selectedYear <= (int) CURRENT_YEAR) {
+
+						timeBar.setCurrentValue(selectedYear);
+						// if the given year is out of range
+					} else {
+						timeBar.setCurrentValue(CURRENT_YEAR);
+						//Window.alert("Please insert a valid number (" + (int) YEAR_OLDEST_MOVIE + "-" + (int) CURRENT_YEAR + ")");
+					}
+				} catch (Exception ex) {
+					Window.alert("Please insert a valid number (" + (int) YEAR_OLDEST_MOVIE + "-" + (int) CURRENT_YEAR + ")");
+				}
+				timeBar.setMinValue(YEAR_OLDEST_MOVIE);
+				timeBar.setMaxValue(CURRENT_YEAR);
+
+				initializeTimeBar();
+			}
+		});
+		absoluteRB.setValue(true);
 		worldMapCriteriaTable.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_LEFT);
 		worldMapCriteriaTable.setVerticalAlignment(HasVerticalAlignment.ALIGN_BOTTOM);
 		VerticalPanel selectionRight = new VerticalPanel();
@@ -333,33 +376,28 @@ public class Error404 implements EntryPoint {
 	 * @param column
 	 * @param columnId
 	 */
-	private void initializeSelectionListBox(final ListBox selectionListBox,
-			String column) {
-		dbService.getColumnEntries(column,
-				new AsyncCallback<ArrayList<String>>() {
-					@Override
-					public void onFailure(Throwable caught) {
-					}
+	private void initializeSelectionListBox(final ListBox selectionListBox, String column) {
+		dbService.getColumnEntries(column, new AsyncCallback<ArrayList<String>>() {
+			@Override
+			public void onFailure(Throwable caught) {
+			}
 
-					@Override
-					public void onSuccess(ArrayList<String> result) {
-						try {
-							for (String entry : result) {
-								selectionListBox.addItem(entry);
-							}
-							selectionListBox.setVisibleItemCount(5);
-							selectionListBox.setMultipleSelect(true);
-							selectionListBox.setItemSelected(0, false); // first
-																		// item
-																		// is
-																		// selected
-																		// by
-																		// default
-						} catch (Exception ex) {
-							logger.log(Level.WARNING, ex.toString());
-						}
+			@Override
+			public void onSuccess(ArrayList<String> result) {
+				try {
+					for (String entry : result) {
+						selectionListBox.addItem(entry);
 					}
-				});
+					selectionListBox.setVisibleItemCount(5);
+					selectionListBox.setMultipleSelect(true);
+					selectionListBox.setItemSelected(0, false); // first item is
+																// selected by
+																// default
+				} catch (Exception ex) {
+					logger.log(Level.WARNING, ex.toString());
+				}
+			}
+		});
 	}
 
 	/**
@@ -390,19 +428,15 @@ public class Error404 implements EntryPoint {
 		// fillWorldmap();
 		try {
 			int selectedYear = Integer.parseInt(tbYearWorldmap.getText());
-			if (selectedYear >= (int) YEAR_OLDEST_MOVIE
-					&& selectedYear <= (int) CURRENT_YEAR) {
+			if (selectedYear >= (int) YEAR_OLDEST_MOVIE && selectedYear <= (int) CURRENT_YEAR) {
 
 				timeBar.setCurrentValue(selectedYear);
 				// if the given year is out of range
 			} else {
-				Window.alert("Please insert a valid number ("
-						+ (int) YEAR_OLDEST_MOVIE + "-" + (int) CURRENT_YEAR
-						+ ")");
+				Window.alert("Please insert a valid number (" + (int) YEAR_OLDEST_MOVIE + "-" + (int) CURRENT_YEAR + ")");
 			}
 		} catch (Exception ex) {
-			Window.alert("Please insert a valid number ("
-					+ (int) YEAR_OLDEST_MOVIE + "-" + (int) CURRENT_YEAR + ")");
+			Window.alert("Please insert a valid number (" + (int) YEAR_OLDEST_MOVIE + "-" + (int) CURRENT_YEAR + ")");
 		}
 
 		tabPanel.selectTab(0);
@@ -533,19 +567,14 @@ public class Error404 implements EntryPoint {
 		if (tbYearTable.getText().length() > 0) {
 			try {
 				int selectedYear = Integer.parseInt(tbYearTable.getText());
-				if (selectedYear >= (int) YEAR_OLDEST_MOVIE
-						&& selectedYear <= (int) CURRENT_YEAR) {
+				if (selectedYear >= (int) YEAR_OLDEST_MOVIE && selectedYear <= (int) CURRENT_YEAR) {
 					selection.setSelectedYear(selectedYear);
 					// if the given year is out of range
 				} else {
-					Window.alert("Please insert a valid number ("
-							+ (int) YEAR_OLDEST_MOVIE + "-"
-							+ (int) CURRENT_YEAR + ")");
+					Window.alert("Please insert a valid number (" + (int) YEAR_OLDEST_MOVIE + "-" + (int) CURRENT_YEAR + ")");
 				}
 			} catch (Exception ex) {
-				Window.alert("Please insert a valid number ("
-						+ (int) YEAR_OLDEST_MOVIE + "-" + (int) CURRENT_YEAR
-						+ ")");
+				Window.alert("Please insert a valid number (" + (int) YEAR_OLDEST_MOVIE + "-" + (int) CURRENT_YEAR + ")");
 			}
 		}
 		selection.setSelectedCountries(selectedCountries);
@@ -560,8 +589,7 @@ public class Error404 implements EntryPoint {
 
 	}
 
-	private MyServiceAsync dbService = (MyServiceAsync) GWT
-			.create(MyService.class);
+	private MyServiceAsync dbService = (MyServiceAsync) GWT.create(MyService.class);
 
 	/**
 	 * Called by the showWorldMapClick method, this method fills the countries
@@ -575,34 +603,54 @@ public class Error404 implements EntryPoint {
 	 */
 	private void fillWorldmap() {
 		try {
-			int selectedYear = Integer.parseInt(tbYearWorldmap.getText());
-			if (selectedYear >= (int) YEAR_OLDEST_MOVIE
-					&& selectedYear <= (int) CURRENT_YEAR) {
+			selectedYear = Integer.parseInt(tbYearWorldmap.getText());
+			if (selectedYear >= (int) YEAR_OLDEST_MOVIE && selectedYear <= (int) CURRENT_YEAR) {
 
-				dbService.getWorldMapData(selectedYear,
-						new AsyncCallback<ArrayList<DataResultAggregated>>() {
-							@Override
-							public void onFailure(Throwable caught) {
-							}
+				dbService.getWorldMapData(selectedYear, new AsyncCallback<ArrayList<DataResultAggregated>>() {
+					@Override
+					public void onFailure(Throwable caught) {
+					}
 
-							@Override
-							public void onSuccess(
-									ArrayList<DataResultAggregated> result) {
-								// refreshWorldMap(result);
-								worldMapInputDataList = result;
-								refreshWorldMap();
-							}
-						});
+					@Override
+					public void onSuccess(ArrayList<DataResultAggregated> result) {
+						// refreshWorldMap(result);
+						worldMapInputDataList = result;
 
+						if (percapitaRB.getValue()) {
+							// worldMapInputDataListPopulation
+
+							dbService.getPopulation(selectedYear, new AsyncCallback<Map<String, Integer>>() {
+								@Override
+								public void onFailure(Throwable caught) {
+									logger.log(Level.WARNING, "somefailure");
+								}
+
+								@Override
+								public void onSuccess(Map<String, Integer> result) {
+									// refreshWorldMap(result);
+									worldMapInputDataListPopulation = result;
+									/*
+									 * for (Map.Entry<String, Integer> kvp :
+									 * result.entrySet()) {
+									 * logger.log(Level.SEVERE, kvp.getKey() +
+									 * ": " + kvp.getValue()); }
+									 */
+
+									logger.log(Level.WARNING, "somesuccess");
+									refreshWorldMap();
+								}
+							});
+						} else {
+							refreshWorldMap();
+						}
+					}
+				});
 				// if the given year is out of range
 			} else {
-				Window.alert("Please insert a valid number ("
-						+ (int) YEAR_OLDEST_MOVIE + "-" + (int) CURRENT_YEAR
-						+ ")");
+				Window.alert("Please insert a valid number (" + (int) YEAR_OLDEST_MOVIE + "-" + (int) CURRENT_YEAR + ")");
 			}
 		} catch (Exception ex) {
-			Window.alert("Please insert a valid number ("
-					+ (int) YEAR_OLDEST_MOVIE + "-" + (int) CURRENT_YEAR + ")");
+			Window.alert("Please insert a valid number (" + (int) YEAR_OLDEST_MOVIE + "-" + (int) CURRENT_YEAR + ")");
 		}
 	}
 
@@ -617,23 +665,22 @@ public class Error404 implements EntryPoint {
 	 */
 	private void showResults(Selection selection) {
 
-		dbService.getFilteredData(selection,
-				new AsyncCallback<Map<Integer, DataResultShared>>() {
-					@Override
-					public void onFailure(Throwable caught) {
-						logger.log(Level.SEVERE, caught.getMessage());
+		dbService.getFilteredData(selection, new AsyncCallback<Map<Integer, DataResultShared>>() {
+			@Override
+			public void onFailure(Throwable caught) {
+				logger.log(Level.SEVERE, caught.getMessage());
 
-						for (StackTraceElement t : caught.getStackTrace()) {
-							logger.log(Level.SEVERE, t.toString());
-						}
-					}
+				for (StackTraceElement t : caught.getStackTrace()) {
+					logger.log(Level.SEVERE, t.toString());
+				}
+			}
 
-					@Override
-					public void onSuccess(Map<Integer, DataResultShared> result) {
-						resultTableInputDataList = result;
-						refreshResultTable();
-					}
-				});
+			@Override
+			public void onSuccess(Map<Integer, DataResultShared> result) {
+				resultTableInputDataList = result;
+				refreshResultTable();
+			}
+		});
 	}
 
 	/**
@@ -659,11 +706,9 @@ public class Error404 implements EntryPoint {
 		resultTablePanel.clear();
 		Runnable onLoadCallback = new Runnable() {
 			public void run() {
-				ResultTable resultTable = new ResultTable(
-						resultTableInputDataList);
+				ResultTable resultTable = new ResultTable(resultTableInputDataList);
 				resultTablePanel.add(resultTable.getResultTable());
-				resultTable.getResultTable().draw(resultTable.getDataTable(),
-						resultTable.getOptions());
+				resultTable.getResultTable().draw(resultTable.getDataTable(), resultTable.getOptions());
 			}
 		};
 		VisualizationUtils.loadVisualizationApi(onLoadCallback, Table.PACKAGE);
@@ -677,15 +722,27 @@ public class Error404 implements EntryPoint {
 	 * @Pre WorldMap must be implemented
 	 */
 	private void refreshWorldMap() {
-		Runnable onLoadCallback = new Runnable() {
-			public void run() {
-				WorldMap map = new WorldMap(worldMapInputDataList,
-						TABPANELWIDTH, TABPANELHEIGHT);
-				worldMapPanel.setWidget(map.getWorldMap());
-				map.getWorldMap().draw(map.getDataTable(), map.getOptions());
-			}
-		};
-		VisualizationUtils.loadVisualizationApi(onLoadCallback, GeoMap.PACKAGE);
+		if (absoluteRB.getValue()) {
+			Runnable onLoadCallback1 = new Runnable() {
+				public void run() {
+					WorldMap map = new WorldMap(worldMapInputDataList, null, TABPANELWIDTH, TABPANELHEIGHT);
+					worldMapPanel.setWidget(map.getWorldMap());
+					map.getWorldMap().draw(map.getDataTable(), map.getOptions());
+					logger.log(Level.WARNING, "abs");
+				}
+			};
+			VisualizationUtils.loadVisualizationApi(onLoadCallback1, GeoMap.PACKAGE);
+		} else {
+			Runnable onLoadCallback2 = new Runnable() {
+				public void run() {
+					logger.log(Level.WARNING, "cap");
+					WorldMap map = new WorldMap(worldMapInputDataList, worldMapInputDataListPopulation, TABPANELWIDTH, TABPANELHEIGHT);
+					worldMapPanel.setWidget(map.getWorldMap());
+					map.getWorldMap().draw(map.getDataTable(), map.getOptions());
+				}
+			};
+			VisualizationUtils.loadVisualizationApi(onLoadCallback2, GeoMap.PACKAGE);
+		}
 	}
 
 	/**
@@ -697,7 +754,7 @@ public class Error404 implements EntryPoint {
 	 */
 	private void initializeTimeBar() {
 		timeBar.setStepSize(1.0);
-		timeBar.setCurrentValue(2015.0);
+		//timeBar.setCurrentValue(CURRENT_YEAR);
 		timeBar.setNumTicks((int) (CURRENT_YEAR - YEAR_OLDEST_MOVIE));
 		timeBar.setNumLabels(13);
 		timeBar.addChangeListener(new ChangeListener() {
@@ -722,12 +779,17 @@ public class Error404 implements EntryPoint {
 		worldMapPanel.setSize(TABPANELWIDTH, TABPANELHEIGHT);
 		Runnable onLoadCallback = new Runnable() {
 			public void run() {
-				WorldMap map = new WorldMap(worldMapInputDataList,
-						TABPANELWIDTH, TABPANELHEIGHT);
+				WorldMap map;
+				if (absoluteRB.getValue()) {
+					map = new WorldMap(worldMapInputDataList, null, TABPANELWIDTH, TABPANELHEIGHT);
+				} else {
+					map = new WorldMap(worldMapInputDataList, worldMapInputDataListPopulation, TABPANELWIDTH, TABPANELHEIGHT);
+				}
 				worldMapPanel.setWidget(map.getWorldMap());
 				map.getWorldMap().draw(map.getDataTable(), map.getOptions());
 				worldMapVP.add(worldMapPanel);
 				initializeTimeBar();
+				timeBar.setCurrentValue(CURRENT_YEAR);
 			}
 		};
 		VisualizationUtils.loadVisualizationApi(onLoadCallback, GeoMap.PACKAGE);
@@ -769,45 +831,47 @@ public class Error404 implements EntryPoint {
 		VerticalPanel sourcePanel = new VerticalPanel();
 
 		// new anchor to the creative commons website
-		Anchor anchor = new Anchor("Commons Attribution-ShareAlike License",
-				"http://creativecommons.org/licenses/by-sa/4.0/");
+		Anchor anchorMovies = new Anchor("Commons Attribution-ShareAlike License", "http://creativecommons.org/licenses/by-sa/4.0/");
 
 		// opens link in a new tab
-		anchor.setTarget("_blank");
+		anchorMovies.setTarget("_blank");
 
 		// adds simple text to the source panel
-		sourcePanel
-				.add(new Label(
-						"Source: David Bamman, Brendan O'Connor and Noah Smith, "
-								+ "\"Learning Latent Personas of Film Characters,\" in: Proceedings "
-								+ "of the Annual Meeting of the Association for Computational Linguistics (ACL 2013), Sofia, Bulgaria, August 2013."));
+		sourcePanel.add(new Label("Source Movie Data: David Bamman, Brendan O'Connor and Noah Smith, "
+				+ "\"Learning Latent Personas of Film Characters,\" in: Proceedings "
+				+ "of the Annual Meeting of the Association for Computational Linguistics (ACL 2013), Sofia, Bulgaria, August 2013."));
 
-		sourcePanel.add(anchor);
+		sourcePanel.add(anchorMovies);
+		
+		// new anchor to the creative commons website
+		Anchor anchorPopulation = new Anchor("World Bank Global Population", "http://data.worldbank.org/indicator/SP.POP.TOTL");
+
+		// opens link in a new tab
+		anchorPopulation.setTarget("_blank");
+
+		// adds simple text to the source panel
+		sourcePanel.add(new Label("Source Population Data: World Bank yearly census. Total population per country per year from 1960-2014. License: Open"));
+
+		sourcePanel.add(anchorPopulation);
 		disclosureSourcePanel.add(sourcePanel);
 		disclosureSourcePanel.setOpen(true);
 	}
 
-	/*private void showYearsBarChartTest() {
-
-		dbService.getBarChartData("China", null, 2004, 2005,
-				new AsyncCallback<Map<Integer, Integer>>() {
-					@Override
-					public void onFailure(Throwable caught) {
-						logger.log(Level.SEVERE, caught.getMessage());
-
-						for (StackTraceElement t : caught.getStackTrace()) {
-							logger.log(Level.SEVERE, t.toString());
-						}
-					}
-
-					@Override
-					public void onSuccess(Map<Integer, Integer> result) {
-						for (Map.Entry<Integer, Integer> kvp : result
-								.entrySet()) {
-							String s = "year: " + kvp.getKey() + " amount: " + kvp.getValue();
-							logger.log(Level.SEVERE, s);
-						}
-					}
-				});
-	}*/
+	/*
+	 * private void showYearsBarChartTest() {
+	 * 
+	 * dbService.getBarChartData("China", null, 2004, 2005, new
+	 * AsyncCallback<Map<Integer, Integer>>() {
+	 * 
+	 * @Override public void onFailure(Throwable caught) {
+	 * logger.log(Level.SEVERE, caught.getMessage());
+	 * 
+	 * for (StackTraceElement t : caught.getStackTrace()) {
+	 * logger.log(Level.SEVERE, t.toString()); } }
+	 * 
+	 * @Override public void onSuccess(Map<Integer, Integer> result) { for
+	 * (Map.Entry<Integer, Integer> kvp : result .entrySet()) { String s =
+	 * "year: " + kvp.getKey() + " amount: " + kvp.getValue();
+	 * logger.log(Level.SEVERE, s); } } }); }
+	 */
 }

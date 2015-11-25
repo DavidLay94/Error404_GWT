@@ -1,7 +1,6 @@
 package movie.db.client;
 
 import java.util.ArrayList;
-
 import java.util.Map;
 
 import movie.db.shared.DataResultAggregated;
@@ -19,7 +18,9 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 public interface MyServiceAsync {
 	public void getFilteredData(Selection selection, AsyncCallback<Map<Integer, DataResultShared>> callback);
 
-	public void getWorldMapData(int selectedYear, AsyncCallback<ArrayList<DataResultAggregated>> asyncCallback);
+	public void getWorldMapData(int selectedYear, AsyncCallback<ArrayList<DataResultAggregated>> asyncCallback);	
+
+	public void getPopulation(int selectedYear, AsyncCallback<Map<String,Integer>> callback);
 	
 	public void getColumnEntries(String column, AsyncCallback<ArrayList<String>> callback);
 	

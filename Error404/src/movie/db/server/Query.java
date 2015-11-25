@@ -11,6 +11,7 @@ import movie.db.shared.DataResultShared;
 import movie.db.shared.Duration;
 import movie.db.shared.Selection;
 
+import com.google.apphosting.api.DatastorePb.QueryResult;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 /*
@@ -288,6 +289,38 @@ public class Query extends RemoteServiceServlet implements MyService {
 		return resultArray;
 	}
 
+	public Map<String, Integer> getPopulation(int selectedYear){
+		Map<String,Integer> resultMap = new HashMap<String, Integer>();
+		String sqlQuery = "SELECT name, year_" + selectedYear + " AS \"amount\" FROM population";
+
+		try {
+			Connection connection = ConnectionConfiguration.getConnection();
+			Statement statement = null;
+			try {
+				statement = connection.createStatement();
+				ResultSet queryResult = statement.executeQuery(sqlQuery);
+				
+				while (queryResult.next()) {
+					resultMap.put(queryResult.getString("name"), queryResult.getInt("amount"));				
+					
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			} finally {
+				try {
+					statement.close();
+				} catch (Exception e) {
+				}
+				try {
+					connection.close();
+				} catch (Exception e) {
+				}
+			}
+		} catch (Exception ex) {
+		}
+		return resultMap;
+	}
+	
 	/**
 	 * Generates a ArrayList<String> which is used to fill the
 	 * selection-listboxes in the UI.
