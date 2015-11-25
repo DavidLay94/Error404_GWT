@@ -35,6 +35,7 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
+import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.SimpleLayoutPanel;
 import com.google.gwt.user.client.ui.TabPanel;
@@ -114,14 +115,14 @@ public class Error404 implements EntryPoint {
 		// mainPanel.setSize("100vw", "82vh");
 		// rootPanel.setSize("100vw", "82vh");
 		// mainPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
-		showYearsBarChartTest();
+		//showYearsBarChartTest();
 		rootPanel.setSpacing(5);
 		// mainPanel.add(introductionText);
 
 		// VerticalPanel selectionPanel = new VerticalPanel();
 
 		VerticalPanel selectionCriteriaTable = new VerticalPanel();
-		FlexTable worldMapCriteriaTable = new FlexTable();
+		HorizontalPanel worldMapCriteriaTable = new HorizontalPanel();
 
 		initializeSelectionListBox(genreListBox, "genre");
 		initializeSelectionListBox(countryListBox, "country");
@@ -285,10 +286,13 @@ public class Error404 implements EntryPoint {
 	 * @Pre Parameters have to be implemented
 	 * @param worldMapCriteriaTable
 	 */
-	private void initializeWorldMapCriteriaTable(FlexTable worldMapCriteriaTable) {
-		worldMapCriteriaTable.setText(0, 0, "Year:");
+	private void initializeWorldMapCriteriaTable(HorizontalPanel worldMapCriteriaTable) {		
+		worldMapCriteriaTable.setWidth(TABPANELWIDTH);
+		FlexTable selectionLeft = new FlexTable();
+		worldMapCriteriaTable.add(selectionLeft);
+		selectionLeft.setText(0, 0, "Year:");
 		tbYearWorldmap.setWidth("4em");
-		worldMapCriteriaTable.setWidget(1, 0, tbYearWorldmap);
+		selectionLeft.setWidget(1, 0, tbYearWorldmap);
 
 		Button showMapButton = new Button();
 		Button cleanWorldMapButton = new Button();
@@ -298,7 +302,7 @@ public class Error404 implements EntryPoint {
 			}
 		});
 		showMapButton.setText("Show Year on Worldmap");
-		worldMapCriteriaTable.setWidget(1, 1, showMapButton);
+		selectionLeft.setWidget(1, 1, showMapButton);
 
 		cleanWorldMapButton.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
@@ -307,7 +311,16 @@ public class Error404 implements EntryPoint {
 		});
 		cleanWorldMapButton.setText("Clean Worldmap");
 
-		worldMapCriteriaTable.setWidget(1, 2, cleanWorldMapButton);
+		selectionLeft.setWidget(1, 2, cleanWorldMapButton);
+
+		RadioButton absoluteRB = new RadioButton("valueType", "absolute numbers");
+		RadioButton percapitaRB = new RadioButton("valueType","per capita amount");
+		worldMapCriteriaTable.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_LEFT);
+		worldMapCriteriaTable.setVerticalAlignment(HasVerticalAlignment.ALIGN_BOTTOM);
+		VerticalPanel selectionRight = new VerticalPanel();
+		selectionRight.add(absoluteRB);
+		selectionRight.add(percapitaRB);
+		worldMapCriteriaTable.add(selectionRight);
 	}
 
 	/**
@@ -774,7 +787,7 @@ public class Error404 implements EntryPoint {
 		disclosureSourcePanel.setOpen(true);
 	}
 
-	private void showYearsBarChartTest() {
+	/*private void showYearsBarChartTest() {
 
 		dbService.getBarChartData("China", null, 2004, 2005,
 				new AsyncCallback<Map<Integer, Integer>>() {
@@ -796,5 +809,5 @@ public class Error404 implements EntryPoint {
 						}
 					}
 				});
-	}
+	}*/
 }

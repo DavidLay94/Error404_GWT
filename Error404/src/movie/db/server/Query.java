@@ -241,6 +241,7 @@ public class Query extends RemoteServiceServlet implements MyService {
 
 		String sqlQuery = "SELECT country, count(country) AS \"amount\" FROM moviesAllInOne WHERE year = "
 				+ selectedYear + " group by country";
+		//String sqlQuery = "SELECT country, count(country) AS \"amount\" FROM moviesAllInOne group by country";
 
 		try {
 			Connection connection = ConnectionConfiguration.getConnection();

@@ -1,6 +1,8 @@
 package movie.db.client;
 
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import movie.db.shared.DataResultAggregated;
 
@@ -19,7 +21,7 @@ public class WorldMap {
 	private GeoMap worldMap;
 	private DataTable dataTable;
 	private Options options;
-
+	private final static Logger logger = Logger.getLogger("Error404");
 	public WorldMap(ArrayList<DataResultAggregated> list, String width, String height) {
 		super();
 		dataTable = generateDataTable(list);
@@ -73,6 +75,9 @@ public class WorldMap {
 					dataTable.setValue(z, 0, inputList.get(z).getOSICountryName());
 					dataTable.setValue(z, 1, inputList.get(z).getNumberOfMovies());
 					dataTable.setValue(z, 2, inputList.get(z).getShowedCountryName());
+					if( inputList.get(z).getShowedCountryName().equals(" ")){
+					//logger.log(Level.SEVERE, inputList.get(z).getOSICountryName());
+					}
 					z++;
 				}
 
@@ -163,10 +168,10 @@ public class WorldMap {
 				String country = inputData.get(i).getCountryName();
 				country.trim();
 				country = country.replaceAll("\\s+", "");
-				if (country.equals("Aruba")) {
+				if(country.equals(" ")){}
+				else if (country.equals("Aruba")) {
 					outputList = handleExceptionalCountry(inputData, outputList, i, "Netherlands", "Netherlands");
 				}
-
 				else if (country.equals("Netherlands")) {
 					outputList = handleExceptionalCountry(inputData, outputList, i, "Netherlands", "Netherlands");
 				}
