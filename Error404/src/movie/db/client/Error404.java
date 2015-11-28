@@ -47,6 +47,7 @@ import com.google.gwt.user.client.ui.HasHorizontalAlignment.HorizontalAlignmentC
 import com.google.gwt.visualization.client.VisualizationUtils;
 import com.google.gwt.visualization.client.visualizations.GeoMap;
 import com.google.gwt.visualization.client.visualizations.Table;
+import com.google.gwt.visualization.client.visualizations.corechart.CoreChart;
 import com.google.gwt.widgetideas.client.SliderBar;
 import com.google.gwt.widgetideas.client.SliderBar.LabelFormatter;
 
@@ -69,7 +70,9 @@ public class Error404 implements EntryPoint {
 	private HorizontalPanel mainPanel = new HorizontalPanel();
 	private SimpleLayoutPanel worldMapPanel;
 	private HorizontalPanel resultTablePanel;
-
+	private SimpleLayoutPanel pieChartPanel;
+	private SimpleLayoutPanel columnChartPanel;
+	
 	private VerticalPanel rootPanel = new VerticalPanel();
 	private VerticalPanel advertisementPanel1 = new VerticalPanel();
 	private VerticalPanel advertisementPanel2 = new VerticalPanel();
@@ -79,9 +82,26 @@ public class Error404 implements EntryPoint {
 	private ListBox countryListBox = new ListBox();
 	private ListBox langListBox = new ListBox();
 	private ListBox durationListBox = new ListBox();
+	
+	private ListBox countryCCListBox = new ListBox();
+	private ListBox genreCCListBox = new ListBox();
+	
 	private TextBox tbYearWorldmap = new TextBox();
 	private TextBox tbNameTable = new TextBox();
 	private TextBox tbYearTable = new TextBox();
+	
+	private TextBox tbYearPieChart = new TextBox();
+	private TextBox tbYearFromColumnChart = new TextBox();
+	private TextBox tbYearToColumnChart = new TextBox();
+	
+	private ArrayList<DataResultAggregated> pieChartInputDataList = new ArrayList<DataResultAggregated>();
+	///
+	private Map<Integer, Integer> columnChartInputMap = new HashMap<Integer, Integer>();
+	private	int selectedYearFromColumnChart = 0;
+	private int selectedYearToColumnChart = 0;
+	private String selectedCountryColumnChart;
+	private String selectedGenreColumnChart;
+	
 	private ArrayList<DataResultAggregated> worldMapInputDataList = new ArrayList<DataResultAggregated>();
 	private int selectedYear;
 	private Map<String, Integer> worldMapInputDataListPopulation = new HashMap<String, Integer>();
@@ -105,7 +125,9 @@ public class Error404 implements EntryPoint {
 
 	private final static Logger logger = Logger.getLogger("Error404");
 	private VerticalPanel worldMapVP;
-
+	private VerticalPanel pieChartVP;
+	private VerticalPanel columnChartVP;
+	
 	/**
 	 * Initializes most of the important panels and buttons by calling smaller
 	 * methods in its body. These methods initialize parts of the mainPanel as
@@ -116,15 +138,10 @@ public class Error404 implements EntryPoint {
 	 * @Pre EntryPoint class must be loaded correctly
 	 */
 	private void initializePanels() {
-		// mainPanel.setSize("100vw", "82vh");
-		// rootPanel.setSize("100vw", "82vh");
-		// mainPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
-		// showYearsBarChartTest();
 		rootPanel.setSpacing(5);
-		// mainPanel.add(introductionText);
-
-		// VerticalPanel selectionPanel = new VerticalPanel();
-
+		
+		FlexTable pieChartCriteriaTable = new FlexTable();
+		FlexTable columnChartCriteriaTable = new FlexTable();
 		VerticalPanel selectionCriteriaTable = new VerticalPanel();
 		HorizontalPanel worldMapCriteriaTable = new HorizontalPanel();
 
@@ -137,19 +154,34 @@ public class Error404 implements EntryPoint {
 		worldMapVP = new VerticalPanel();
 		worldMapVP.add(worldMapCriteriaTable);
 		initializeWorldMapAndTimeBar();
+		
+		initializeSelectionListBox(countryCCListBox, "country");
+		initializeSelectionListBox(genreCCListBox, "genre");
+		
+		initializePieChartCriteriaTable(pieChartCriteriaTable);
+		pieChartVP = new VerticalPanel();
+		pieChartVP.add(pieChartCriteriaTable);
+		initializePieChart();
 
+		///
+		initializeColumnChartCriteriaTable(columnChartCriteriaTable);
+		columnChartVP = new VerticalPanel();
+		columnChartVP.add(columnChartCriteriaTable);
+		initializeColumnChart();
+		
 		initializeSelectionCriteriaTable(selectionCriteriaTable);
 		VerticalPanel tableVP = new VerticalPanel();
 		tableVP.add(selectionCriteriaTable);
 		tableVP.add(initializeResultTable());
 
-		// tabPanel.setSize(TABPANELWIDTH, TABPANELHEIGHT);
+		//fill tabbar
 		tabPanel.setSize("1415px", TABPANELHEIGHT);
-		// tabPanel.setWidth("1215px");
 		tabPanel.add(worldMapVP, "Worldmap");
-		tabPanel.add(tableVP, "Table");
+		tabPanel.add(tableVP, "Table");		
+		tabPanel.add(pieChartVP, "Pie Chart");
+		tabPanel.add(columnChartVP, "Column Chart");
 		tabPanel.selectTab(0);
-
+		
 		Label lb = new Label();
 		lb.setText("Movie Database by Error 404");
 		lb.addStyleName("customHeader");
@@ -365,7 +397,92 @@ public class Error404 implements EntryPoint {
 		selectionRight.add(percapitaRB);
 		worldMapCriteriaTable.add(selectionRight);
 	}
+	
+	/** Initializes a pie chart criteria table visible on the main page. Adds a
+	 * textbox and a button to the flextable. The flextable is localized
+	 * underneath selection part of the website.
+	 * 
+	 * @author Patrick Muntwyler
+	 * @Pre Parameters have to be implemented
+	 * @param pieChartCriteriaTable
+	 */
+	private void initializePieChartCriteriaTable(FlexTable pieChartCriteriaTable) {
+		pieChartCriteriaTable.setText(0, 0, "Year:");
+		tbYearPieChart.setWidth("4em");
+		pieChartCriteriaTable.setWidget(1, 0, tbYearPieChart);
 
+		Button showPieChartButton = new Button();
+		Button cleanPieChartButton = new Button();
+
+		showPieChartButton.addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				drawPieChart();
+			}
+		});
+		showPieChartButton.setText("Draw Pie Chart");
+		pieChartCriteriaTable.setWidget(1, 1, showPieChartButton);
+		
+		cleanPieChartButton.addClickHandler(new ClickHandler(){
+			public void onClick(ClickEvent event){
+				pieChartInputDataList.clear();
+				refreshPieChart();
+			}
+		});
+		cleanPieChartButton.setText("Clean Pie Chart");
+		pieChartCriteriaTable.setWidget(1, 2, cleanPieChartButton);
+		
+	}
+	
+	/**
+	 * Initializes a column chart criteria table visible on the main page. Adds
+	 * two listboxes, two textboxes and a button to the flextable. The flextable
+	 * is localized underneath selection part of the website.
+	 * 
+	 * @author Patrick Muntwyler
+	 * @Pre Parameters have to be implemented
+	 * @param pieChartCriteriaTable
+	 */
+	private void initializeColumnChartCriteriaTable(FlexTable columnChartCriteriaTable) {
+
+		columnChartCriteriaTable.setText(0, 0, "Country:");
+		columnChartCriteriaTable.setWidget(1, 0, countryCCListBox);
+
+		columnChartCriteriaTable.setText(0, 1, "Genre:");
+		columnChartCriteriaTable.setWidget(1, 1, genreCCListBox);
+
+		columnChartCriteriaTable.setText(0, 2, "From Year:");
+		tbYearFromColumnChart.setWidth("5em");
+		columnChartCriteriaTable.setWidget(1, 2, tbYearFromColumnChart);
+		columnChartCriteriaTable.getCellFormatter().setVerticalAlignment(1, 2, HasVerticalAlignment.ALIGN_TOP);
+
+		columnChartCriteriaTable.setText(0, 3, "To Year:");
+		tbYearToColumnChart.setWidth("5em");
+		columnChartCriteriaTable.setWidget(1, 3, tbYearToColumnChart);
+		columnChartCriteriaTable.getCellFormatter().setVerticalAlignment(1, 3, HasVerticalAlignment.ALIGN_TOP);
+
+		Button showColumnChartButton = new Button();
+		Button cleanColumnChartButton = new Button();
+
+		showColumnChartButton.addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				drawColumnChart();
+			}
+		});
+		showColumnChartButton.setText("Draw Column Chart");
+		columnChartCriteriaTable.setWidget(1, 4, showColumnChartButton);
+		columnChartCriteriaTable.getCellFormatter().setVerticalAlignment(1, 4, HasVerticalAlignment.ALIGN_TOP);
+		
+		cleanColumnChartButton.addClickHandler(new ClickHandler(){
+			public void onClick(ClickEvent event){
+				columnChartInputMap.clear();
+				refreshColumnChart();
+			}
+		});
+		cleanColumnChartButton.setText("Clean Column Chart");
+		columnChartCriteriaTable.setWidget(1, 5, cleanColumnChartButton);
+		columnChartCriteriaTable.getCellFormatter().setVerticalAlignment(1, 5, HasVerticalAlignment.ALIGN_TOP);
+	}
+	
 	/**
 	 * Initializes one selection Box with the entries from the database by
 	 * making an async call to Query.java class
@@ -655,6 +772,110 @@ public class Error404 implements EntryPoint {
 	}
 
 	/**
+	 * this function takes the number entered in the textbox tbYearPieChart and
+	 * generates a query to get the data from the database. Then it invokes the
+	 * method refreshPieChart.
+	 * 
+	 * @author Patrick Muntwyler
+	 * @pre mainpanel has been loaded
+	 * @post the pie chart is drawn
+	 */
+	private void drawPieChart() {
+		try {
+			int selectedYear = Integer.parseInt(tbYearPieChart.getText());
+			if (selectedYear >= (int) YEAR_OLDEST_MOVIE && selectedYear <= (int) CURRENT_YEAR) {
+
+				dbService.getWorldMapData(selectedYear, new AsyncCallback<ArrayList<DataResultAggregated>>() {
+					@Override
+					public void onFailure(Throwable caught) {
+					}
+
+					@Override
+					public void onSuccess(ArrayList<DataResultAggregated> result) {
+
+						pieChartInputDataList = result;
+						refreshPieChart();
+					}
+				});
+
+				// if the given year is out of range
+			} else {
+				Window.alert(
+						"Please insert a valid number (" + (int) YEAR_OLDEST_MOVIE + "-" + (int) CURRENT_YEAR + ")");
+			}
+		} catch (Exception ex) {
+			Window.alert("Please insert a valid number (" + (int) YEAR_OLDEST_MOVIE + "-" + (int) CURRENT_YEAR + ")");
+		}
+	}
+	
+	/**
+	 * This method takes the column chart criteria and generates a query to get the considered data from
+	 * the database. Then it invokes the method refreshColumnChart.
+	 * @author Patrick Muntwyler
+	 */
+	private void drawColumnChart() {
+
+		try {
+			this.selectedYearFromColumnChart = Integer.parseInt(tbYearFromColumnChart.getText());
+			this.selectedYearToColumnChart = Integer.parseInt(tbYearToColumnChart.getText());
+			
+			//Year From must be equal or smaller than Year To!
+			if (selectedYearToColumnChart < selectedYearFromColumnChart) {
+				Window.alert("Year To can not be smaller than Year From!");
+			} else {
+
+				// a country must be selected
+				if (countryCCListBox.getSelectedIndex() >= 0) {
+					selectedCountryColumnChart = countryCCListBox.getItemText(countryCCListBox.getSelectedIndex());
+
+					// if no genre is selected
+					if (genreCCListBox.getSelectedIndex() == -1) {
+						selectedGenreColumnChart = null;
+					} else {
+						selectedGenreColumnChart = genreCCListBox.getItemText(genreCCListBox.getSelectedIndex());
+					}
+
+					this.selectedYearFromColumnChart = Integer.parseInt(tbYearFromColumnChart.getText());
+					this.selectedYearToColumnChart = Integer.parseInt(tbYearToColumnChart.getText());
+					// Window.alert(selectedYearTo + "");
+
+					dbService.getColumnChartData(selectedCountryColumnChart, selectedGenreColumnChart, selectedYearFromColumnChart,
+							selectedYearToColumnChart, new AsyncCallback<Map<Integer, Integer>>() {
+
+								@Override
+								public void onFailure(Throwable caught) {
+									logger.log(Level.SEVERE, caught.getMessage());
+
+									for (StackTraceElement t : caught.getStackTrace()) {
+										logger.log(Level.SEVERE, t.toString());
+									}
+								}
+
+								@Override
+								public void onSuccess(Map<Integer, Integer> result) {
+									columnChartInputMap = result;
+									refreshColumnChart();
+									/*
+									 * for (Map.Entry<Integer, Integer> kvp :
+									 * result.entrySet()) { String s = "year: "
+									 * + kvp.getKey() + " amount: " +
+									 * kvp.getValue(); logger.log(Level.SEVERE,
+									 * s); }
+									 */
+								}
+							});
+
+				} else {
+					Window.alert("Please select a country!");
+				}
+			}
+		} catch (Exception ex) {
+			Window.alert("Please select a country, enter a year from and a year to");
+
+		}
+	}
+	
+	/**
 	 * Gets the data of the selection, searches the database for the given input
 	 * and returns a table with the selected data.
 	 * 
@@ -746,6 +967,43 @@ public class Error404 implements EntryPoint {
 	}
 
 	/**
+	 * Refreshes the pie chart after new selection was chosen. Shows a new pie chart
+	 * with the new given selection criteria.
+	 * 
+	 * @author Patrick Muntwyler
+	 * @post the pie chart is drawn
+	 *
+	 */
+	private void refreshPieChart() {
+		Runnable onLoadCallback = new Runnable() {
+			public void run() {
+				PieChartWebPage pieChart = new PieChartWebPage(pieChartInputDataList);
+				pieChartPanel.setWidget(pieChart.getPieChart());
+				pieChart.getPieChart().draw(pieChart.getDataTable(), pieChart.getOptions());
+			}
+		};
+		VisualizationUtils.loadVisualizationApi(onLoadCallback, CoreChart.PACKAGE);
+	}
+	
+	/**
+	 * Refreshes the column chart after new selections was chosen. Shows a new column
+	 * chart with the new given selection criteria. 
+	 * @author Patrick Muntwyler
+	 * @post the column chart is drawn
+	 */
+	private void refreshColumnChart() {
+		Runnable onLoadCallback = new Runnable() {
+			public void run() {
+				ColumnChartWebPage columnChart = new ColumnChartWebPage(columnChartInputMap, selectedYearFromColumnChart,
+						selectedYearToColumnChart, selectedCountryColumnChart, selectedGenreColumnChart);
+				columnChartPanel.setWidget(columnChart.getColumnChart());
+				columnChart.getColumnChart().draw(columnChart.getDataTable(), columnChart.getOptions());
+			}
+		};
+		VisualizationUtils.loadVisualizationApi(onLoadCallback, CoreChart.PACKAGE);
+	}
+	
+	/**
 	 * Creates a new Timebar object, adds a change listener to detect changes
 	 * made on the timebar
 	 * 
@@ -765,7 +1023,7 @@ public class Error404 implements EntryPoint {
 		});
 		worldMapVP.add(timeBar);
 	}
-
+	
 	/**
 	 * Creates a new Timebar object, adds a change listener to detect changes
 	 * made on the timebar
@@ -819,6 +1077,30 @@ public class Error404 implements EntryPoint {
 	}
 
 	/**
+	 * Instantiates new SimpleLayoutPanel for the pie chart, then instantiates
+	 * the pie chart, adds the pie chart to the SimpleLayoutPanel and adds the
+	 * SimpleLayoutPanel to the VerticalPanel where the pie chart and the
+	 * criteria table for the pie chart will exist.
+	 * 
+	 * @author Patrick Muntwyler
+	 * @Pre Mainpanel was initialized
+	 * @post pie chart were initialized and added to the VerticalPanel
+	 */
+	private void initializePieChart() {
+		pieChartPanel = new SimpleLayoutPanel();
+		pieChartPanel.setSize(TABPANELWIDTH, TABPANELHEIGHT);
+		Runnable onLoadCallback = new Runnable() {
+			public void run() {
+				PieChartWebPage pieChart = new PieChartWebPage(pieChartInputDataList);
+				pieChartPanel.setWidget(pieChart.getPieChart());
+				pieChart.getPieChart().draw(pieChart.getDataTable(), pieChart.getOptions());
+				pieChartVP.add(pieChartPanel);
+			}
+		};
+		VisualizationUtils.loadVisualizationApi(onLoadCallback, CoreChart.PACKAGE);
+	}
+	
+	/**
 	 * Initializes the source panel and adds an anchor as well as a new label to
 	 * it.
 	 * 
@@ -857,6 +1139,22 @@ public class Error404 implements EntryPoint {
 		disclosureSourcePanel.setOpen(true);
 	}
 
+	/**
+	 * Instantiates new SimpleLayoutPanel for the column chart and adds the SimpleLayoutPanel to the VerticalPanel
+	 * where the column chart and the criteria table for the column chart will
+	 * exist.
+	 * 
+	 * @author Patrick Muntwyler
+	 * @Pre Mainpanel was initialized
+	 * @post vertical panel for column chart is instantiated
+	 */
+	private void initializeColumnChart() {
+		columnChartPanel = new SimpleLayoutPanel();
+		columnChartPanel.setSize(TABPANELWIDTH, TABPANELHEIGHT);
+		columnChartVP.add(columnChartPanel);
+		
+	}
+	
 	/*
 	 * private void showYearsBarChartTest() {
 	 * 

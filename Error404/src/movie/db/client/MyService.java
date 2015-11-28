@@ -24,7 +24,7 @@ public interface MyService extends RemoteService {
 	public ArrayList<DataResultAggregated> getWorldMapData(int selectedYear);
 	public Map<String,Integer> getPopulation(int selectedYear);
 	public ArrayList<String> getColumnEntries(String column);
-	public Map<Integer, Integer> getBarChartData(String country, String genre, int yearFrom, int yearTo);
+	public Map<Integer, Integer> getColumnChartData(String country, String genre, int yearFrom, int yearTo);
 
 }
 

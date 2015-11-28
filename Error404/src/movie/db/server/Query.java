@@ -55,8 +55,8 @@ public class Query extends RemoteServiceServlet implements MyService {
 			try {
 				statement = connection.createStatement();
 
-				String sqlQuery = "SELECT id, name, year, duration, country, language, genre FROM moviesAllInOne "
-						+ sqlClause + " ORDER BY name"; // LIMIT 0,500";
+				String sqlQuery = "SELECT id, name, year, duration, country, language, genre FROM moviesAllInOne " + sqlClause + " ORDER BY name"; // LIMIT
+																																					// 0,500";
 
 				ResultSet queryResult = statement.executeQuery(sqlQuery);
 
@@ -85,14 +85,12 @@ public class Query extends RemoteServiceServlet implements MyService {
 					movie.setDuration(duration);
 					if (countriesSeparated != null) {
 						ArrayList<String> countries = new ArrayList<String>();
-						countries.addAll(Arrays.asList(countriesSeparated
-								.split(",")));
+						countries.addAll(Arrays.asList(countriesSeparated.split(",")));
 						movie.setCountries(countries);
 					}
 					if (languagesSeparated != null) {
 						ArrayList<String> languages = new ArrayList<String>();
-						languages.addAll(Arrays.asList(languagesSeparated
-								.split(",")));
+						languages.addAll(Arrays.asList(languagesSeparated.split(",")));
 						movie.setLanguages(languages);
 					}
 					if (genresSeparated != null) {
@@ -165,16 +163,16 @@ public class Query extends RemoteServiceServlet implements MyService {
 	 * 
 	 * @Author Christoph Weber
 	 * @pre country and the timespan must be given
-	 * @param String country, String genre,	int yearFrom, int yearTo
-	 * @post Map<Integer, Integer> contains the years with the corresponding number of films in that year
+	 * @param String
+	 *            country, String genre, int yearFrom, int yearTo
+	 * @post Map<Integer, Integer> contains the years with the corresponding
+	 *       number of films in that year
 	 */
 	@SuppressWarnings("finally")
-	public Map<Integer, Integer> getBarChartData(String country, String genre,
-			int yearFrom, int yearTo) {
+	public Map<Integer, Integer> getColumnChartData(String country, String genre, int yearFrom, int yearTo) {
 		Map<Integer, Integer> dataResultMap = new HashMap<Integer, Integer>();
 
-		String genreNullable = genre != null ? "AND genre REGEXP '(^|,)" + genre + "($|,)' "
-				: " ";
+		String genreNullable = genre != null ? "AND genre REGEXP '(^|,)" + genre + "($|,)' " : " ";
 
 		// logger.log(Level.INFO, sqlClause);
 		try {
@@ -184,15 +182,8 @@ public class Query extends RemoteServiceServlet implements MyService {
 			try {
 				statement = connection.createStatement();
 
-				String sqlQuery = "SELECT year, count(*) as \"amount\" FROM moviesAllInOne WHERE 1 = 1 AND year >= "
-						+ yearFrom
-						+ " AND year <= "
-						+ yearTo
-						+ " AND country REGEXP '(^|,)"
-						+ country
-						+ "($|,)' "
-						+ genreNullable
-						+ "group by year";
+				String sqlQuery = "SELECT year, count(*) as \"amount\" FROM moviesAllInOne WHERE 1 = 1 AND year >= " + yearFrom + " AND year <= "
+						+ yearTo + " AND country REGEXP '(^|,)" + country + "($|,)' " + genreNullable + "group by year";
 
 				ResultSet queryResult = statement.executeQuery(sqlQuery);
 
@@ -240,9 +231,9 @@ public class Query extends RemoteServiceServlet implements MyService {
 	public ArrayList<DataResultAggregated> getWorldMapData(int selectedYear) {
 		ArrayList<DataResultAggregated> resultArray = new ArrayList<DataResultAggregated>();
 
-		String sqlQuery = "SELECT country, count(country) AS \"amount\" FROM moviesAllInOne WHERE year = "
-				+ selectedYear + " group by country";
-		//String sqlQuery = "SELECT country, count(country) AS \"amount\" FROM moviesAllInOne group by country";
+		String sqlQuery = "SELECT country, count(country) AS \"amount\" FROM moviesAllInOne WHERE year = " + selectedYear + " group by country";
+		// String sqlQuery =
+		// "SELECT country, count(country) AS \"amount\" FROM moviesAllInOne group by country";
 
 		try {
 			Connection connection = ConnectionConfiguration.getConnection();
@@ -253,20 +244,26 @@ public class Query extends RemoteServiceServlet implements MyService {
 
 				Map<String, Integer> aggregatedCountries = new HashMap<String, Integer>();
 				while (queryResult.next()) {
-					for (String singleCountry : queryResult
-							.getString("country").split(",")) {
-						if (aggregatedCountries.containsKey(singleCountry)) {
-							aggregatedCountries.put(singleCountry,
-									aggregatedCountries.get(singleCountry)
-											+ queryResult.getInt("amount"));
+					String[] splitCountries = queryResult.getString("country").split(",");
+					for (String singleCountry : splitCountries) {
+						boolean isMinorPart;
+						if (splitCountries.length > 1) {
+							isMinorPart = isMinorPartOfGroupCountries(singleCountry, splitCountries);
 						} else {
-							aggregatedCountries.put(singleCountry,
-									queryResult.getInt("amount"));
+							isMinorPart = false;
+						}
+						// if singlecountry == westgerm then
+						// if queryresult contains eastgermany then do nothing
+						if (!isMinorPart) {
+							if (aggregatedCountries.containsKey(singleCountry)) {
+								aggregatedCountries.put(singleCountry, aggregatedCountries.get(singleCountry) + queryResult.getInt("amount"));
+							} else {
+								aggregatedCountries.put(singleCountry, queryResult.getInt("amount"));
+							}
 						}
 					}
 				}
-				for (Map.Entry<String, Integer> kvp : aggregatedCountries
-						.entrySet()) {
+				for (Map.Entry<String, Integer> kvp : aggregatedCountries.entrySet()) {
 					DataResultAggregated dataresult = new DataResultAggregated();
 					dataresult.setCountryName(kvp.getKey());
 					dataresult.setAggregatedNumberOfMovies(kvp.getValue());
@@ -289,8 +286,8 @@ public class Query extends RemoteServiceServlet implements MyService {
 		return resultArray;
 	}
 
-	public Map<String, Integer> getPopulation(int selectedYear){
-		Map<String,Integer> resultMap = new HashMap<String, Integer>();
+	public Map<String, Integer> getPopulation(int selectedYear) {
+		Map<String, Integer> resultMap = new HashMap<String, Integer>();
 		String sqlQuery = "SELECT name, year_" + selectedYear + " AS \"amount\" FROM population";
 
 		try {
@@ -299,10 +296,10 @@ public class Query extends RemoteServiceServlet implements MyService {
 			try {
 				statement = connection.createStatement();
 				ResultSet queryResult = statement.executeQuery(sqlQuery);
-				
+
 				while (queryResult.next()) {
-					resultMap.put(queryResult.getString("name"), queryResult.getInt("amount"));				
-					
+					resultMap.put(queryResult.getString("name"), queryResult.getInt("amount"));
+
 				}
 			} catch (SQLException e) {
 				e.printStackTrace();
@@ -320,7 +317,7 @@ public class Query extends RemoteServiceServlet implements MyService {
 		}
 		return resultMap;
 	}
-	
+
 	/**
 	 * Generates a ArrayList<String> which is used to fill the
 	 * selection-listboxes in the UI.
@@ -335,8 +332,7 @@ public class Query extends RemoteServiceServlet implements MyService {
 	public ArrayList<String> getColumnEntries(String column) {
 		ArrayList<String> resultArrayList = new ArrayList<String>();
 
-		String sqlQuery = "SELECT " + column + " FROM moviesAllInOne group by "
-				+ column;
+		String sqlQuery = "SELECT " + column + " FROM moviesAllInOne group by " + column;
 
 		try {
 			Connection connection = ConnectionConfiguration.getConnection();
@@ -347,8 +343,7 @@ public class Query extends RemoteServiceServlet implements MyService {
 
 				while (queryResult.next()) {
 					ArrayList<String> aList = new ArrayList<String>();
-					aList.addAll(Arrays.asList(queryResult.getString(column)
-							.split(",")));
+					aList.addAll(Arrays.asList(queryResult.getString(column).split(",")));
 
 					for (String s : aList) {
 						if (!resultArrayList.contains(s))
@@ -386,7 +381,7 @@ public class Query extends RemoteServiceServlet implements MyService {
 	 * @post String must be in proper syntax to be added in the part of the
 	 *       "WHERE-clause" of the sql query
 	 */
-	public String selectionToSQLWhereClause(Selection selection) {
+	private String selectionToSQLWhereClause(Selection selection) {
 		String selectionSQLWhereClause;
 		if (selection == null) {
 			selectionSQLWhereClause = " ";
@@ -395,34 +390,25 @@ public class Query extends RemoteServiceServlet implements MyService {
 
 			if (selection.getSelectedMovieName() != null) {
 				if (selection.getSelectedMovieName().length() > 0) {
-					selectionSQLWhereClause = selectionSQLWhereClause
-							+ "AND name like '"
-							+ selection.getSelectedMovieName() + "' ";
+					selectionSQLWhereClause = selectionSQLWhereClause + "AND name like '" + selection.getSelectedMovieName() + "' ";
 				}
 			}
 			if (selection.getSelectedYear() != null) {
-				selectionSQLWhereClause = selectionSQLWhereClause
-						+ "AND year = " + selection.getSelectedYear() + " ";
+				selectionSQLWhereClause = selectionSQLWhereClause + "AND year = " + selection.getSelectedYear() + " ";
 			}
 			if (!selection.getSelectedCountries().isEmpty()) {
-				selectionSQLWhereClause = selectionSQLWhereClause
-						+ "AND (country LIKE '%"
-						+ concatStrings("%' OR country LIKE '%",
-								selection.getSelectedCountries()) + "%') ";
+				selectionSQLWhereClause = selectionSQLWhereClause + "AND (country LIKE '%"
+						+ concatStrings("%' OR country LIKE '%", selection.getSelectedCountries()) + "%') ";
 			}
 
 			if (!selection.getSelectedLanguages().isEmpty()) {
-				selectionSQLWhereClause = selectionSQLWhereClause
-						+ "AND (language LIKE '%"
-						+ concatStrings("%' OR language LIKE '%",
-								selection.getSelectedLanguages()) + "%') ";
+				selectionSQLWhereClause = selectionSQLWhereClause + "AND (language LIKE '%"
+						+ concatStrings("%' OR language LIKE '%", selection.getSelectedLanguages()) + "%') ";
 			}
 
 			if (!selection.getSelectedGenres().isEmpty()) {
-				selectionSQLWhereClause = selectionSQLWhereClause
-						+ "AND (genre LIKE '%"
-						+ concatStrings("%' OR genre LIKE '%",
-								selection.getSelectedGenres()) + "%') ";
+				selectionSQLWhereClause = selectionSQLWhereClause + "AND (genre LIKE '%"
+						+ concatStrings("%' OR genre LIKE '%", selection.getSelectedGenres()) + "%') ";
 			}
 
 			if (!selection.getSelectedDurations().isEmpty()) {
@@ -430,25 +416,20 @@ public class Query extends RemoteServiceServlet implements MyService {
 				for (Duration d : selection.getSelectedDurations()) {
 					switch (d) {
 					case Short:
-						selectionSQLWhereClause = selectionSQLWhereClause
-								+ "(duration > 0 AND duration < 30) OR ";
+						selectionSQLWhereClause = selectionSQLWhereClause + "(duration > 0 AND duration < 30) OR ";
 						break;
 					case Medium:
-						selectionSQLWhereClause = selectionSQLWhereClause
-								+ "(duration >= 30 AND duration < 60) OR ";
+						selectionSQLWhereClause = selectionSQLWhereClause + "(duration >= 30 AND duration < 60) OR ";
 						break;
 					case Long:
-						selectionSQLWhereClause = selectionSQLWhereClause
-								+ "(duration >= 60 AND duration < 120) OR ";
+						selectionSQLWhereClause = selectionSQLWhereClause + "(duration >= 60 AND duration < 120) OR ";
 						break;
 					case ExtraLong:
-						selectionSQLWhereClause = selectionSQLWhereClause
-								+ "(duration >= 120) OR ";
+						selectionSQLWhereClause = selectionSQLWhereClause + "(duration >= 120) OR ";
 						break;
 					}
 				}
-				selectionSQLWhereClause = selectionSQLWhereClause.substring(0,
-						selectionSQLWhereClause.length() - 4) + ") ";
+				selectionSQLWhereClause = selectionSQLWhereClause.substring(0, selectionSQLWhereClause.length() - 4) + ") ";
 			}
 		}
 		return selectionSQLWhereClause;
@@ -466,7 +447,7 @@ public class Query extends RemoteServiceServlet implements MyService {
 	 * @post all Elements are concatenated or emptystring if aList is empty.
 	 *       Apostroph's are escaped
 	 */
-	public String concatStrings(String separator, ArrayList<String> aList) {
+	private String concatStrings(String separator, ArrayList<String> aList) {
 		if (separator != null && aList != null) {
 			String returnString = "";
 			for (String s : aList) {
@@ -479,13 +460,44 @@ public class Query extends RemoteServiceServlet implements MyService {
 				returnString = returnString + s.replace("'", "''") + separator;
 			}
 			if (aList.size() > 0) {
-				returnString = returnString.substring(0, returnString.length()
-						- separator.length());
+				returnString = returnString.substring(0, returnString.length() - separator.length());
 			}
 
 			return returnString;
 		} else {
 			return null;
 		}
+	}
+
+	private boolean isMinorPartOfGroupCountries(String singleCountry, String[] splitCountries) {
+		ArrayList<List<String>> countryGroups = new ArrayList<List<String>>();
+		List<String> germanGroup = Arrays.asList("German Democratic Republic", "Nazi Germany", "Weimarer Republic", "Germany");
+		List<String> englishGroup = Arrays.asList("Wales", "Isle of Man", "England");
+		countryGroups.add(germanGroup);
+		countryGroups.add(englishGroup);
+
+		for (List<String> group : countryGroups) {
+			if (group.contains(singleCountry)) {
+				int singleCountryIndex = -1;
+				int highestIndexOfSplitCountries = -1;
+				int i = 0;
+				for (String s : group) {
+					if (s.equals(singleCountry)) {
+						singleCountryIndex = i;
+					}
+					if (Arrays.asList(splitCountries).contains(s)) {
+						highestIndexOfSplitCountries = i;
+					}
+					i++;
+				}
+				if (highestIndexOfSplitCountries > singleCountryIndex) {
+					return true;
+				} else {
+					return false;
+				}
+			}
+		}
+
+		return false;
 	}
 }

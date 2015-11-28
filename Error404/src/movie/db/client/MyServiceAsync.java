@@ -24,6 +24,6 @@ public interface MyServiceAsync {
 	
 	public void getColumnEntries(String column, AsyncCallback<ArrayList<String>> callback);
 	
-	public void getBarChartData(String country, String genre, int yearFrom, int yearTo, AsyncCallback<Map<Integer,Integer>> callback);
+	public void getColumnChartData(String country, String genre, int yearFrom, int yearTo, AsyncCallback<Map<Integer,Integer>> callback);
 }
 
