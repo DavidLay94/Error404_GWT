@@ -10,7 +10,7 @@ import org.junit.Test;
 
 public class isMinorPartOfGroupTest {
 
-	@Test
+	//@Test
 	/*public void test() {
 		Query q = new Query();
 		

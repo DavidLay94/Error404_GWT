@@ -390,7 +390,7 @@ public class Query extends RemoteServiceServlet implements MyService {
 
 			if (selection.getSelectedMovieName() != null) {
 				if (selection.getSelectedMovieName().length() > 0) {
-					selectionSQLWhereClause = selectionSQLWhereClause + "AND name like '" + selection.getSelectedMovieName() + "' ";
+					selectionSQLWhereClause = selectionSQLWhereClause + "AND name like '%" + selection.getSelectedMovieName() + "%' ";
 				}
 			}
 			if (selection.getSelectedYear() != null) {
@@ -471,10 +471,33 @@ public class Query extends RemoteServiceServlet implements MyService {
 
 	private boolean isMinorPartOfGroupCountries(String singleCountry, String[] splitCountries) {
 		ArrayList<List<String>> countryGroups = new ArrayList<List<String>>();
-		List<String> germanGroup = Arrays.asList("German Democratic Republic", "Nazi Germany", "Weimarer Republic", "Germany");
-		List<String> englishGroup = Arrays.asList("Wales", "Isle of Man", "England");
-		countryGroups.add(germanGroup);
+		
+		List<String> dutchGroup = Arrays.asList("Aruba", "Netherlands");
+		countryGroups.add(dutchGroup);
+		List<String> myanmarGroup = Arrays.asList("Burma", "Myanmar");
+		countryGroups.add(myanmarGroup);
+		List<String> chineseGroup = Arrays.asList("Republic of China", "Hong Kong","Macau","China");
+		countryGroups.add(chineseGroup);
+		List<String> congoleseGroup = Arrays.asList("Congo", "Democratic Republic of the Congo");
+		countryGroups.add(congoleseGroup);
+		List<String> englishGroup = Arrays.asList("Isle of Man", "Kingdom of Great Britain","Northern Ireland","Scotland","United Kindom","Wales","England");
 		countryGroups.add(englishGroup);
+		List<String> georgianGroup = Arrays.asList("Georgian SSR", "Georgia");
+		countryGroups.add(georgianGroup);
+		List<String> germanGroup = Arrays.asList("German Democratic Republic", "Nazi Germany","Weimar Republic","West Germany","Germany");
+		countryGroups.add(germanGroup);
+		List<String> iraqiGroup = Arrays.asList("Iraqi Kurdistan", "Iraq");
+		countryGroups.add(iraqiGroup);
+		List<String> italianGroup = Arrays.asList("Kingdom of Italy", "Italy");
+		countryGroups.add(italianGroup);
+		List<String> koreanGroup = Arrays.asList("South Korea", "Korea");
+		countryGroups.add(koreanGroup);
+		List<String> slovakGroup = Arrays.asList("Slovak Republic", "Slovakia");
+		countryGroups.add(slovakGroup);
+		List<String> ukrainianGroup = Arrays.asList("Ukranian SSR", "Ukrainian SSR","Ukraine");
+		countryGroups.add(ukrainianGroup);
+		List<String> uzbekGroup = Arrays.asList("Uzbek SSR", "Uzbekistan");
+		countryGroups.add(uzbekGroup);
 
 		for (List<String> group : countryGroups) {
 			if (group.contains(singleCountry)) {
@@ -497,7 +520,6 @@ public class Query extends RemoteServiceServlet implements MyService {
 				}
 			}
 		}
-
 		return false;
 	}
 }

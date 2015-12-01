@@ -19,6 +19,9 @@ import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -120,7 +123,7 @@ public class Error404 implements EntryPoint {
 	// private final static double YEAR_OLDEST_MOVIE = 1888;
 	// private final static double CURRENT_YEAR = 2015;
 	private final static String TABPANELHEIGHT = "540px";
-	private final static String TABPANELWIDTH = "1400px";
+	private final static String TABPANELWIDTH = "100%";
 	private final static String MAINPANELHEIGHT = "690px";
 
 	private final static Logger logger = Logger.getLogger("Error404");
@@ -139,6 +142,9 @@ public class Error404 implements EntryPoint {
 	 */
 	private void initializePanels() {
 		rootPanel.setSpacing(5);
+		rootPanel.setSize("98.5vw", "95vh");
+		mainPanel.setSize("95vw", "95vh");
+		rootPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
 		
 		FlexTable pieChartCriteriaTable = new FlexTable();
 		FlexTable columnChartCriteriaTable = new FlexTable();
@@ -174,8 +180,8 @@ public class Error404 implements EntryPoint {
 		tableVP.add(selectionCriteriaTable);
 		tableVP.add(initializeResultTable());
 
-		//fill tabbar
-		tabPanel.setSize("1415px", TABPANELHEIGHT);
+		//fill tabpanel
+		tabPanel.setSize("75vw", TABPANELHEIGHT);
 		tabPanel.add(worldMapVP, "Worldmap");
 		tabPanel.add(tableVP, "Table");		
 		tabPanel.add(pieChartVP, "Pie Chart");
@@ -195,13 +201,21 @@ public class Error404 implements EntryPoint {
 				+ "Switch to the tab \"Table\" and perform more detailed research based on the offered criteria.";
 		Label introductionText = new HTML(new SafeHtmlBuilder().appendEscapedLines(introString).toSafeHtml());
 		rootPanel.add(introductionText);
-
+/*
 		mainPanel.setHeight(MAINPANELHEIGHT);
 		mainPanel.add(advertisementPanel1);
 		mainPanel.add(tabPanel);
 		mainPanel.add(advertisementPanel2);
-		rootPanel.add(mainPanel);
+		rootPanel.add(mainPanel);*/
 
+		mainPanel.setHeight(MAINPANELHEIGHT);
+		  mainPanel.add(advertisementPanel1);
+		  mainPanel.setCellHorizontalAlignment(advertisementPanel1, HasHorizontalAlignment.ALIGN_RIGHT);
+		  mainPanel.add(tabPanel);
+		  mainPanel.add(advertisementPanel2);
+		  mainPanel.setCellHorizontalAlignment(advertisementPanel2, HasHorizontalAlignment.ALIGN_LEFT);
+		  rootPanel.add(mainPanel);
+		
 		initializeSourcePanel();
 		rootPanel.add(disclosureSourcePanel);
 		/*
@@ -228,8 +242,8 @@ public class Error404 implements EntryPoint {
 	 * @param selectionCriteriaTable
 	 */
 	private void initializeSelectionCriteriaTable(VerticalPanel selectionCriteriaTable) {
-		Button showAsButton = new Button();
-		showAsButton.addClickHandler(new ClickHandler() {
+		final Button showButton = new Button();
+		showButton.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
 				showButtonClick();
 			}
@@ -240,7 +254,7 @@ public class Error404 implements EntryPoint {
 				cleanSelectionClick();
 			}
 		});
-		showAsButton.setText("Show");
+		showButton.setText("Show");
 
 		VerticalPanel genreVP = new VerticalPanel();
 		Label genreLabel = new Label("Genre:");
@@ -267,10 +281,19 @@ public class Error404 implements EntryPoint {
 		durationVP.add(durationListBox);
 
 		VerticalPanel nameVP = new VerticalPanel();
-		Label nameLabel = new Label("Name: (use % as wildcard, e.g. %of the Rings%)");
+		Label nameLabel = new Label("Name:");
 		nameLabel.setHeight("2em");
 		nameVP.add(nameLabel);
 		tbNameTable.setWidth("39em");
+		tbNameTable.addKeyDownHandler(new KeyDownHandler() {
+
+		    @Override
+		    public void onKeyDown(KeyDownEvent event) {
+		     if(event.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
+		    	 showButton.click();
+		           }
+		    }
+		});
 		nameVP.add(tbNameTable);
 
 		VerticalPanel yearVP = new VerticalPanel();
@@ -279,6 +302,15 @@ public class Error404 implements EntryPoint {
 		yearLabel.setHeight("2em");
 		yearVP.add(yearLabel);
 		tbYearTable.setWidth("4em");
+		tbYearTable.addKeyDownHandler(new KeyDownHandler() {
+
+		    @Override
+		    public void onKeyDown(KeyDownEvent event) {
+		     if(event.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
+		    	 showButton.click();
+		           }
+		    }
+		});
 		yearVP.add(tbYearTable);
 
 		HorizontalPanel selectionHorizontal1 = new HorizontalPanel();
@@ -296,8 +328,8 @@ public class Error404 implements EntryPoint {
 		HorizontalPanel selectionHorizontal3 = new HorizontalPanel();
 		selectionHorizontal3.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
 		selectionHorizontal3.setSpacing(5);
-		showAsButton.setWidth("8em");
-		selectionHorizontal3.add(showAsButton);
+		showButton.setWidth("8em");
+		selectionHorizontal3.add(showButton);
 		cleanSelectionButton.setText("Clean");
 		cleanSelectionButton.setWidth("8em");
 		selectionHorizontal3.add(cleanSelectionButton);
@@ -324,9 +356,19 @@ public class Error404 implements EntryPoint {
 		worldMapCriteriaTable.add(selectionLeft);
 		selectionLeft.setText(0, 0, "Year:");
 		tbYearWorldmap.setWidth("4em");
+		final Button showMapButton = new Button();
+		tbYearWorldmap.addKeyDownHandler(new KeyDownHandler() {
+
+		    @Override
+		    public void onKeyDown(KeyDownEvent event) {
+		     if(event.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
+		    	 showMapButton.click();
+		           }
+		    }
+		});
+		
 		selectionLeft.setWidget(1, 0, tbYearWorldmap);
 
-		Button showMapButton = new Button();
 		Button cleanWorldMapButton = new Button();
 		showMapButton.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
@@ -407,12 +449,22 @@ public class Error404 implements EntryPoint {
 	 * @param pieChartCriteriaTable
 	 */
 	private void initializePieChartCriteriaTable(FlexTable pieChartCriteriaTable) {
+		final Button showPieChartButton = new Button();
+		Button cleanPieChartButton = new Button();
 		pieChartCriteriaTable.setText(0, 0, "Year:");
 		tbYearPieChart.setWidth("4em");
+		tbYearPieChart.addKeyDownHandler(new KeyDownHandler() {
+
+		    @Override
+		    public void onKeyDown(KeyDownEvent event) {
+		     if(event.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
+		    	 showPieChartButton.click();
+		           }
+		    }
+		});
 		pieChartCriteriaTable.setWidget(1, 0, tbYearPieChart);
 
-		Button showPieChartButton = new Button();
-		Button cleanPieChartButton = new Button();
+
 
 		showPieChartButton.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
@@ -443,25 +495,44 @@ public class Error404 implements EntryPoint {
 	 * @param pieChartCriteriaTable
 	 */
 	private void initializeColumnChartCriteriaTable(FlexTable columnChartCriteriaTable) {
-
+		final Button showColumnChartButton = new Button();
+		Button cleanColumnChartButton = new Button();
+		
 		columnChartCriteriaTable.setText(0, 0, "Country:");
 		columnChartCriteriaTable.setWidget(1, 0, countryCCListBox);
-
+		countryCCListBox.setMultipleSelect(false);
 		columnChartCriteriaTable.setText(0, 1, "Genre:");
 		columnChartCriteriaTable.setWidget(1, 1, genreCCListBox);
+		genreCCListBox.setMultipleSelect(false);
 
 		columnChartCriteriaTable.setText(0, 2, "From Year:");
 		tbYearFromColumnChart.setWidth("5em");
+		tbYearFromColumnChart.addKeyDownHandler(new KeyDownHandler() {
+
+		    @Override
+		    public void onKeyDown(KeyDownEvent event) {
+		     if(event.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
+		    	 showColumnChartButton.click();
+		           }
+		    }
+		});
 		columnChartCriteriaTable.setWidget(1, 2, tbYearFromColumnChart);
 		columnChartCriteriaTable.getCellFormatter().setVerticalAlignment(1, 2, HasVerticalAlignment.ALIGN_TOP);
 
 		columnChartCriteriaTable.setText(0, 3, "To Year:");
 		tbYearToColumnChart.setWidth("5em");
+		tbYearToColumnChart.addKeyDownHandler(new KeyDownHandler() {
+
+		    @Override
+		    public void onKeyDown(KeyDownEvent event) {
+		     if(event.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
+		    	 showColumnChartButton.click();
+		           }
+		    }
+		});
 		columnChartCriteriaTable.setWidget(1, 3, tbYearToColumnChart);
 		columnChartCriteriaTable.getCellFormatter().setVerticalAlignment(1, 3, HasVerticalAlignment.ALIGN_TOP);
 
-		Button showColumnChartButton = new Button();
-		Button cleanColumnChartButton = new Button();
 
 		showColumnChartButton.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
@@ -1066,8 +1137,10 @@ public class Error404 implements EntryPoint {
 		// initializes new images
 		Image img1 = new Image("Images/header_advertise_hor.jpg");
 		img1.setHeight(MAINPANELHEIGHT);
+		img1.setSize("10vw", MAINPANELHEIGHT);
+		
 		Image img2 = new Image("Images/header_advertise_hor.jpg");
-		img2.setHeight(MAINPANELHEIGHT);
+		img2.setSize("10vw", MAINPANELHEIGHT);
 
 		// adds the images to the different panels
 		advertisementPanel1.setWidth("5vw");
