@@ -151,9 +151,9 @@ public class Error404 implements EntryPoint {
 		VerticalPanel selectionCriteriaTable = new VerticalPanel();
 		HorizontalPanel worldMapCriteriaTable = new HorizontalPanel();
 
-		initializeSelectionListBox(genreListBox, "genre");
-		initializeSelectionListBox(countryListBox, "country");
-		initializeSelectionListBox(langListBox, "language");
+		initializeMultiSelectionListBox(genreListBox, "genre");
+		initializeMultiSelectionListBox(countryListBox, "country");
+		initializeMultiSelectionListBox(langListBox, "language");
 		initializeDurationSelListBox();
 
 		initializeWorldMapCriteriaTable(worldMapCriteriaTable);
@@ -161,8 +161,8 @@ public class Error404 implements EntryPoint {
 		worldMapVP.add(worldMapCriteriaTable);
 		initializeWorldMapAndTimeBar();
 		
-		initializeSelectionListBox(countryCCListBox, "country");
-		initializeSelectionListBox(genreCCListBox, "genre");
+		initializeSingleSelectionListBox(countryCCListBox, "country");
+		initializeSingleSelectionListBox(genreCCListBox, "genre");
 		
 		initializePieChartCriteriaTable(pieChartCriteriaTable);
 		pieChartVP = new VerticalPanel();
@@ -500,10 +500,8 @@ public class Error404 implements EntryPoint {
 		
 		columnChartCriteriaTable.setText(0, 0, "Country:");
 		columnChartCriteriaTable.setWidget(1, 0, countryCCListBox);
-		countryCCListBox.setMultipleSelect(false);
 		columnChartCriteriaTable.setText(0, 1, "Genre:");
 		columnChartCriteriaTable.setWidget(1, 1, genreCCListBox);
-		genreCCListBox.setMultipleSelect(false);
 
 		columnChartCriteriaTable.setText(0, 2, "From Year:");
 		tbYearFromColumnChart.setWidth("5em");
@@ -564,7 +562,7 @@ public class Error404 implements EntryPoint {
 	 * @param column
 	 * @param columnId
 	 */
-	private void initializeSelectionListBox(final ListBox selectionListBox, String column) {
+	private void initializeMultiSelectionListBox(final ListBox selectionListBox, String column) {
 		dbService.getColumnEntries(column, new AsyncCallback<ArrayList<String>>() {
 			@Override
 			public void onFailure(Throwable caught) {
@@ -578,6 +576,40 @@ public class Error404 implements EntryPoint {
 					}
 					selectionListBox.setVisibleItemCount(5);
 					selectionListBox.setMultipleSelect(true);
+					selectionListBox.setItemSelected(0, false); // first item is
+																// selected by
+																// default
+				} catch (Exception ex) {
+					logger.log(Level.WARNING, ex.toString());
+				}
+			}
+		});
+	}
+	
+	/**
+	 * Initializes one selection Box with the entries from the database by
+	 * making an async call to Query.java class
+	 * 
+	 * @author Patrick Muntwyler
+	 * @Pre data in database and connection
+	 * @param selectionListBox
+	 * @param column
+	 * @param columnId
+	 */
+	private void initializeSingleSelectionListBox(final ListBox selectionListBox, String column) {
+		dbService.getColumnEntries(column, new AsyncCallback<ArrayList<String>>() {
+			@Override
+			public void onFailure(Throwable caught) {
+			}
+
+			@Override
+			public void onSuccess(ArrayList<String> result) {
+				try {
+					for (String entry : result) {
+						selectionListBox.addItem(entry);
+					}
+					selectionListBox.setVisibleItemCount(5);
+					selectionListBox.setMultipleSelect(false);
 					selectionListBox.setItemSelected(0, false); // first item is
 																// selected by
 																// default
