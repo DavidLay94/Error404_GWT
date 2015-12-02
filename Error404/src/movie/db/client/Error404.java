@@ -1024,6 +1024,10 @@ public class Error404 implements EntryPoint {
 			public void onSuccess(Map<Integer, DataResultShared> result) {
 				resultTableInputDataList = result;
 				refreshResultTable();
+				if(resultTableInputDataList.isEmpty()==true){
+					Window.alert("No results found for this selected criterias");
+				}
+				
 			}
 		});
 	}
@@ -1054,6 +1058,7 @@ public class Error404 implements EntryPoint {
 				ResultTable resultTable = new ResultTable(resultTableInputDataList);
 				resultTablePanel.add(resultTable.getResultTable());
 				resultTable.getResultTable().draw(resultTable.getDataTable(), resultTable.getOptions());
+				
 			}
 		};
 		VisualizationUtils.loadVisualizationApi(onLoadCallback, Table.PACKAGE);
