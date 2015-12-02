@@ -543,8 +543,20 @@ public class Error404 implements EntryPoint {
 		
 		cleanColumnChartButton.addClickHandler(new ClickHandler(){
 			public void onClick(ClickEvent event){
-				columnChartInputMap.clear();
-				refreshColumnChart();
+				
+				 // unselects all selected items of the ListBoxes
+				 
+				genreCCListBox.setItemSelected(0, true);
+				genreCCListBox.setItemSelected(0, false);
+				countryCCListBox.setItemSelected(0, true);
+				countryCCListBox.setItemSelected(0, false);
+				
+				//cleans the TextBox
+				tbYearFromColumnChart.setText("");
+				tbYearToColumnChart.setText("");
+				
+				//removes ColumnChart
+				columnChartPanel.getWidget().removeFromParent();
 			}
 		});
 		cleanColumnChartButton.setText("Clean Column Chart");
@@ -661,6 +673,15 @@ public class Error404 implements EntryPoint {
 
 		tabPanel.selectTab(0);
 	}
+	
+	/**
+	 * Unselects every selection of the ListBox
+	 * @author Patrick Muntwyler
+	 * @param listBox
+	 * @post ListBox has no selected items
+	 */
+	
+
 
 	/**
 	 * Cleans the selection of the selection boards and sets it back to the
