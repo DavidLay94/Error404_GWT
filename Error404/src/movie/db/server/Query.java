@@ -390,7 +390,7 @@ public class Query extends RemoteServiceServlet implements MyService {
 
 			if (selection.getSelectedMovieName() != null) {
 				if (selection.getSelectedMovieName().length() > 0) {
-					selectionSQLWhereClause = selectionSQLWhereClause + "AND name like '%" + selection.getSelectedMovieName() + "%' ";
+					selectionSQLWhereClause = selectionSQLWhereClause + "AND name like '" + selection.getSelectedMovieName() + "' ";
 				}
 			}
 			if (selection.getSelectedYear() != null) {
