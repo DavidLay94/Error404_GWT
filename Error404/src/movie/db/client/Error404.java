@@ -41,6 +41,7 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.SimpleLayoutPanel;
 import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.TextBox;
@@ -186,6 +187,7 @@ public class Error404 implements EntryPoint {
 		tabPanel.add(tableVP, "Table");		
 		tabPanel.add(pieChartVP, "Pie Chart");
 		tabPanel.add(columnChartVP, "Column Chart");
+		tabPanel.add(initializeFAQ(), "FAQ");
 		tabPanel.selectTab(0);
 		
 		Label lb = new Label();
@@ -1025,7 +1027,7 @@ public class Error404 implements EntryPoint {
 				resultTableInputDataList = result;
 				refreshResultTable();
 				if(resultTableInputDataList.isEmpty()==true){
-					Window.alert("No results found for this selected criterias");
+					Window.alert("No results found for these selected criterias");
 				}
 				
 			}
@@ -1284,6 +1286,37 @@ public class Error404 implements EntryPoint {
 		columnChartPanel.setSize(TABPANELWIDTH, TABPANELHEIGHT);
 		columnChartVP.add(columnChartPanel);
 		
+	}
+	
+	/**
+	 * Instantiates new ScrollPanel for the FAQ and adds the HTML layout to the panel
+	 * 
+	 * @author Lukas Enggist
+	 * @Pre Mainpanel was initialized
+	 * @post scroll panel for HTML layout is instantiated
+	 */
+	
+	private ScrollPanel initializeFAQ(){
+		ScrollPanel faq = new ScrollPanel();
+		faq.add(initializeFAQHTML());
+		return faq;
+	}
+	
+	private HTML initializeFAQHTML(){
+		HTML faq = new HTML("<div> <br><br>"
+				+ "<div style='margin-left: 50px;'><img src='Images/worldmap_absolute.png' width='50%' align='left' style='margin-bottom: 50px; margin-right: 50px;' /><div style='padding-top: 30px;'><b>What does the worldmap show in the absolute number modus?</b><br><br>It's requested to choose one year in the text box or on the time bar. <br>The results shown are every movie made in this specific year for each country. <br>By hovering above a blue coloured country the number of produced movies in this country for the chosen year is showed. </div></div><div style='clear: both;'></div>"
+				+ "<div style='margin-left: 50px;'><img src='Images/worldmap_capita.png' width='50%' align='left' style='margin-bottom: 50px; margin-right: 50px;' /><div style='padding-top: 30px;'>Das ist der Text zum Bild2</div></div><div style='clear: both;'></div>"
+				+ "<div style='margin-left: 50px;'><img src='Images/table_country.png' width='50%' align='left' style='margin-bottom: 50px; margin-right: 50px;' /><div style='padding-top: 30px;'>Das ist der Text zum Bild3</div></div><div style='clear: both;'></div>"
+				+ "<div style='margin-left: 50px;'><img src='Images/table_each_one.png' width='50%' align='left' style='margin-bottom: 50px; margin-right: 50px;' /><div style='padding-top: 30px;'>Das ist der Text zum Bild4</div></div><div style='clear: both;'></div>"
+				+ "<div style='margin-left: 50px;'><img src='Images/table_each_multiple_2.png' width='50%' align='left' style='margin-bottom: 50px; margin-right: 50px;'/><div style='padding-top: 30px;'>Das ist der Text zum Bild5</div></div><div style='clear: both;'></div>"
+				+ "<div style='margin-left: 50px;'><img src='Images/table_name.png' width='50%' align='left' style='margin-bottom: 50px; margin-right: 50px;' /><div style='padding-top: 30px;'>Das ist der Text zum Bild6</div></div><div style='clear: both;'></div>"
+				+ "<div style='margin-left: 50px;'><img src='Images/table_name_year.png' width='50%' align='left' style='margin-bottom: 50px; margin-right: 50px;' /><div style='padding-top: 30px;'>Das ist der Text zum Bild7</div></div><div style='clear: both;'></div>"
+				+ "<div style='margin-left: 50px;'><img src='Images/table_year_country.png' width='50%' align='left' style='margin-bottom: 50px; margin-right: 50px;' /><div style='padding-top: 30px;'>Das ist der Text zum Bild8</div></div><div style='clear: both;'></div>"
+				+ "<div style='margin-left: 50px;'><img src='Images/pie_chart.png' width='50%' align='left' style='margin-bottom: 50px; margin-right: 50px;' /><div style='padding-top: 30px;'>Das ist der Text zum Bild9</div></div><div style='clear: both;'></div>"
+				+ "<div style='margin-left: 50px;'><img src='Images/column_chart.png' width='50%' align='left' style='margin-bottom: 50px; margin-right: 50px;' /><div style='padding-top: 30px;'>Das ist der Text zum Bild10</div></div><div style='clear: both;'></div>"
+				+ "<div style='margin-left: 50px;'><img src='Images/column_chart_genre.png' width='50%' align='left' style='margin-bottom: 50px; margin-right: 50px;'/><div style='padding-top: 30px;'>Das ist der Text zum Bild11</div></div><div style='clear: both;'></div>"
+				+"</div>");
+		return faq;
 	}
 	
 	/*

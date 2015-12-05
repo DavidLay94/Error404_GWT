@@ -18,8 +18,8 @@ import com.google.gwt.visualization.client.visualizations.GeoMap.Options;
  */
 public class WorldMap {
 
-	private final static int BRIGHT = 0x87CEEB;
-	private final static int DARK = 0x00008B;
+	private final static int BRIGHT = 0x3db8fa;
+	 private final static int DARK = 0x0f27ff;
 	private GeoMap worldMap;
 	private DataTable dataTable;
 	private Options options;
