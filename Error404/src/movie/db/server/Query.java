@@ -232,8 +232,6 @@ public class Query extends RemoteServiceServlet implements MyService {
 		ArrayList<DataResultAggregated> resultArray = new ArrayList<DataResultAggregated>();
 
 		String sqlQuery = "SELECT country, count(country) AS \"amount\" FROM moviesAllInOne WHERE year = " + selectedYear + " group by country";
-		// String sqlQuery =
-		// "SELECT country, count(country) AS \"amount\" FROM moviesAllInOne group by country";
 
 		try {
 			Connection connection = ConnectionConfiguration.getConnection();
@@ -248,12 +246,13 @@ public class Query extends RemoteServiceServlet implements MyService {
 					for (String singleCountry : splitCountries) {
 						boolean isMinorPart;
 						if (splitCountries.length > 1) {
+							//tests if the result should be counted or omitted
 							isMinorPart = isMinorPartOfGroupCountries(singleCountry, splitCountries);
 						} else {
 							isMinorPart = false;
 						}
-						// if singlecountry == westgerm then
-						// if queryresult contains eastgermany then do nothing
+						//if the country is a minor part, it won't be counted. See description of the function 
+						//"isMinorPartOfGroupCountries" for more information.
 						if (!isMinorPart) {
 							if (aggregatedCountries.containsKey(singleCountry)) {
 								aggregatedCountries.put(singleCountry, aggregatedCountries.get(singleCountry) + queryResult.getInt("amount"));
@@ -468,10 +467,27 @@ public class Query extends RemoteServiceServlet implements MyService {
 			return null;
 		}
 	}
-
+	
+	/**
+	 * This method prevents the calculation of a wrong sum if a movie is produced in 2 countries which are summarized
+	 * as one country on the worldmap. E.g. a movie is produced in "German Democratic Republic" and in "West Germany",
+	 * both "German Democratic Republic" and "West Germany" are remapped as "Germany". In this case, one movie would 
+	 * add 2 to the specific country (Germany) in that year. 	
+	 * For that, we check if the movie was produced in multiple countries that are part of the same group. If so, only 
+	 * the country in the higher hierarchical position is counted. For all countries that are a "minor" part, this 
+	 * function returns true. The hierarchical order for the example is:
+	 * "German Democratic Republic" < "Nazi Germany" < "Weimar Republic" < "West Germany" < "Germany"
+	 * Which would return true for "German Democatic Republic" and false for "West Germany".
+	 * 
+	 * @Author Christoph Weber
+	 * @pre splitCountries != null && singleCountry != null
+	 * @param String singleCountry, String[] splitCountries
+	 * @post none
+	 */
 	private boolean isMinorPartOfGroupCountries(String singleCountry, String[] splitCountries) {
 		ArrayList<List<String>> countryGroups = new ArrayList<List<String>>();
 		
+		//country groups, least hierarchical position left, highest right
 		List<String> dutchGroup = Arrays.asList("Aruba", "Netherlands");
 		countryGroups.add(dutchGroup);
 		List<String> myanmarGroup = Arrays.asList("Burma", "Myanmar");
@@ -500,19 +516,25 @@ public class Query extends RemoteServiceServlet implements MyService {
 		countryGroups.add(uzbekGroup);
 
 		for (List<String> group : countryGroups) {
+			//if the specific country "singleCountry" is part of this group, else we check the next group
 			if (group.contains(singleCountry)) {
 				int singleCountryIndex = -1;
 				int highestIndexOfSplitCountries = -1;
 				int i = 0;
 				for (String s : group) {
 					if (s.equals(singleCountry)) {
+						//it checks at what hierarchical position "singleCountry" is.
 						singleCountryIndex = i;
 					}
 					if (Arrays.asList(splitCountries).contains(s)) {
+						//it checks what the hierarchical position of the country with the highest hierarchical
+						// position in the list of different production countries is
 						highestIndexOfSplitCountries = i;
 					}
 					i++;
 				}
+				//if there is a country in the group of production countries, which has a higher hierarchical
+				//position than the specific country "singleCountry", singleCountry is a minorPart of that group
 				if (highestIndexOfSplitCountries > singleCountryIndex) {
 					return true;
 				} else {
@@ -520,6 +542,7 @@ public class Query extends RemoteServiceServlet implements MyService {
 				}
 			}
 		}
+		//if singleCountry was not part of any group, it can't be a minor part either
 		return false;
 	}
 }

@@ -52,12 +52,11 @@ public class WorldMap {
 	}
 
 	/**
-	 * @author Patrick Muntwyler Generates a DataTable which will be used by the
-	 *         GeoMap
+	 * Generates a DataTable which will be used by the GeoMap
+	 * @Author Patrick Muntwyler 
 	 * 
 	 * @pre Database query must have delivered some results
-	 * @param ArrayList
-	 *            <DataResultAggregated> data
+	 * @param ArrayList <DataResultAggregated> movieData
 	 * @post DataTable contains the result entered in the different columns
 	 */
 	public DataTable generateDataTable(ArrayList<DataResultAggregated> movieData) {
@@ -89,7 +88,16 @@ public class WorldMap {
 		}
 		return dataTable;
 	}
-
+	
+	/**
+	 * Generates a DataTable with the per-capita amounts which will be used by the GeoMap
+	 * 
+	 * @Author Christoph Weber
+	 * @pre Database query must have delivered some results
+	 * 
+	 * @param ArrayList <DataResultAggregated> movieData, Map<Strin, Integer> populationData
+	 * @post DataTable contains the result entered in the different columns
+	 */
 	public DataTable generateDataTable(ArrayList<DataResultAggregated> movieData, Map<String, Integer> populationData) {
 
 		DataTable dataTable = DataTable.create();
@@ -109,13 +117,14 @@ public class WorldMap {
 					if (movieData.get(z).getCountryName() == null) {
 					} else {
 						if (populationData.containsKey(inputList.get(z).getShowedCountryName())) {
+							int population = populationData.get(inputList.get(z).getShowedCountryName());
+							if(population > 0){
 							dataTable.addRow();
 							dataTable.setValue(z, 0, inputList.get(z).getOSICountryName());
 
-							int population = populationData.get(inputList.get(z).getShowedCountryName());
 							double capitaAmount = Math.round(1000000000.0 * inputList.get(z).getNumberOfMovies() / population) / 1000d;
 							dataTable.setValue(z, 1, capitaAmount);
-							dataTable.setValue(z, 2, inputList.get(z).getShowedCountryName());
+							dataTable.setValue(z, 2, inputList.get(z).getShowedCountryName());}
 						}
 					}
 					z++;
