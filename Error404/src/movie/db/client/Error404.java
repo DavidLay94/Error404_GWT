@@ -113,8 +113,10 @@ public class Error404 implements EntryPoint {
 	private Map<Integer, DataResultShared> resultTableInputDataList = new HashMap<Integer, DataResultShared>();
 	private RadioButton absoluteRB;
 	private RadioButton percapitaRB;
-	private double YEAR_OLDEST_MOVIE = 1888;
-	private double CURRENT_YEAR = 2015;
+	private final static double YEAR_OLDEST_MOVIE = 1888;
+	private final static double CURRENT_YEAR = 2015;
+	private final static double YEAR_OLDEST_MOVIE_CAPITA = 1960;
+	private final static double CURRENT_YEAR_CAPITA = 2014;
 	private SliderBar timeBar = new SliderBar(YEAR_OLDEST_MOVIE, CURRENT_YEAR, new LabelFormatter() {
 		public String formatLabel(SliderBar slider, double value) {
 			return (int) (10 * value) / 10 + "";
@@ -210,12 +212,20 @@ public class Error404 implements EntryPoint {
 		mainPanel.add(advertisementPanel2);
 		rootPanel.add(mainPanel);*/
 
-		mainPanel.setHeight(MAINPANELHEIGHT);
+		/*mainPanel.setHeight(MAINPANELHEIGHT);
 		  mainPanel.add(advertisementPanel1);
 		  mainPanel.setCellHorizontalAlignment(advertisementPanel1, HasHorizontalAlignment.ALIGN_RIGHT);
 		  mainPanel.add(tabPanel);
 		  mainPanel.add(advertisementPanel2);
 		  mainPanel.setCellHorizontalAlignment(advertisementPanel2, HasHorizontalAlignment.ALIGN_LEFT);
+		  rootPanel.add(mainPanel);*/
+		
+		mainPanel.setHeight(MAINPANELHEIGHT);
+		  mainPanel.add(advertisementPanel1);
+		  mainPanel.setCellVerticalAlignment(advertisementPanel1, HasVerticalAlignment.ALIGN_MIDDLE);
+		  mainPanel.add(tabPanel);
+		  mainPanel.add(advertisementPanel2);
+		  mainPanel.setCellVerticalAlignment(advertisementPanel2, HasVerticalAlignment.ALIGN_MIDDLE);
 		  rootPanel.add(mainPanel);
 		
 		initializeSourcePanel();
@@ -394,8 +404,8 @@ public class Error404 implements EntryPoint {
 
 			@Override
 			public void onClick(Widget sender) {
-				YEAR_OLDEST_MOVIE = 1888;
-				CURRENT_YEAR = 2015;
+				//YEAR_OLDEST_MOVIE = 1888;
+				//CURRENT_YEAR = 2015;
 				timeBar.setMinValue(YEAR_OLDEST_MOVIE);
 				timeBar.setMaxValue(CURRENT_YEAR);
 				initializeTimeBar();
@@ -411,24 +421,24 @@ public class Error404 implements EntryPoint {
 
 			@Override
 			public void onClick(Widget sender) {
-				YEAR_OLDEST_MOVIE = 1960;
-				CURRENT_YEAR = 2014;
+				//YEAR_OLDEST_MOVIE = 1960;
+				//CURRENT_YEAR = 2014;
 				try {
 					int selectedYear = Integer.parseInt(tbYearWorldmap.getText());
 
-					if (selectedYear >= (int) YEAR_OLDEST_MOVIE && selectedYear <= (int) CURRENT_YEAR) {
+					if (selectedYear >= (int) YEAR_OLDEST_MOVIE_CAPITA && selectedYear <= (int) CURRENT_YEAR_CAPITA) {
 
 						timeBar.setCurrentValue(selectedYear);
 						// if the given year is out of range
 					} else {
-						timeBar.setCurrentValue(CURRENT_YEAR);
-						//Window.alert("Please insert a valid number (" + (int) YEAR_OLDEST_MOVIE + "-" + (int) CURRENT_YEAR + ")");
+						timeBar.setCurrentValue(CURRENT_YEAR_CAPITA);
+						Window.alert("Please insert a valid number (" + (int) YEAR_OLDEST_MOVIE_CAPITA + "-" + (int) CURRENT_YEAR_CAPITA + ")");
 					}
 				} catch (Exception ex) {
-					Window.alert("Please insert a valid number (" + (int) YEAR_OLDEST_MOVIE + "-" + (int) CURRENT_YEAR + ")");
+					Window.alert("Please insert a valid number (" + (int) YEAR_OLDEST_MOVIE_CAPITA + "-" + (int) CURRENT_YEAR_CAPITA + ")");
 				}
-				timeBar.setMinValue(YEAR_OLDEST_MOVIE);
-				timeBar.setMaxValue(CURRENT_YEAR);
+				timeBar.setMinValue(YEAR_OLDEST_MOVIE_CAPITA);
+				timeBar.setMaxValue(CURRENT_YEAR_CAPITA);
 
 				initializeTimeBar();
 			}
@@ -1196,11 +1206,14 @@ public class Error404 implements EntryPoint {
 	private void initializeAdvertPanels() {
 		// initializes new images
 		Image img1 = new Image("Images/banana.gif");
-		img1.setHeight(MAINPANELHEIGHT);
-		img1.setSize("10vw", MAINPANELHEIGHT);
+		img1.setWidth("100%");
+		
+		//img1.setHeight(MAINPANELHEIGHT);
+		//img1.setSize("10vw", MAINPANELHEIGHT);
 		
 		Image img2 = new Image("Images/banana.gif");
-		img2.setSize("10vw", MAINPANELHEIGHT);
+		img2.setWidth("100%");
+		//img2.setSize("10vw", MAINPANELHEIGHT);
 
 		// adds the images to the different panels
 		advertisementPanel1.setWidth("5vw");
