@@ -1195,11 +1195,11 @@ public class Error404 implements EntryPoint {
 	 */
 	private void initializeAdvertPanels() {
 		// initializes new images
-		Image img1 = new Image("Images/header_advertise_hor.jpg");
+		Image img1 = new Image("Images/banana.gif");
 		img1.setHeight(MAINPANELHEIGHT);
 		img1.setSize("10vw", MAINPANELHEIGHT);
 		
-		Image img2 = new Image("Images/header_advertise_hor.jpg");
+		Image img2 = new Image("Images/banana.gif");
 		img2.setSize("10vw", MAINPANELHEIGHT);
 
 		// adds the images to the different panels
