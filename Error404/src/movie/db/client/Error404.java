@@ -1301,6 +1301,14 @@ public class Error404 implements EntryPoint {
 		faq.add(initializeFAQHTML());
 		return faq;
 	}
+	
+	/**
+	 * Instantiates new HTML content for the FAQ
+	 * 
+	 * @author Lukas Enggist
+	 * @Pre ScrollPanel was initialized
+	 * @post FAQ contend established
+	 */
 
 	private HTML initializeFAQHTML() {
 		HTML faq = new HTML(
