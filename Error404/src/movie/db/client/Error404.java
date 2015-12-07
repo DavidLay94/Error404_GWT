@@ -205,21 +205,6 @@ public class Error404 implements EntryPoint {
 				+ "Switch to the tab \"Table\" and perform more detailed research based on the offered criteria.";
 		Label introductionText = new HTML(new SafeHtmlBuilder().appendEscapedLines(introString).toSafeHtml());
 		rootPanel.add(introductionText);
-		/*
-		 * mainPanel.setHeight(MAINPANELHEIGHT);
-		 * mainPanel.add(advertisementPanel1); mainPanel.add(tabPanel);
-		 * mainPanel.add(advertisementPanel2); rootPanel.add(mainPanel);
-		 */
-
-		/*
-		 * mainPanel.setHeight(MAINPANELHEIGHT);
-		 * mainPanel.add(advertisementPanel1);
-		 * mainPanel.setCellHorizontalAlignment(advertisementPanel1,
-		 * HasHorizontalAlignment.ALIGN_RIGHT); mainPanel.add(tabPanel);
-		 * mainPanel.add(advertisementPanel2);
-		 * mainPanel.setCellHorizontalAlignment(advertisementPanel2,
-		 * HasHorizontalAlignment.ALIGN_LEFT); rootPanel.add(mainPanel);
-		 */
 
 		mainPanel.setHeight(MAINPANELHEIGHT);
 		mainPanel.add(advertisementPanel1);
@@ -230,17 +215,9 @@ public class Error404 implements EntryPoint {
 		rootPanel.add(mainPanel);
 
 		initializeSourcePanel();
+		disclosureSourcePanel.setWidth("75vw");
 		rootPanel.add(disclosureSourcePanel);
-		/*
-		 * rootPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
-		 * rootPanel.setVerticalAlignment(HasVerticalAlignment.ALIGN_BOTTOM);
-		 * rootPanel.add(lb,DockPanel.NORTH);
-		 * rootPanel.add(mainPanel,DockPanel.CENTER);
-		 * rootPanel.add(advertisementPanel1,DockPanel.WEST);
-		 * rootPanel.add(advertisementPanel2,DockPanel.EAST);
-		 * 
-		 * rootPanel.addStyleName("customCenter");
-		 */
+
 		// Associate the Main panel with the HTML host page.
 		RootPanel.get("mainPage").add(rootPanel);
 	}
@@ -1194,17 +1171,11 @@ public class Error404 implements EntryPoint {
 		Image img1 = new Image("Images/banana.gif");
 		img1.setWidth("100%");
 
-		// img1.setHeight(MAINPANELHEIGHT);
-		// img1.setSize("10vw", MAINPANELHEIGHT);
-
 		Image img2 = new Image("Images/banana.gif");
 		img2.setWidth("100%");
-		// img2.setSize("10vw", MAINPANELHEIGHT);
 
 		// adds the images to the different panels
-		advertisementPanel1.setWidth("5vw");
 		advertisementPanel1.add(img1);
-		advertisementPanel2.setWidth("5vw");
 		advertisementPanel2.add(img2);
 	}
 
