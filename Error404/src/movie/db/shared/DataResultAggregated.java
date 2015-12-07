@@ -1,12 +1,12 @@
 package movie.db.shared;
 
 import java.io.Serializable;
-
+/**
+ * This class provides the objects which are visualized on the worldmap. 
+ * @Author Christoph Weber
+ */
+@SuppressWarnings("serial")
 public class DataResultAggregated implements Serializable{
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private String countryName;
 	private int aggregatedNumberOfMovies;
 	

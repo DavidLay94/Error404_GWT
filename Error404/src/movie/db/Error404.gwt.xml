@@ -24,8 +24,11 @@
 
   <!-- Specify the paths for translatable code                    -->
   <source path='client'/>
-  <source path='shared'/>
+  <source path='shared'/>  
 
   <!-- allow Super Dev Mode -->
+  <!-- inherits name="com.google.gwt.logging.Logging"/-->
+  <inherits name='com.google.gwt.visualization.Visualization'/>
+  <inherits name='com.google.gwt.widgetideas.WidgetIdeas'/>
   <add-linker name="xsiframe"/>
 </module>

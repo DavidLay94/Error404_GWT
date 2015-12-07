@@ -1,2 +1,0 @@
-serviceClass: movie.db.client.GreetingService
-path: 2E22CE540F1E4480213607C8925FECB6.gwt.rpc

@@ -3,15 +3,16 @@ package movie.db.shared;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+/**
+ * This class provides the objects which are visualized in the table.
+ * @Author Christoph Weber
+ */
+@SuppressWarnings("serial")
 public class DataResultShared implements Serializable{
 
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private String movieName;
 	private int year;
+	private int duration;
 	private ArrayList<String> countries = new ArrayList<String>();
 	private ArrayList<String> languages = new ArrayList<String>();
 	private ArrayList<String> genres = new ArrayList<String>();
@@ -22,8 +23,11 @@ public class DataResultShared implements Serializable{
 	}
 	
 	public int getYear(){
-		return year;	
-		
+		return year;			
+	}	
+	
+	public int getDuration(){
+		return duration;			
 	}
 	
 	public ArrayList<String> getCountries(){
@@ -46,21 +50,21 @@ public class DataResultShared implements Serializable{
 		this.year = movieYear;
 	}
 	
-	public void addCountry(String countryName){		
-		if(!countries.contains(countryName)){
-			countries.add(countryName);
-		}
+	public void setDuration(int duration){
+		this.duration = duration;
 	}
 	
-	public void addLanguage(String languageName){
-		if(!languages.contains(languageName)){
-			languages.add(languageName);
-		}
+	public void setCountries(ArrayList<String> countries){		
+		this.countries = countries;
 	}
 	
-	public void addGenre(String genreName){
-		if(!genres.contains(genreName)){
-			genres.add(genreName);
-		}
+	public void setLanguages(ArrayList<String> languages){		
+		this.languages = languages;
+	}
+	
+	public void setGenres(ArrayList<String> genres){		
+		this.genres = genres;
 	}
 }
+
+
