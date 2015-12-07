@@ -1136,7 +1136,7 @@ public class Error404 implements EntryPoint {
 	 */
 	private void initializeTimeBar() {
 		timeBar.setStepSize(1.0);
-		timeBar.setCurrentValue(CURRENT_YEAR);
+		timeBar.setCurrentValue(1950);
 		timeBar.setNumTicks((int) (CURRENT_YEAR - YEAR_OLDEST_MOVIE));
 		timeBar.setNumLabels(13);
 		timeBar.addChangeListener(new ChangeListener() {
