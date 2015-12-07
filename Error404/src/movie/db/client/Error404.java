@@ -469,6 +469,7 @@ public class Error404 implements EntryPoint {
 			public void onClick(ClickEvent event) {
 				pieChartInputDataList.clear();
 				refreshPieChart();
+				tbYearPieChart.setText("");
 			}
 		});
 		cleanPieChartButton.setText("Clean Pie Chart");
