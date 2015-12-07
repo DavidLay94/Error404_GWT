@@ -114,7 +114,7 @@ public class Error404 implements EntryPoint {
 	private RadioButton absoluteRB;
 	private RadioButton percapitaRB;
 	private final static double YEAR_OLDEST_MOVIE = 1888;
-	private final static double CURRENT_YEAR = 2015;
+	private final static double CURRENT_YEAR = 2016;
 	private final static double YEAR_OLDEST_MOVIE_CAPITA = 1960;
 	private final static double CURRENT_YEAR_CAPITA = 2014;
 	private SliderBar timeBar = new SliderBar(YEAR_OLDEST_MOVIE, CURRENT_YEAR, new LabelFormatter() {
@@ -410,10 +410,12 @@ public class Error404 implements EntryPoint {
 						// if the given year is out of range
 					} else {
 						timeBar.setCurrentValue(CURRENT_YEAR_CAPITA);
-						Window.alert("Please insert a valid number (" + (int) YEAR_OLDEST_MOVIE_CAPITA + "-" + (int) CURRENT_YEAR_CAPITA + ")");
+						Window.alert("Please insert a valid number (" + (int) YEAR_OLDEST_MOVIE_CAPITA + "-"
+								+ (int) CURRENT_YEAR_CAPITA + ")");
 					}
 				} catch (Exception ex) {
-					Window.alert("Please insert a valid number (" + (int) YEAR_OLDEST_MOVIE_CAPITA + "-" + (int) CURRENT_YEAR_CAPITA + ")");
+					Window.alert("Please insert a valid number (" + (int) YEAR_OLDEST_MOVIE_CAPITA + "-"
+							+ (int) CURRENT_YEAR_CAPITA + ")");
 				}
 				timeBar.setMinValue(YEAR_OLDEST_MOVIE_CAPITA);
 				timeBar.setMaxValue(CURRENT_YEAR_CAPITA);
@@ -653,7 +655,8 @@ public class Error404 implements EntryPoint {
 				timeBar.setCurrentValue(selectedYear);
 				// if the given year is out of range
 			} else {
-				Window.alert("Please insert a valid number (" + (int) YEAR_OLDEST_MOVIE + "-" + (int) CURRENT_YEAR + ")");
+				Window.alert(
+						"Please insert a valid number (" + (int) YEAR_OLDEST_MOVIE + "-" + (int) CURRENT_YEAR + ")");
 			}
 		} catch (Exception ex) {
 			Window.alert("Please insert a valid number (" + (int) YEAR_OLDEST_MOVIE + "-" + (int) CURRENT_YEAR + ")");
@@ -791,10 +794,12 @@ public class Error404 implements EntryPoint {
 					selection.setSelectedYear(selectedYear);
 					// if the given year is out of range
 				} else {
-					Window.alert("Please insert a valid number (" + (int) YEAR_OLDEST_MOVIE + "-" + (int) CURRENT_YEAR + ")");
+					Window.alert("Please insert a valid number (" + (int) YEAR_OLDEST_MOVIE + "-" + (int) CURRENT_YEAR
+							+ ")");
 				}
 			} catch (Exception ex) {
-				Window.alert("Please insert a valid number (" + (int) YEAR_OLDEST_MOVIE + "-" + (int) CURRENT_YEAR + ")");
+				Window.alert(
+						"Please insert a valid number (" + (int) YEAR_OLDEST_MOVIE + "-" + (int) CURRENT_YEAR + ")");
 			}
 		}
 		selection.setSelectedCountries(selectedCountries);
@@ -867,7 +872,8 @@ public class Error404 implements EntryPoint {
 				});
 				// if the given year is out of range
 			} else {
-				Window.alert("Please insert a valid number (" + (int) YEAR_OLDEST_MOVIE + "-" + (int) CURRENT_YEAR + ")");
+				Window.alert(
+						"Please insert a valid number (" + (int) YEAR_OLDEST_MOVIE + "-" + (int) CURRENT_YEAR + ")");
 			}
 		} catch (Exception ex) {
 			Window.alert("Please insert a valid number (" + (int) YEAR_OLDEST_MOVIE + "-" + (int) CURRENT_YEAR + ")");
@@ -903,7 +909,8 @@ public class Error404 implements EntryPoint {
 
 				// if the given year is out of range
 			} else {
-				Window.alert("Please insert a valid number (" + (int) YEAR_OLDEST_MOVIE + "-" + (int) CURRENT_YEAR + ")");
+				Window.alert(
+						"Please insert a valid number (" + (int) YEAR_OLDEST_MOVIE + "-" + (int) CURRENT_YEAR + ")");
 			}
 		} catch (Exception ex) {
 			Window.alert("Please insert a valid number (" + (int) YEAR_OLDEST_MOVIE + "-" + (int) CURRENT_YEAR + ")");
@@ -926,7 +933,11 @@ public class Error404 implements EntryPoint {
 			// Year From must be equal or smaller tha Year To!
 			if (selectedYearToColumnChart < selectedYearFromColumnChart) {
 				Window.alert("Year To can not be smaller than Year From!");
-			} else {
+			} else if (selectedYearFromColumnChart < YEAR_OLDEST_MOVIE || selectedYearToColumnChart > CURRENT_YEAR ) {
+				Window.alert("Please insert valid year dates (" + (int)YEAR_OLDEST_MOVIE + "-" + (int)CURRENT_YEAR + ")");
+			}
+
+			else {
 
 				// a country must be selected
 				if (countryCCListBox.getSelectedIndex() >= 0) {
@@ -943,8 +954,9 @@ public class Error404 implements EntryPoint {
 					this.selectedYearToColumnChart = Integer.parseInt(tbYearToColumnChart.getText());
 					// Window.alert(selectedYearTo + "");
 
-					dbService.getColumnChartData(selectedCountryColumnChart, selectedGenreColumnChart, selectedYearFromColumnChart,
-							selectedYearToColumnChart, new AsyncCallback<Map<Integer, Integer>>() {
+					dbService.getColumnChartData(selectedCountryColumnChart, selectedGenreColumnChart,
+							selectedYearFromColumnChart, selectedYearToColumnChart,
+							new AsyncCallback<Map<Integer, Integer>>() {
 
 								@Override
 								public void onFailure(Throwable caught) {
@@ -1066,7 +1078,8 @@ public class Error404 implements EntryPoint {
 			Runnable onLoadCallback2 = new Runnable() {
 				public void run() {
 					logger.log(Level.WARNING, "cap");
-					WorldMap map = new WorldMap(worldMapInputDataList, worldMapInputDataListPopulation, TABPANELWIDTH, TABPANELHEIGHT);
+					WorldMap map = new WorldMap(worldMapInputDataList, worldMapInputDataListPopulation, TABPANELWIDTH,
+							TABPANELHEIGHT);
 					worldMapPanel.setWidget(map.getWorldMap());
 					map.getWorldMap().draw(map.getDataTable(), map.getOptions());
 				}
@@ -1104,8 +1117,9 @@ public class Error404 implements EntryPoint {
 	private void refreshColumnChart() {
 		Runnable onLoadCallback = new Runnable() {
 			public void run() {
-				ColumnChartWebPage columnChart = new ColumnChartWebPage(columnChartInputMap, selectedYearFromColumnChart, selectedYearToColumnChart,
-						selectedCountryColumnChart, selectedGenreColumnChart);
+				ColumnChartWebPage columnChart = new ColumnChartWebPage(columnChartInputMap,
+						selectedYearFromColumnChart, selectedYearToColumnChart, selectedCountryColumnChart,
+						selectedGenreColumnChart);
 				columnChartPanel.setWidget(columnChart.getColumnChart());
 				columnChart.getColumnChart().draw(columnChart.getDataTable(), columnChart.getOptions());
 			}
@@ -1147,7 +1161,7 @@ public class Error404 implements EntryPoint {
 		worldMapPanel.setSize(TABPANELWIDTH, TABPANELHEIGHT);
 		Runnable onLoadCallback = new Runnable() {
 			public void run() {
-				 WorldMap map = new WorldMap(worldMapInputDataList, null, TABPANELWIDTH, TABPANELHEIGHT);
+				WorldMap map = new WorldMap(worldMapInputDataList, null, TABPANELWIDTH, TABPANELHEIGHT);
 				worldMapPanel.setWidget(map.getWorldMap());
 				map.getWorldMap().draw(map.getDataTable(), map.getOptions());
 				worldMapVP.add(worldMapPanel);
@@ -1218,7 +1232,8 @@ public class Error404 implements EntryPoint {
 		VerticalPanel sourcePanel = new VerticalPanel();
 
 		// new anchor to the creative commons website
-		Anchor anchorMovies = new Anchor("Commons Attribution-ShareAlike License", "http://creativecommons.org/licenses/by-sa/4.0/");
+		Anchor anchorMovies = new Anchor("Commons Attribution-ShareAlike License",
+				"http://creativecommons.org/licenses/by-sa/4.0/");
 
 		// opens link in a new tab
 		anchorMovies.setTarget("_blank");
@@ -1231,7 +1246,8 @@ public class Error404 implements EntryPoint {
 		sourcePanel.add(anchorMovies);
 
 		// new anchor to the creative commons website
-		Anchor anchorPopulation = new Anchor("World Bank Global Population", "http://data.worldbank.org/indicator/SP.POP.TOTL");
+		Anchor anchorPopulation = new Anchor("World Bank Global Population",
+				"http://data.worldbank.org/indicator/SP.POP.TOTL");
 
 		// opens link in a new tab
 		anchorPopulation.setTarget("_blank");
@@ -1274,7 +1290,7 @@ public class Error404 implements EntryPoint {
 		faq.add(initializeFAQHTML());
 		return faq;
 	}
-	
+
 	/**
 	 * Instantiates new HTML content for the FAQ
 	 * 
@@ -1297,7 +1313,11 @@ public class Error404 implements EntryPoint {
 						+ "<div style='margin-left: 50px;'><img src='Images/table_each_one.png' width='50%' align='left' style='margin-bottom: 50px; margin-right: 50px;' /><div><b>How to filter by genre, country, language and duration?</b><br><br>For filtering by movies which have a specific genre, are produced in a specific country, have a specific language and a specific duration, the genre, country, language and duration needs to be selected.<br>The result are all movies which fulfill all chosen criteria.<br>Of course it's possible to leave one or multiple criteria boxes blank as long as at least one criteria of any box is selected.<br>In case no results can be found for the filter options an alert pops up. </div></div><div style='clear: both;'></div>"
 						+ "<div style='margin-left: 50px;'><img src='Images/table_each_multiple_2.png' width='50%' align='left' style='margin-bottom: 50px; margin-right: 50px;'/><div><b>How to filter by multiple genres, countries, languages and durations?</b><br><br>For filtering by multiple criteria of genre, county, language and duration just push ctrl on your keyboard and choose whatever's desired. It's also possible to push shift and choose all in a row or even press ctrl+A to get all criteria of the selected criteria box (just in chrome).<br>The showed results are all movies which have the same genres, countries, languages and duration.*<br>Of course it's possible to leave one or multiple criteria boxes blank or choose just one criteria as long as at least one criteria of any box is selected.<br>In case no results can be found for the filter options an alert pops up.<br><br>*Example:<br>If Genre (Action, Action Comedy), Country (USA, Uruguay, Uzbek SSR), Language (English, Esperanto, Estonia), Duration(all) is selected the result are all movies with any duration, which have the languages English or Esperanto or Estonia, which were produced in the USA or Uruguay or Uzbek SSR and have either the genre action or action comedy.</div></div><div style='clear: both;'></div>"
 						// +
-						// "<div style='margin-left: 50px;'><img src='Images/column_chart_genre.png' width='50%' align='left' style='margin-bottom: 50px; margin-right: 50px;'/><div>Das ist der Text zum Bild11</div></div><div style='clear: both;'></div>"
+						// "<div style='margin-left: 50px;'><img
+						// src='Images/column_chart_genre.png' width='50%'
+						// align='left' style='margin-bottom: 50px;
+						// margin-right: 50px;'/><div>Das ist der Text zum
+						// Bild11</div></div><div style='clear: both;'></div>"
 						+ "</div>");
 		return faq;
 	}
