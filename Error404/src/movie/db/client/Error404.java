@@ -201,9 +201,8 @@ public class Error404 implements EntryPoint {
 		rootPanel.add(lb);
 
 		String introString = "Welcome to our Movie Database!\n"
-                + "Enter a year and see the number of movies in the different countries in the \"Worldmap\" tab.\n"
-				+ "Switch to the tab \"Table\" and perform more detailed research based on the offered criteria.\n"
-				+ "Check out \"Pie Chart\" and \"Column Chart\" for additional visualizations. Refer to the FAQ for any questions.";
+				+ "Check out the tabs to perform filmographical research to your liking.\n"
+				+ "Feel free to refer to the frequently asked questions (FAQ) if something is unclear.";
 		Label introductionText = new HTML(new SafeHtmlBuilder().appendEscapedLines(introString).toSafeHtml());		
 		rootPanel.add(introductionText);
 
