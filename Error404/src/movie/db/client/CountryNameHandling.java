@@ -347,7 +347,7 @@ public abstract class CountryNameHandling {
 	 * @return an int which represents the index of the searched object in the
 	 *         ArrayList. If there is no such object, it returns -1
 	 */
-	private static int getIndex(ArrayList<InputObjectWorldMap> list, String searchedCountryName) {
+	static int getIndex(ArrayList<InputObjectWorldMap> list, String searchedCountryName) {
 
 		int size = list.size();
 		int z = 0;

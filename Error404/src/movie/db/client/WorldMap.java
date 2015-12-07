@@ -147,7 +147,7 @@ public class WorldMap {
 	 *            needed for the webpage.
 	 * @return
 	 */
-	public String[][] generateDataTableTest(ArrayList<DataResultAggregated> data) {
+	public static String[][] generateDataTableTest(ArrayList<DataResultAggregated> data) {
 
 		ArrayList<InputObjectWorldMap> inputList = CountryNameHandling.createInputArrayList(data, true);
 		int sizeInputList = inputList.size();

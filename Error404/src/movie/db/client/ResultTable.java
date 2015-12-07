@@ -113,5 +113,72 @@ public class ResultTable {
 		}
 		return returnString;
 	}
+	
+public String[][] generateDataTableTest(Map<Integer, DataResultShared> result) {
+
+		
+		
+		/*dataTable.addRow(); this line is for the case that result is empty
+		when working with arrays it's not important to monitor this case
+		in the generateDataTable method here you find the following line "dataTable.addRow();".
+		this is important because the GeoMap cannot work with a DataTable, which has 0 rows.
+		So we added just a empty row. */
+		 
+		/*DataTable dataTable = DataTable.create();
+		dataTable.addColumn(ColumnType.STRING, "Movie");
+		dataTable.addColumn(ColumnType.NUMBER, "Year");
+		dataTable.addColumn(ColumnType.STRING, "Genres");
+		dataTable.addColumn(ColumnType.STRING, "Languages");
+		dataTable.addColumn(ColumnType.STRING, "Countries");
+		this is substituted by the following 2 lines */
+		
+		
+		int size = result.size();
+		String [][] testArray = new String[size][6];
+
+		try {
+			
+			int z = 0;
+
+			if (size > 0) {
+				//dataTable.removeRow(0); this line is not needed in this method, because the case
+				//that the map is empty is not important when working with arrays
+				
+				for (DataResultShared entry : result.values()) {
+					//dataTable.addRow();
+					//dataTable.setValue(z, 0, entry.getMovieName());
+					//this is substituted by the following line
+					testArray[z][0] = entry.getMovieName();
+					
+					//dataTable.setValue(z, 1, entry.getYear());
+					//this is substituted by the following line
+					testArray[z][1] = entry.getYear() + "";
+					
+					//dataTable.setValue(z, 2, entry.getDuration());
+					//this is substituted by the following line
+					testArray[z][2] = entry.getDuration() + "";	
+					
+					//dataTable.setValue(z, 3, arrayListToStringConverter(entry.getGenres()));
+					//this is substituted by the following line
+					testArray[z][3] = arrayListToStringConverter(entry.getGenres());
+					
+					//dataTable.setValue(z, 4, arrayListToStringConverter(entry.getLanguages()));
+					//this is substituted by the following line
+					testArray[z][4] = arrayListToStringConverter(entry.getLanguages());
+					
+					//dataTable.setValue(z, 5, arrayListToStringConverter(entry.getCountries()));
+					//this is substituted by the following line
+					testArray[z][5] = arrayListToStringConverter(entry.getCountries());
+					z++;
+				}
+			}
+
+		}
+
+		catch (Exception ex1) {
+			Window.alert(ex1.toString());
+		}
+		return testArray;
+	}
 
 }
