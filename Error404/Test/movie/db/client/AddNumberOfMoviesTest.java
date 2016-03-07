@@ -18,7 +18,8 @@ public class AddNumberOfMoviesTest extends GWTTestCase {
 	private static final String COUNTRY_OSI2 = "Netherlands";
 	private static final int NUMBER_OF_MOVIES2 = 0;
 	private static final String COUNTRY_NAME_SHOWED2 = "Netherlands";
-	
+
+	//this is a test	
 	private static final String COUNTRY_OSI3 = "Netherlands";
 	private static final int NUMBER_OF_MOVIES3 = -50;
 	private static final String COUNTRY_NAME_SHOWED3 = "Netherlands";
